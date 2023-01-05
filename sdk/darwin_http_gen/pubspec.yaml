@@ -1,6 +1,6 @@
 name: darwin_http_gen
 description: A sample command-line application.
-version: 1.1.0-alpha.2
+version: 1.1.0-alpha.3
 repository: https://github.com/DarwinFramework/darwin
 
 environment:
@@ -23,8 +23,7 @@ dependencies:
   darwin_eventbus: ^1.1.0-alpha.0
   darwin_marshal: ^1.1.0-alpha.2
   darwin_gen: ^1.1.0-alpha.2
-  darwin_http: ^1.1.0-alpha.2
-
+  darwin_http: ^1.1.0-alpha.3
 dev_dependencies:
   lints: ^2.0.0
   test: ^1.16.0
