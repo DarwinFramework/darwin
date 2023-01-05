@@ -1,6 +1,6 @@
 name: darwin_marshal
 description: A starting point for Dart libraries or applications.
-version: 1.1.0-alpha.0
+version: 1.1.0-alpha.1
 repository: https://github.com/DarwinFramework/darwin
 
 environment:
@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   path: ^1.8.0
-  darwin_sdk: ^1.1.0-alpha.0
+  darwin_sdk: ^1.1.0-alpha.1
   darwin_injector: ^1.1.0-alpha.0
   darwin_eventbus: ^1.1.0-alpha.0
 
