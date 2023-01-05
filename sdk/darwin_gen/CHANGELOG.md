@@ -1,3 +1,7 @@
+## 1.1.0-alpha.2
+
+ - **REFACTOR**: extract pubspec overrides.
+
 ## 1.1.0-alpha.1
 
  - **REFACTOR**: rename darwin to darwin_sdk.

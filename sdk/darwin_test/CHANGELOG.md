@@ -1,3 +1,7 @@
+## 1.1.0-alpha.2
+
+ - **REFACTOR**: extract pubspec overrides.
+
 ## 1.1.0-alpha.1
 
  - Update a dependency to the latest release.
