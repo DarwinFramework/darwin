@@ -1,5 +1,5 @@
 name: darwin_http
-description: A starting point for Dart libraries or applications.
+description: Http server and rest api functionality for the darwin framework
 version: 1.1.0-alpha.4
 repository: https://github.com/DarwinFramework/darwin
 

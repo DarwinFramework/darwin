@@ -1,5 +1,5 @@
 name: darwin_sdk
-description: A sample command-line application.
+description: Swiss army knife for creating service based applications in dart, using IoC and a powerful annotation based code generator
 version: 1.1.0-alpha.2
 repository: https://github.com/DarwinFramework/darwin
 

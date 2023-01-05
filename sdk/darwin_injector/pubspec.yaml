@@ -1,13 +1,12 @@
 name: darwin_injector
-description: A starting point for Dart libraries or applications.
+description: Extensible dependency injection library used as the foundation of the darwin framework
 version: 1.1.0-alpha.0
 repository: https://github.com/DarwinFramework/darwin
 
 environment:
   sdk: '>=2.18.2 <3.0.0'
 
-# dependencies:
-#   path: ^1.8.0
+dependencies: {}
 
 dev_dependencies:
   lints: ^2.0.0

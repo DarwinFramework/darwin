@@ -1,5 +1,5 @@
 name: darwin_gen
-description: A starting point for Dart libraries or applications.
+description: Code generator for the base darwin_sdk package of the darwin framework
 version: 1.1.0-alpha.2
 repository: https://github.com/DarwinFramework/darwin
 

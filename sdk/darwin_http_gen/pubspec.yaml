@@ -1,5 +1,5 @@
 name: darwin_http_gen
-description: A sample command-line application.
+description: Code generator for the http package of the darwin framework
 version: 1.1.0-alpha.5
 repository: https://github.com/DarwinFramework/darwin
 
