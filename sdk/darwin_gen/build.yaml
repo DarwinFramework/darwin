@@ -1,0 +1,25 @@
+targets:
+  $default:
+    builders: {}
+
+builders:
+  darwin_service_bindings:
+    import: "package:darwin_gen/integrations.dart"
+    builder_factories: [ "darwinServiceBindings" ]
+    build_extensions: { ".dart": [ ".base.service" ] }
+    runs_before: [ "darwin_gen:darwin_reactor" ]
+    auto_apply: dependents
+    build_to: cache
+  darwin_service_descriptors:
+    import: "package:darwin_gen/integrations.dart"
+    builder_factories: [ "darwinServiceDescriptors" ]
+    build_extensions: { ".dart": [ ".base.g.dart" ] }
+    auto_apply: dependents
+    build_to: source
+  darwin_reactor:
+    import: "package:darwin_gen/integrations.dart"
+    builder_factories: [ "darwinReactor" ]
+    build_extensions: { "$lib$": [ "darwin.g.dart" ] }
+    required_inputs: [".service"]
+    auto_apply: dependents
+    build_to: source

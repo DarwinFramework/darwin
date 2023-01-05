@@ -1,0 +1,18 @@
+targets:
+  $default:
+    builders: {}
+
+builders:
+  darwin_http_service_bindings:
+    import: "package:darwin_http_gen/integrations.dart"
+    builder_factories: [ "darwinHttpServiceBindings" ]
+    build_extensions: { ".dart": [ ".http.service" ] }
+    runs_before: [ "darwin_gen:darwin_reactor" ]
+    auto_apply: dependents
+    build_to: cache
+  darwin_http_service_creator:
+    import: "package:darwin_http_gen/integrations.dart"
+    builder_factories: [ "darwinHttpServiceCreator" ]
+    build_extensions: { ".dart": [ ".http.g.dart" ] }
+    auto_apply: dependents
+    build_to: source

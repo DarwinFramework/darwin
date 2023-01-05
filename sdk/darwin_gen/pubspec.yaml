@@ -1,0 +1,35 @@
+name: darwin_gen
+description: A starting point for Dart libraries or applications.
+version: 1.0.0
+repository: https://github.com/DarwinFramework/darwin
+
+environment:
+  sdk: '>=2.18.2 <3.0.0'
+
+dependencies:
+  build: '>=2.0.0 <3.0.0'
+  analyzer: ">=2.0.0 <6.0.0"
+  source_gen: '>=1.0.0 <=2.0.0'
+  collection: '>=1.15.0 <2.0.0'
+  crypto: '>=3.0.0 <4.0.0'
+  glob: '>=2.0.0 <3.0.0'
+  path: '>=1.8.0 <2.0.0'
+
+  code_builder: 4.3.0
+  dart_style: 2.2.4
+
+  darwin_sdk: any
+  darwin_injector: any
+  darwin_eventbus: any
+
+dependency_overrides:
+  darwin_sdk:
+    path: ../darwin
+  darwin_injector:
+    path: ../darwin_injector
+  darwin_eventbus:
+    path: ../darwin_eventbus
+
+
+dev_dependencies:
+  lints: '>=2.0.0 <3.0.0'
