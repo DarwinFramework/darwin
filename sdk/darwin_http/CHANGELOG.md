@@ -1,3 +1,7 @@
+## 1.1.0-alpha.4
+
+ - **FIX**: pubspec yaml.
+
 ## 1.1.0-alpha.3
 
  - **FIX**: pubspec yaml.
