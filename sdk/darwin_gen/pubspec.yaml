@@ -15,8 +15,8 @@ dependencies:
   glob: '>=2.0.0 <3.0.0'
   path: '>=1.8.0 <2.0.0'
 
-  code_builder: 4.3.0
-  dart_style: 2.2.4
+  code_builder: '>=4.3.0 <5.0.0'
+  dart_style: '>=2.2.4 <3.0.0'
 
   darwin_sdk: ^1.1.0-alpha.2
   darwin_injector: ^1.1.0-alpha.0
