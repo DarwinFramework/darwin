@@ -1,3 +1,7 @@
+## 1.1.0-alpha.5
+
+ - **FIX**: pubspec yaml.
+
 ## 1.1.0-alpha.4
 
  - Update a dependency to the latest release.
