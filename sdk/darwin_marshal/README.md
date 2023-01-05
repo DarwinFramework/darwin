@@ -1,1 +1,1 @@
-This package contains the object serialization system for darwin.
+An object serialization library used by the darwin_http package of the darwin framework

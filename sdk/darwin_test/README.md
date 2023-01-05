@@ -1,1 +1,1 @@
-This package contains test utilities for darwin.
+A simple test library for the darwin framework
