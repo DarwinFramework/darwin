@@ -11,12 +11,6 @@ dependencies:
   darwin_sdk: ^1.1.0-alpha.1
   darwin_injector: ^1.1.0-alpha.0
 
-dependency_overrides:
-  darwin_sdk:
-    path: ../darwin
-  darwin_injector:
-    path: ../darwin_injector
-
 dev_dependencies:
   lints: ^2.0.0
   test: ^1.16.0

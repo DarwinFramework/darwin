@@ -10,16 +10,10 @@ dependencies:
   path: '>=1.8.0 <1.9.0'
   logging: '>=1.1.0 <1.2.0'
   ansi_styles: '>=0.3.1 <0.4.0'
-  meta: any
+  meta: ^1.8.0
 
   darwin_injector: ^1.1.0-alpha.0
   darwin_eventbus: ^1.1.0-alpha.0
-
-dependency_overrides:
-  darwin_injector:
-    path: ../darwin_injector
-  darwin_eventbus:
-    path: ../darwin_eventbus
 
 dev_dependencies:
   lints: ^2.0.0

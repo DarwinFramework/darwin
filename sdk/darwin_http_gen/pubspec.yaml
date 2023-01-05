@@ -24,20 +24,6 @@ dependencies:
   darwin_marshal: ^1.1.0-alpha.1
   darwin_gen: ^1.1.0-alpha.1
   darwin_http: ^1.1.0-alpha.1
-dependency_overrides:
-  darwin_sdk:
-    path: ../darwin
-  darwin_injector:
-    path: ../darwin_injector
-  darwin_eventbus:
-    path: ../darwin_eventbus
-  darwin_marshal:
-    path: ../darwin_marshal
-  darwin_gen:
-    path: ../darwin_gen
-  darwin_http:
-    path: ../darwin_http
-
 
 dev_dependencies:
   lints: ^2.0.0

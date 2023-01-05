@@ -22,14 +22,6 @@ dependencies:
   darwin_injector: ^1.1.0-alpha.0
   darwin_eventbus: ^1.1.0-alpha.0
 
-dependency_overrides:
-  darwin_sdk:
-    path: ../darwin
-  darwin_injector:
-    path: ../darwin_injector
-  darwin_eventbus:
-    path: ../darwin_eventbus
-
 
 dev_dependencies:
   lints: '>=2.0.0 <3.0.0'

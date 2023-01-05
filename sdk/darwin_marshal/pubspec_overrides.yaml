@@ -1,0 +1,7 @@
+dependency_overrides:
+  darwin_sdk:
+    path: ../darwin
+  darwin_eventbus:
+    path: ../darwin_eventbus
+  darwin_injector:
+    path: ../darwin_injector
