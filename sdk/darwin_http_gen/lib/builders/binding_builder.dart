@@ -24,16 +24,20 @@ import 'package:darwin_http/darwin_http.dart';
 import 'package:source_gen/source_gen.dart';
 
 class DarwinHttpServiceBindingBuilder extends Builder {
-
   @override
   FutureOr<void> build(BuildStep buildStep) async {
     var library = await buildStep.inputLibrary;
     var reader = LibraryReader(library);
-    var foundServices = reader.annotatedWith(TypeChecker.fromRuntime(RestController));
+    var foundServices =
+        reader.annotatedWith(TypeChecker.fromRuntime(RestController));
     if (foundServices.isEmpty) return;
-    if (foundServices.length > 1) throw Exception("A dart file can only have one service");
+    if (foundServices.length > 1) {
+      throw Exception("A dart file can only have one service");
+    }
     var serviceClass = foundServices.first.element;
-    if (serviceClass is! ClassElement) throw Exception("Only classes can be annotated with @RestController");
+    if (serviceClass is! ClassElement) {
+      throw Exception("Only classes can be annotated with @RestController");
+    }
     var package = buildStep.inputId.uri.toString();
     var descriptorId = buildStep.inputId.changeExtension(".http.g.dart");
     var descriptorName = "${serviceClass.name}Descriptor";
@@ -41,14 +45,14 @@ class DarwinHttpServiceBindingBuilder extends Builder {
         name: serviceClass.name,
         package: package,
         descriptorName: descriptorName,
-        descriptorPackage: descriptorId.uri.toString()
-    );
-    await buildStep.writeAsString(buildStep.inputId.changeExtension(".http.service"), jsonEncode(binding.toMap()));
+        descriptorPackage: descriptorId.uri.toString());
+    await buildStep.writeAsString(
+        buildStep.inputId.changeExtension(".http.service"),
+        jsonEncode(binding.toMap()));
   }
 
   @override
   Map<String, List<String>> get buildExtensions => {
-    ".dart": [".http.service"]
-  };
-
+        ".dart": [".http.service"]
+      };
 }

@@ -18,13 +18,10 @@ import 'dart:async';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
-import 'package:darwin_gen/darwin_gen.dart';
 import 'package:darwin_http/darwin_http.dart';
-import 'package:darwin_sdk/darwin.dart';
 import 'package:source_gen/source_gen.dart';
 
 class DarwinHttpServiceCreator extends Builder {
-
   @override
   FutureOr<void> build(BuildStep buildStep) async {
     var library = await buildStep.inputLibrary;
@@ -32,13 +29,22 @@ class DarwinHttpServiceCreator extends Builder {
     await _checkComponent(buildStep, library, reader);
   }
 
-  Future _checkComponent(BuildStep buildStep, LibraryElement library, LibraryReader reader) async {
-    var foundServices = reader.annotatedWith(TypeChecker.fromRuntime(RestController));
+  Future _checkComponent(
+      BuildStep buildStep, LibraryElement library, LibraryReader reader) async {
+    var foundServices =
+        reader.annotatedWith(TypeChecker.fromRuntime(RestController));
     if (foundServices.isEmpty) return;
-    if (foundServices.length > 1) throw Exception("A dart file can only have one service");
+    if (foundServices.length > 1) {
+      throw Exception("A dart file can only have one service");
+    }
     var serviceClass = foundServices.first.element;
-    if (serviceClass is! ClassElement) throw Exception("Only classes can be annotated with @RestController");
-    var dependencies = serviceClass.unnamedConstructor?.parameters.map((e) => e.type.getDisplayString(withNullability: false)).toList() ?? [];
+    if (serviceClass is! ClassElement) {
+      throw Exception("Only classes can be annotated with @RestController");
+    }
+    var dependencies = serviceClass.unnamedConstructor?.parameters
+            .map((e) => e.type.getDisplayString(withNullability: false))
+            .toList() ??
+        [];
     dependencies.add("DarwinHttpServer");
     dependencies.add("HttpPlugin");
     //await BaseServiceDescriptorGenerator.generate([BaseServiceDescriptorGenerator.linkStart, BaseServiceDescriptorGenerator.linkStop], serviceClass, dependencies, library, buildStep, ".http");
@@ -46,7 +52,6 @@ class DarwinHttpServiceCreator extends Builder {
 
   @override
   Map<String, List<String>> get buildExtensions => {
-    ".dart": [".http.g.dart"]
-  };
-
+        ".dart": [".http.g.dart"]
+      };
 }

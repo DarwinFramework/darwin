@@ -20,19 +20,14 @@ import 'plugin.dart';
 import 'service.dart';
 
 class DarwinSystemGeneratedArgs {
-
   final List<ServiceDescriptor> services;
 
   const DarwinSystemGeneratedArgs(this.services);
-
 }
 
 class DarwinSystemUserArgs {
-
   final Module appModule;
   final List<DarwinPlugin> plugins;
-
-//<editor-fold desc="Data Methods">
 
   const DarwinSystemUserArgs({
     required this.appModule,
@@ -67,8 +62,8 @@ class DarwinSystemUserArgs {
 
   Map<String, dynamic> toMap() {
     return {
-      'appModule': this.appModule,
-      'plugins': this.plugins,
+      'appModule': appModule,
+      'plugins': plugins,
     };
   }
 
@@ -78,6 +73,4 @@ class DarwinSystemUserArgs {
       plugins: map['plugins'] as List<DarwinPlugin>,
     );
   }
-
-//</editor-fold>
 }

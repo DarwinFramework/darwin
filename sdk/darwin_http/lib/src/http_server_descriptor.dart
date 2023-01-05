@@ -17,7 +17,6 @@
 part of 'http_server.dart';
 
 class HttpServerServiceDescriptor extends ServiceDescriptor {
-
   @override
   Type get bindingType => DarwinHttpServer;
 
@@ -28,18 +27,21 @@ class HttpServerServiceDescriptor extends ServiceDescriptor {
   List<InjectorKey> get dependencies => [InjectorKey.create(HttpPlugin)];
 
   @override
-  List<InjectorKey> get publications => [InjectorKey.create(HttpServerServiceDescriptor)];
+  List<InjectorKey> get publications =>
+      [InjectorKey.create(HttpServerServiceDescriptor)];
 
   @override
   List<Condition> get conditions => [];
 
   @override
-  Future instantiate(Injector injector) async => DarwinHttpServer(await injector.get(HttpPlugin), await injector.get(DarwinMarshal));
+  Future instantiate(Injector injector) async => DarwinHttpServer(
+      await injector.get(HttpPlugin), await injector.get(DarwinMarshal));
 
   @override
-  Future<void> start(DarwinSystem system, obj) async => await (obj as DarwinHttpServer).start(system);
+  Future<void> start(DarwinSystem system, obj) async =>
+      await (obj as DarwinHttpServer).start(system);
 
   @override
-  Future<void> stop(DarwinSystem system, obj) async => await (obj as DarwinHttpServer).stop(system);
-
+  Future<void> stop(DarwinSystem system, obj) async =>
+      await (obj as DarwinHttpServer).stop(system);
 }

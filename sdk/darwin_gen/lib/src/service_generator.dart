@@ -30,13 +30,16 @@ class BaseServiceResults {
 }
 
 class ServiceGen {
-  static final Reference serviceDescriptorRef = Reference("$genAlias.ServiceDescriptor");
+  static final Reference serviceDescriptorRef =
+      Reference("$genAlias.ServiceDescriptor");
   static final Reference darwinSystemRef = Reference("$genAlias.DarwinSystem");
   static final Reference injectorRef = Reference("$genAlias.Injector");
   static final Reference injectorKeyRef = Reference("$genAlias.InjectorKey");
-  static final Reference injectorKeyListRef = Reference("List<$genAlias.InjectorKey>");
+  static final Reference injectorKeyListRef =
+      Reference("List<$genAlias.InjectorKey>");
   static final Reference conditionRef = Reference("$genAlias.Condition");
-  static final Reference conditionListRef = Reference("List<$genAlias.Condition>");
+  static final Reference conditionListRef =
+      Reference("List<$genAlias.Condition>");
 
   static final String serviceBaseStrRef = "$genAlias.ServiceBase";
 
@@ -57,7 +60,8 @@ class ServiceGen {
         getDependencies(serviceClass.unnamedConstructor?.parameters);
 
     List<GeneratedBeanDefinition> beans = getBeanDefinitions(genContext);
-    List<EventSubscriptionDefinition> eventSubscriptions = getEventSubscriptions(genContext);
+    List<EventSubscriptionDefinition> eventSubscriptions =
+        getEventSubscriptions(genContext);
 
     var serviceAnnotation = serviceChecker.firstAnnotationOf(serviceClass);
     var boundType = serviceAnnotation

@@ -17,7 +17,6 @@
 import 'package:darwin_eventbus/darwin_eventbus.dart';
 
 abstract class EventSubscription {
-
   /// Cancels this event subscriptions.
   void cancel();
 }

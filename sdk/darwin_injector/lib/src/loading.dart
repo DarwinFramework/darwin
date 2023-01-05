@@ -15,7 +15,6 @@
  */
 
 enum LoadingStrategy {
-
   /// The value is loaded directly after initialisation and is then cached.
   eager,
 
@@ -24,5 +23,4 @@ enum LoadingStrategy {
 
   /// The value is loaded on demand and is not cached afterwards.
   direct
-
 }

@@ -29,7 +29,6 @@ export 'src/module.dart';
 export 'src/provider.dart';
 
 class Named {
-
   final String name;
 
   const Named(this.name);

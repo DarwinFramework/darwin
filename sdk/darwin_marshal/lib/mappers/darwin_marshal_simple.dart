@@ -19,7 +19,6 @@ import 'dart:convert';
 import '../darwin_marshal.dart';
 
 class DarwinMarshalSimple {
-
   static void register(DarwinMarshal marshal, {bool strictMime = false}) {
     marshal.registerTypeMapper(String, SimpleStringMapper());
     marshal.registerTypeMapper(List<int>, SimpleDataMapper());
@@ -27,7 +26,6 @@ class DarwinMarshalSimple {
 }
 
 class SimpleStringMapper extends DarwinMapper<String> {
-
   @override
   bool checkDeserialize(DeserializationContext context) {
     return context.target == String;
@@ -51,7 +49,6 @@ class SimpleStringMapper extends DarwinMapper<String> {
 }
 
 class SimpleDataMapper extends DarwinMapper<List<int>> {
-
   @override
   bool checkDeserialize(DeserializationContext context) {
     return context.target == List<int>;
@@ -72,5 +69,4 @@ class SimpleDataMapper extends DarwinMapper<List<int>> {
     if (obj == null) return [];
     return obj;
   }
-
 }

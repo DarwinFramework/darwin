@@ -26,4 +26,3 @@ export 'src/plugin.dart';
 
 export 'mappers/darwin_marshal_json.dart';
 export 'mappers/darwin_marshal_simple.dart';
-

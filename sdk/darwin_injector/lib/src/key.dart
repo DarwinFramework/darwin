@@ -15,7 +15,6 @@
  */
 
 class InjectorKey {
-
   final Type type;
   final String? name;
   final dynamic data;
@@ -39,6 +38,6 @@ class InjectorKey {
     return 'InjectorKey{type: $type, name: $name, data: $data}';
   }
 
-  factory InjectorKey.create(Type type, {String? name, dynamic data}) => InjectorKey(type, name, data);
-
+  factory InjectorKey.create(Type type, {String? name, dynamic data}) =>
+      InjectorKey(type, name, data);
 }

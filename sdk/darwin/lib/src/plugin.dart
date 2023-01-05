@@ -33,7 +33,6 @@ import 'package:darwin_sdk/darwin.dart';
 /// this just influences the order in which [configure] is called. Services
 /// published by the plugin still follow the usual service lifecycle.
 abstract class DarwinPlugin {
-
   int loadOrder = 0;
 
   /// Configures and prepares the plugin before services are loaded.
@@ -48,16 +47,16 @@ abstract class DarwinPlugin {
 
   /// Returns services defined by this plugin.
   Stream<ServiceDescriptor> collectServices() async* {}
-
 }
 
 mixin DarwinSystemPluginMixin on DarwinSystem {
-
   final List<DarwinPlugin> plugins = [];
 
   Stream<ServiceDescriptor> configurePlugins() async* {
     for (var plugin in plugins) {
-      darwinSystemModule.bind(plugin.runtimeType).toConstant(plugin); // Bind plugin
+      darwinSystemModule
+          .bind(plugin.runtimeType)
+          .toConstant(plugin); // Bind plugin
       await plugin.configure();
       await plugin.collectModules().forEach((element) {
         injector.registerModule(element);
@@ -66,7 +65,8 @@ mixin DarwinSystemPluginMixin on DarwinSystem {
       var services = await plugin.collectServices().toList();
       for (var service in services) {
         yield service;
-        log("Registered service binding $service by $plugin", name: "Darwin System");
+        log("Registered service binding $service by $plugin",
+            name: "Darwin System");
       }
     }
   }

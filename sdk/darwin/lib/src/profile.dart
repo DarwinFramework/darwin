@@ -19,7 +19,6 @@ import 'dart:async';
 import 'package:darwin_sdk/darwin.dart';
 
 class Profile extends Condition {
-
   final String profile;
   final bool inverse;
   const Profile(this.profile, {this.inverse = false});
@@ -35,7 +34,5 @@ class Profile extends Condition {
 }
 
 mixin DarwinSystemProfileMixin on DarwinSystem {
-
   String? profile;
-
 }

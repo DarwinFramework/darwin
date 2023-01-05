@@ -17,14 +17,15 @@
 import '../darwin_injector.dart';
 
 class Module {
-
   final Map<InjectorKey, DependencyProvider> _providers = {};
 
   Map<InjectorKey, DependencyProvider> get providers => _providers;
 
   Future<dynamic> get(Injector injector, InjectorKey key) {
     var provider = providers[key];
-    if (provider == null) throw Exception("No dependency provider for $key found");
+    if (provider == null) {
+      throw Exception("No dependency provider for $key found");
+    }
     return provider.get(injector);
   }
 
@@ -37,5 +38,4 @@ class Module {
   }
 
   BindingBuilder bind(Type type) => BindingBuilder(this, type);
-
 }

@@ -22,4 +22,3 @@ class LateStartupEvent extends AsyncEvent {
 
   const LateStartupEvent(this.system);
 }
-

@@ -15,13 +15,9 @@
  */
 
 import 'dart:async';
-import 'dart:developer';
 
-import 'package:ansi_styles/extension.dart';
 import 'package:darwin_injector/darwin_injector.dart';
-import 'package:logging/logging.dart';
-
-import '../darwin.dart';
+import 'package:darwin_sdk/darwin.dart';
 
 /// Class-Annotation for defining services.
 ///
@@ -66,10 +62,8 @@ class Stop {
 /// Abstract base for [Service]s, which can be used to hook into the service
 /// lifecycle. Can also obtain the current instance of [DarwinSystem].
 abstract class ServiceBase {
-
   FutureOr<void> start(DarwinSystem system);
   FutureOr<void> stop(DarwinSystem system);
-
 }
 
 /// Abstract factory-like service creator and information holder.
@@ -78,7 +72,6 @@ abstract class ServiceBase {
 /// the generators of other darwin packages. However this class can and should
 /// also be manually implemented by plugins which intend to run custom services.
 abstract class ServiceDescriptor implements Activator {
-
   const ServiceDescriptor();
 
   /// Actual type of the service that will be instantiated
@@ -102,7 +95,8 @@ abstract class ServiceDescriptor implements Activator {
   Future<void> stop(DarwinSystem system, dynamic obj);
 
   /// [_combineDependencies] check via an [Injector].
-  bool isSatisfied(Injector injector) => _combineDependencies().every((element) => injector.checkKey(element));
+  bool isSatisfied(Injector injector) =>
+      _combineDependencies().every((element) => injector.checkKey(element));
 
   Iterable<InjectorKey> _combineDependencies() sync* {
     yield* dependencies;
@@ -110,7 +104,6 @@ abstract class ServiceDescriptor implements Activator {
       yield* condition.dependencies;
     }
   }
-
 }
 
 class RunningService {
@@ -121,11 +114,10 @@ class RunningService {
 }
 
 mixin DarwinSystemServiceMixin on DarwinSystem {
-
   List<RunningService> runningServices = [];
   final List<ServiceDescriptor> serviceDescriptors = [];
   SystemLifecycleState lifecycleState = SystemLifecycleState.initial;
-  
+
   Future<void> startServices() async {
     lifecycleState = SystemLifecycleState.starting;
     var unsolved = serviceDescriptors.toList();
@@ -151,10 +143,12 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
   }
 
   Future<bool> startService(ServiceDescriptor descriptor) async {
-    loggingMixin.logger.finer("Trying to start service ${descriptor.serviceType}...");
+    loggingMixin.logger
+        .finer("Trying to start service ${descriptor.serviceType}...");
     var matchesConditions = await descriptor.conditions.match(this);
     if (!matchesConditions) {
-      loggingMixin.logger.finer("Service conditions aren't met, skipping service");
+      loggingMixin.logger
+          .finer("Service conditions aren't met, skipping service");
       return false;
     }
     var obj = await descriptor.instantiate(injector);
@@ -166,24 +160,26 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
   }
 
   List<ServiceDescriptor> findDescriptors(Type type) => serviceDescriptors
-      .where((element) => element.bindingType == type).toList();
+      .where((element) => element.bindingType == type)
+      .toList();
 
   List<ServiceDescriptor> findDescriptorsExact(Type type) => serviceDescriptors
-      .where((element) => element.serviceType == type).toList();
+      .where((element) => element.serviceType == type)
+      .toList();
 
-  List<RunningService> findServices(Type type) =>
-      runningServices.where((element) => element.descriptor.bindingType == type).toList();
+  List<RunningService> findServices(Type type) => runningServices
+      .where((element) => element.descriptor.bindingType == type)
+      .toList();
 
-  List<RunningService> findServicesExact(Type type) =>
-      runningServices.where((element) => element.obj.runtimeType == type).toList();
+  List<RunningService> findServicesExact(Type type) => runningServices
+      .where((element) => element.obj.runtimeType == type)
+      .toList();
 
-  List<RunningService> findServicesWithDescriptor(ServiceDescriptor descriptor) =>
-      runningServices.where((element) => element.descriptor == descriptor).toList();
-  
+  List<RunningService> findServicesWithDescriptor(
+          ServiceDescriptor descriptor) =>
+      runningServices
+          .where((element) => element.descriptor == descriptor)
+          .toList();
 }
 
-enum SystemLifecycleState {
-  initial,
-  starting,
-  started
-}
+enum SystemLifecycleState { initial, starting, started }

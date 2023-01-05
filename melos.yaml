@@ -2,3 +2,16 @@ name: darwin_project
 repository: https://github.com/DarwinFramework/darwin
 packages:
   - sdk/**
+scripts:
+  analyze:
+    name: analyze
+    description: 'Runs the dart analyzer'
+    run: dart analyze .
+    exec:
+      concurrency: 1
+  format:
+    name: format
+    description: 'Runs the dart fromatter'
+    run: dart format .
+    exec:
+      concurrency: 1

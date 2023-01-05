@@ -17,9 +17,7 @@
 import 'package:darwin_injector/darwin_injector.dart';
 
 abstract class Activator {
-
   const Activator();
 
   Future<dynamic> instantiate(Injector injector);
-
 }

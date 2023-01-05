@@ -14,8 +14,6 @@
  *    limitations under the License.
  */
 
-import 'dart:async';
-
 import 'package:ansi_styles/ansi_styles.dart';
 import 'package:ansi_styles/extension.dart';
 import 'package:darwin_sdk/darwin.dart';
@@ -24,7 +22,6 @@ import 'package:logging/logging.dart';
 typedef LogHandler = Function(LogRecord);
 
 mixin DarwinSystemLoggingMixin on DarwinSystem {
-
   Logger logger = Logger.detached("Darwin");
   LogHandler handler = DarwinDefaultLogger.log;
   Level level = Level.CONFIG;
@@ -46,7 +43,6 @@ mixin DarwinSystemLoggingMixin on DarwinSystem {
 }
 
 class DarwinDefaultLogger {
-
   static bool noAnsi = false;
   static const int groupWidth = 15;
 
@@ -58,10 +54,13 @@ class DarwinDefaultLogger {
     var millisecond = localTime.millisecond.toString().padLeft(3, "0");
     var formattedTime = AnsiStyles.gray("$hour:$minute:$second.$millisecond");
     var level = record.level.coloredName;
-    var group = "[".gray + record.loggerName.padLeft(groupWidth).gray + "]".gray;
+    var group =
+        "[".gray + record.loggerName.padLeft(groupWidth).gray + "]".gray;
     var message = StringBuffer(record.message);
     var colon = AnsiStyles.gray(":");
-    if (record.object != null && record.error != null && record.error is StackTrace) {
+    if (record.object != null &&
+        record.error != null &&
+        record.error is StackTrace) {
       message.write("\n${record.error}");
     } else {
       if (record.error != null) message.write(": ${record.error}");

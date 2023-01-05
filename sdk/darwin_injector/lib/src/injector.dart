@@ -17,7 +17,6 @@
 import 'package:darwin_injector/darwin_injector.dart';
 
 class Injector {
-
   final List<Module> _modules = [];
   final Injector? parent;
 
@@ -46,7 +45,7 @@ class Injector {
   /// Throws an [Exception], if the providers returns null or no provider
   /// is found.
   Future<dynamic> getKey(InjectorKey key) async {
-      var parentState = parent;
+    var parentState = parent;
     // Check own modules
     for (var module in modules) {
       if (module.check(key)) {
@@ -100,11 +99,10 @@ class Injector {
 
   /// Returns all modules that contain a binding for the given [key].
   List<Module> where(InjectorKey key) => [
-    ...modules.where((element) => element.check(key)).toList(),
-    if (parent != null) ...parent!.where(key)
-  ];
+        ...modules.where((element) => element.check(key)).toList(),
+        if (parent != null) ...parent!.where(key)
+      ];
 
   /// Creates a new injector which has the this injector as its [parent].
   Injector createChildInjector() => Injector(parent: this);
-
 }

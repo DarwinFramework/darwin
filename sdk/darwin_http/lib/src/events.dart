@@ -18,7 +18,6 @@ import 'package:darwin_http/darwin_http.dart';
 import 'package:shelf/shelf.dart';
 
 class IncomingHttpRequestEvent {
-
   final RequestContext context;
   bool _isCancelled = false;
   Response? _response;
@@ -37,11 +36,9 @@ class IncomingHttpRequestEvent {
   }
 
   IncomingHttpRequestEvent(this.context, this._isCancelled);
-
 }
 
 class HttpRequestRespondEvent {
-
   final RequestContext context;
   final bool hasBeenHandled;
   Response response;

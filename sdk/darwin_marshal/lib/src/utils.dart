@@ -17,12 +17,10 @@
 import 'dart:math';
 
 class TypeUtils {
-
   static bool testClassAnyGeneric(Type vanilla, Type test) {
     var diamondSplice = vanilla.toString().split("<");
     var a = diamondSplice.take(max(diamondSplice.length - 1, 1)).join("<");
     var b = test.toString();
     return b.startsWith(a);
   }
-
 }

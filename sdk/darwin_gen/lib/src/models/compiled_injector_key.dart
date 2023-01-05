@@ -18,14 +18,14 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:darwin_gen/darwin_gen.dart';
 
 class CompiledInjectorKey {
-
   final String type;
   final String? name;
 
   const CompiledInjectorKey._(this.type, this.name);
 
   factory CompiledInjectorKey(DartType type, String? name) {
-    return CompiledInjectorKey._(type.getDisplayString(withNullability: false), name);
+    return CompiledInjectorKey._(
+        type.getDisplayString(withNullability: false), name);
   }
 
   factory CompiledInjectorKey.fromString(String type, String? name) {
@@ -40,5 +40,4 @@ class CompiledInjectorKey {
 
   String get injectorKey => "InjectorKey($unnamedParameters)";
   String get genInjectorKey => "$genAlias.InjectorKey($unnamedParameters)";
-
 }

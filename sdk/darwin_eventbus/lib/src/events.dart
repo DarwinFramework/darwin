@@ -21,27 +21,27 @@ import 'package:darwin_eventbus/darwin_eventbus.dart';
 abstract class SyncEvent {
   const SyncEvent();
 }
+
 abstract class AsyncEvent {
   const AsyncEvent();
 }
 
 abstract class CancelableEvent {
-
   bool _cancelled = false;
   bool get cancelled => _cancelled;
   void cancel() => _cancelled = true;
-
 }
 
 class EventLineStream<T> extends Stream<T> {
-
   EventSubscription subscription;
   Stream<T> stream;
-  
+
   EventLineStream(this.subscription, this.stream);
 
   @override
-  StreamSubscription<T> listen(void Function(T event)? onData, {Function? onError, void Function()? onDone, bool? cancelOnError}) {
-    return stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  StreamSubscription<T> listen(void Function(T event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
+    return stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 }

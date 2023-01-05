@@ -19,15 +19,15 @@ import 'dart:async';
 import 'package:darwin_eventbus/darwin_eventbus.dart';
 
 class SyncEventLine<T> {
-
   List<SyncEventSubscription<T>> subscriptions = [];
 
   /// Subscribes a [SyncEventConsumer] function to this [SyncEventLine] with
   /// a [priority] which defaults to [EventPriority.normal].
-  SyncEventSubscription<T> subscribe(SyncEventConsumer<T> consumer, {int priority = EventPriority.normal}) {
+  SyncEventSubscription<T> subscribe(SyncEventConsumer<T> consumer,
+      {int priority = EventPriority.normal}) {
     var subscription = SyncEventSubscription(this, consumer, priority);
     subscriptions.add(subscription);
-    subscriptions.sort((a,b) => a.priority.compareTo(b.priority));
+    subscriptions.sort((a, b) => a.priority.compareTo(b.priority));
     return subscription;
   }
 
@@ -35,7 +35,8 @@ class SyncEventLine<T> {
   /// [EventPriority.normal] and returns all events as a [Stream].
   EventLineStream<T> subscribeStream({int priority = EventPriority.normal}) {
     var controller = StreamController<T>.broadcast();
-    var subscription = subscribe((p0) => controller.add(p0), priority: priority);
+    var subscription =
+        subscribe((p0) => controller.add(p0), priority: priority);
     return EventLineStream<T>(subscription, controller.stream);
   }
 
@@ -43,7 +44,8 @@ class SyncEventLine<T> {
   /// [EventPriority.normal] for one event.
   Future<T> subscribeNext({int priority = EventPriority.normal}) async {
     var completer = Completer<T>();
-    var subscription = subscribe((p0) => completer.complete(p0), priority: priority);
+    var subscription =
+        subscribe((p0) => completer.complete(p0), priority: priority);
     var result = await completer.future;
     unsubscribe(subscription);
     return result;
@@ -63,7 +65,6 @@ class SyncEventLine<T> {
 }
 
 class AsyncEventLine<T> {
-
   /// The dispatch mode for this [AsyncEventLine].
   ///
   /// **Sequential**: All subscribers are notified in a chain-like manner, sorted
@@ -79,10 +80,11 @@ class AsyncEventLine<T> {
 
   /// Subscribes a [AsyncEventConsumer] function to this [AsyncEventLine] with
   /// a [priority] which defaults to [EventPriority.normal].
-  AsyncEventSubscription<T> subscribe(AsyncEventConsumer<T> consumer, {int priority = EventPriority.normal}) {
+  AsyncEventSubscription<T> subscribe(AsyncEventConsumer<T> consumer,
+      {int priority = EventPriority.normal}) {
     var subscription = AsyncEventSubscription(this, consumer, priority);
     subscriptions.add(subscription);
-    subscriptions.sort((a,b) => a.priority.compareTo(b.priority));
+    subscriptions.sort((a, b) => a.priority.compareTo(b.priority));
     return subscription;
   }
 
@@ -90,16 +92,17 @@ class AsyncEventLine<T> {
   /// [EventPriority.normal] and returns all events as a [Stream].
   EventLineStream<T> subscribeStream({int priority = EventPriority.normal}) {
     var controller = StreamController<T>.broadcast();
-    var subscription = subscribe((p0) => controller.add(p0), priority: priority);
+    var subscription =
+        subscribe((p0) => controller.add(p0), priority: priority);
     return EventLineStream<T>(subscription, controller.stream);
   }
-
 
   /// Subscribes to this [AsyncEventLine] with a [priority] which defaults to
   /// [EventPriority.normal] for one event.
   Future<T> subscribeNext({int priority = EventPriority.normal}) async {
     var completer = Completer<T>();
-    var subscription = subscribe((p0) => completer.complete(p0), priority: priority);
+    var subscription =
+        subscribe((p0) => completer.complete(p0), priority: priority);
     var result = await completer.future;
     unsubscribe(subscription);
     return result;
@@ -121,7 +124,7 @@ class AsyncEventLine<T> {
         break;
     }
   }
-  
+
   Future _dispatchSequential(T event) async {
     for (var value in subscriptions) {
       await value.consumer(event);
@@ -131,9 +134,8 @@ class AsyncEventLine<T> {
   Future _dispatchParallel(T event) async {
     await Future.wait(subscriptions.map((e) => _toFuture(e.consumer(event))));
   }
-  
+
   Future _toFuture(FutureOr<void> futureOr) async => await futureOr;
-  
 }
 
 enum AsyncLineMode {

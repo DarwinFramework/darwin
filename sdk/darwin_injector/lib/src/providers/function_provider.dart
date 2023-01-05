@@ -19,7 +19,6 @@ import 'dart:async';
 import 'package:darwin_injector/darwin_injector.dart';
 
 class FunctionProvider extends DependencyProvider {
-
   final FutureOr<dynamic> Function() func;
   final LoadingStrategy strategy;
 
@@ -44,5 +43,4 @@ class FunctionProvider extends DependencyProvider {
     if (strategy == LoadingStrategy.lazy) setCacheValue(value);
     return value;
   }
-
 }

@@ -14,17 +14,14 @@
  *    limitations under the License.
  */
 
-import 'dart:async';
-
 import 'package:darwin_injector/darwin_injector.dart';
 
 class UnsatisfiedServiceDependenciesException implements Exception {
-
   List<InjectorKey> keys;
-  
+
   UnsatisfiedServiceDependenciesException(this.keys);
 
   @override
-  String toString() => "UnsatisfiedServiceDependenciesException: Following dependencies could not be resolved: ${keys.join(", ")}";
-
+  String toString() =>
+      "UnsatisfiedServiceDependenciesException: Following dependencies could not be resolved: ${keys.join(", ")}";
 }

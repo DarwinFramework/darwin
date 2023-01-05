@@ -14,20 +14,17 @@
  *    limitations under the License.
  */
 
-import 'dart:convert';
-
 import 'context.dart';
 import 'mapper.dart';
 
 class DarwinMarshal {
-
   Map<Type, List<DarwinMapper<dynamic>>> typeMappers = {};
   List<DarwinMapper<dynamic>> universalMappers = [];
 
   void registerTypeMapper(Type objType, DarwinMapper<dynamic> mapper) {
     var objectMappers = typeMappers[objType] ?? <DarwinMapper<dynamic>>[];
     objectMappers.add(mapper);
-    objectMappers.sort((a,b) => b.priority.compareTo(a.priority));
+    objectMappers.sort((a, b) => b.priority.compareTo(a.priority));
     typeMappers[objType] = objectMappers;
   }
 
@@ -40,23 +37,32 @@ class DarwinMarshal {
 
   void registerUniversalMapper(DarwinMapper<dynamic> mapper) {
     universalMappers.add(mapper);
-    universalMappers.sort((a,b) => b.priority.compareTo(a.priority));
+    universalMappers.sort((a, b) => b.priority.compareTo(a.priority));
   }
 
   DarwinMapper<dynamic>? findSerializer(SerializationContext context) {
-    var foundTypeMappers = typeMappers[context.type]?.where((element) => element.checkSerialize(context)).toList() ?? [];
+    var foundTypeMappers = typeMappers[context.type]
+            ?.where((element) => element.checkSerialize(context))
+            .toList() ??
+        [];
     if (foundTypeMappers.isNotEmpty) return foundTypeMappers.first;
-    var foundUniversalMappers = universalMappers.where((element) => element.checkSerialize(context)).toList();
+    var foundUniversalMappers = universalMappers
+        .where((element) => element.checkSerialize(context))
+        .toList();
     if (foundUniversalMappers.isNotEmpty) return foundUniversalMappers.first;
     return null;
   }
 
   DarwinMapper<dynamic>? findDeserializer(DeserializationContext context) {
-    var foundTypeMappers = typeMappers[context.target]?.where((element) => element.checkDeserialize(context)).toList() ?? [];
+    var foundTypeMappers = typeMappers[context.target]
+            ?.where((element) => element.checkDeserialize(context))
+            .toList() ??
+        [];
     if (foundTypeMappers.isNotEmpty) return foundTypeMappers.first;
-    var foundUniversalMappers = universalMappers.where((element) => element.checkDeserialize(context)).toList();
+    var foundUniversalMappers = universalMappers
+        .where((element) => element.checkDeserialize(context))
+        .toList();
     if (foundUniversalMappers.isNotEmpty) return foundUniversalMappers.first;
     return null;
   }
-
 }

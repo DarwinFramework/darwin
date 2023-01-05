@@ -22,10 +22,11 @@ import 'package:darwin_marshal/src/utils.dart';
 typedef StringKeyedMap = Map<String, dynamic>;
 
 class DarwinMarshalJson {
-
   static String mime = "application/json";
 
-  DarwinMarshalJson._() { throw Exception("Utility class can't be constructed"); }
+  DarwinMarshalJson._() {
+    throw Exception("Utility class can't be constructed");
+  }
 
   static void register(DarwinMarshal marshal, {bool strictMime = false}) {
     // Register Map Serializer
@@ -54,23 +55,27 @@ class DarwinMarshalJson {
     var data = utf8.encode(encoded);
     return data;
   }
-
 }
 
 class GenericMapJsonMapper extends DarwinMapper<Map> {
-
   bool strictMime;
   GenericMapJsonMapper(this.strictMime);
 
   @override
   bool checkDeserialize(DeserializationContext context) {
-    if (strictMime && (context.mime == null || context.mime != DarwinMarshalJson.mime)) return false;
+    if (strictMime &&
+        (context.mime == null || context.mime != DarwinMarshalJson.mime)) {
+      return false;
+    }
     return context.target == Map;
   }
 
   @override
   bool checkSerialize(SerializationContext context) {
-    if (strictMime && (context.mime == null || context.mime != DarwinMarshalJson.mime)) return false;
+    if (strictMime &&
+        (context.mime == null || context.mime != DarwinMarshalJson.mime)) {
+      return false;
+    }
     return context.type == Map;
   }
 
@@ -81,13 +86,11 @@ class GenericMapJsonMapper extends DarwinMapper<Map> {
 
   @override
   List<int> serialize(Map? obj, SerializationContext context) {
-    return JsonMapMapper.jsonSerialize(obj?.cast<String,dynamic>());
+    return JsonMapMapper.jsonSerialize(obj?.cast<String, dynamic>());
   }
-
 }
 
 class JsonMapMapper extends DarwinMapper<StringKeyedMap> {
-
   bool strictMime;
 
   JsonMapMapper(this.strictMime);
@@ -109,25 +112,32 @@ class JsonMapMapper extends DarwinMapper<StringKeyedMap> {
 
   @override
   bool checkDeserialize(DeserializationContext context) {
-    if (strictMime && (context.mime == null || context.mime != DarwinMarshalJson.mime)) return false;
+    if (strictMime &&
+        (context.mime == null || context.mime != DarwinMarshalJson.mime)) {
+      return false;
+    }
     return context.target == StringKeyedMap;
   }
 
   @override
   bool checkSerialize(SerializationContext context) {
-    if (strictMime && (context.mime == null || context.mime != DarwinMarshalJson.mime)) return false;
+    if (strictMime &&
+        (context.mime == null || context.mime != DarwinMarshalJson.mime)) {
+      return false;
+    }
     return context.type == StringKeyedMap;
   }
 
   @override
-  StringKeyedMap? deserialize(List<int> data, DeserializationContext context) => jsonDeserialize(data);
+  StringKeyedMap? deserialize(List<int> data, DeserializationContext context) =>
+      jsonDeserialize(data);
 
   @override
-  List<int> serialize(StringKeyedMap? obj, SerializationContext context) => jsonSerialize(obj);
+  List<int> serialize(StringKeyedMap? obj, SerializationContext context) =>
+      jsonSerialize(obj);
 }
 
 class JsonListSerializer extends DarwinMapper<Iterable> {
-
   bool strictMime;
 
   JsonListSerializer(this.strictMime);
@@ -136,7 +146,8 @@ class JsonListSerializer extends DarwinMapper<Iterable> {
   int get priority => -1;
 
   bool checkType(Type t) {
-    var commonTypes = (t == Iterable<dynamic>) || (t == List<dynamic>) || (t == Set<dynamic>);
+    var commonTypes =
+        (t == Iterable<dynamic>) || (t == List<dynamic>) || (t == Set<dynamic>);
     if (commonTypes) return true;
     if (TypeUtils.testClassAnyGeneric(Iterable, t)) return true;
     if (TypeUtils.testClassAnyGeneric(List, t)) return true;
@@ -146,13 +157,19 @@ class JsonListSerializer extends DarwinMapper<Iterable> {
 
   @override
   bool checkDeserialize(DeserializationContext context) {
-    if (strictMime && (context.mime == null || context.mime != DarwinMarshalJson.mime)) return false;
+    if (strictMime &&
+        (context.mime == null || context.mime != DarwinMarshalJson.mime)) {
+      return false;
+    }
     return checkType(context.target);
   }
 
   @override
   bool checkSerialize(SerializationContext context) {
-    if (strictMime && (context.mime == null || context.mime != DarwinMarshalJson.mime)) return false;
+    if (strictMime &&
+        (context.mime == null || context.mime != DarwinMarshalJson.mime)) {
+      return false;
+    }
     return checkType(context.type);
   }
 
@@ -163,8 +180,12 @@ class JsonListSerializer extends DarwinMapper<Iterable> {
     var decoded = jsonDecode(string);
     if (decoded is! Iterable) throw Exception("Can't decode json list");
     if (TypeUtils.testClassAnyGeneric(context.target, Iterable)) return decoded;
-    if (TypeUtils.testClassAnyGeneric(context.target, List)) return decoded.toList();
-    if (TypeUtils.testClassAnyGeneric(context.target, Set)) return decoded.toSet();
+    if (TypeUtils.testClassAnyGeneric(context.target, List)) {
+      return decoded.toList();
+    }
+    if (TypeUtils.testClassAnyGeneric(context.target, Set)) {
+      return decoded.toSet();
+    }
     return decoded;
   }
 

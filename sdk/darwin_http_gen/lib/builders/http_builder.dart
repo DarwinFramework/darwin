@@ -19,15 +19,15 @@ import 'package:darwin_http/darwin_http.dart';
 import 'package:darwin_http_gen/service_generator.dart';
 
 class HttpBuilder extends ServiceAdapter {
-
-  HttpBuilder(): super(archetype: "http", annotation: RestController);
-
-  @override
-  Future<ServiceBinding> generateBinding(ServiceGenContext context) async => context.defaultBinding(this);
+  HttpBuilder() : super(archetype: "http", annotation: RestController);
 
   @override
-  Future<void> generateService(ServiceGenContext genContext, ServiceCodeContext codeContext) async {
+  Future<ServiceBinding> generateBinding(ServiceGenContext context) async =>
+      context.defaultBinding(this);
+
+  @override
+  Future<void> generateService(
+      ServiceGenContext genContext, ServiceCodeContext codeContext) async {
     await HttpServiceDescriptorGenerator.generateTo(genContext, codeContext);
   }
-
 }

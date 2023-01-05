@@ -20,7 +20,6 @@ import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin.dart';
 
 abstract class Condition {
-
   const Condition();
 
   /// Additional service dependencies which are required to perform this
@@ -32,18 +31,14 @@ abstract class Condition {
 }
 
 extension ConditionIterableExtension on Iterable<Condition> {
-
   Future<bool> match(DarwinSystem system) async {
-    var conditionValues = await Future.wait(
-        map((x) async => await x.match(system))
-    );
+    var conditionValues =
+        await Future.wait(map((x) async => await x.match(system)));
     return conditionValues.every((element) => element == true);
   }
-
 }
 
 class AlwaysCondition extends Condition {
-
   const AlwaysCondition();
 
   @override
@@ -53,7 +48,6 @@ class AlwaysCondition extends Condition {
 }
 
 class NeverCondition extends Condition {
-
   const NeverCondition();
 
   @override

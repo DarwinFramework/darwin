@@ -21,14 +21,11 @@ import 'package:darwin_http/darwin_http.dart';
 import 'package:shelf/shelf.dart';
 
 abstract class DarwinHttpRoute implements DarwinHttpRequestHandler {
-
   int get sortIndex => 0;
   Future<bool> checkRequest(RequestContext context);
-
 }
 
 class DarwinGeneratedHttpRoute extends DarwinHttpRoute {
-
   final PathMatcher path;
   final HttpMethods method;
   final FutureOr<dynamic> Function(RequestContext context) proxyFunc;
@@ -40,7 +37,14 @@ class DarwinGeneratedHttpRoute extends DarwinHttpRoute {
   @override
   int get sortIndex => path.sortIndex;
 
-  DarwinGeneratedHttpRoute(this.path, this.method, this.proxyFunc, this.resultType, this.acceptContentType, this.returnContentType, this.interceptors);
+  DarwinGeneratedHttpRoute(
+      this.path,
+      this.method,
+      this.proxyFunc,
+      this.resultType,
+      this.acceptContentType,
+      this.returnContentType,
+      this.interceptors);
 
   @override
   Future<bool> checkRequest(RequestContext context) async {
@@ -63,7 +67,8 @@ class DarwinGeneratedHttpRoute extends DarwinHttpRoute {
     var interceptedResponse = await interceptors.intercept(context);
     if (interceptedResponse != null) return interceptedResponse;
     var methodOutput = await proxyFunc(context);
-    var response = await context.httpServer.serializeResponse(methodOutput, resultType, returnContentType);
+    var response = await context.httpServer
+        .serializeResponse(methodOutput, resultType, returnContentType);
     return response;
   }
 

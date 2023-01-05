@@ -21,7 +21,6 @@ import 'package:darwin_sdk/darwin.dart';
 import 'package:shelf/shelf.dart';
 
 class HttpPlugin extends DarwinPlugin {
-
   List<Middleware> shelfMiddlewares = [];
   SecurityContext? securityContext;
   Object address = "localhost";
@@ -29,11 +28,9 @@ class HttpPlugin extends DarwinPlugin {
 
   @override
   int get loadOrder => -10;
-  
-  @override
-  Future configure() async {
 
-  }
+  @override
+  Future configure() async {}
 
   @override
   Stream<ServiceDescriptor> collectServices() async* {

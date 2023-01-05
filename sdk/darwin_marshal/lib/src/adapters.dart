@@ -22,7 +22,6 @@ typedef ToMap<T> = Map<String, dynamic> Function(T);
 typedef FromMap<T> = T Function(Map<String, dynamic>);
 
 class JsonMapAdapter<T> extends DarwinMapper<dynamic> {
-
   final ToMap<T> toMap;
   final FromMap<T> fromMap;
 
@@ -33,33 +32,25 @@ class JsonMapAdapter<T> extends DarwinMapper<dynamic> {
   final Type listType = List<T>;
   final Type setType = Set<T>;
 
-  JsonMapAdapter({
-    required this.toMap,
-    required this.fromMap,
-    this.priority = 100
-  });
+  JsonMapAdapter(
+      {required this.toMap, required this.fromMap, this.priority = 100});
 
   @override
   bool checkDeserialize(DeserializationContext context) {
     var target = context.target;
-    return target == T || target == iterableType || target == listType || target == setType;
+    return target == T ||
+        target == iterableType ||
+        target == listType ||
+        target == setType;
   }
 
   @override
   bool checkSerialize(SerializationContext context) {
     var type = context.type;
-    return type == T || type == iterableType || type == listType || type == setType;
-  }
-
-  T? _dMap(List<int> data) {
-    var map = JsonMapMapper.jsonDeserialize(data);
-    if (map == null) return null;
-    return fromMap(map);
-  }
-
-  List<int> _sMap(T? obj) {
-    if (obj == null) return [];
-    return JsonMapMapper.jsonSerialize(toMap(obj));
+    return type == T ||
+        type == iterableType ||
+        type == listType ||
+        type == setType;
   }
 
   @override

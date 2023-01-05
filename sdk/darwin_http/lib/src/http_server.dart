@@ -32,7 +32,6 @@ part 'http_server_handler.dart';
 part 'http_server_serialize.dart';
 
 class DarwinHttpServer extends ServiceBase {
-
   final HttpPlugin plugin;
   final DarwinMarshal marshal;
 
@@ -49,7 +48,7 @@ class DarwinHttpServer extends ServiceBase {
 
   void registerRoute(DarwinHttpRoute route) {
     routes.add(route);
-    routes.sort((a,b) => a.sortIndex.compareTo(b.sortIndex));
+    routes.sort((a, b) => a.sortIndex.compareTo(b.sortIndex));
     logger.finer("Registered http route: $route");
   }
 
@@ -57,14 +56,18 @@ class DarwinHttpServer extends ServiceBase {
   FutureOr<void> start(DarwinSystem system) async {
     this.system = system;
     logger = system.loggingMixin.createLogger("Darwin Http");
-    onIncomingHttpRequest = system.eventbus.getAsyncLine<IncomingHttpRequestEvent>();
-    onHttpRequestRespond = system.eventbus.getAsyncLine<HttpRequestRespondEvent>();
+    onIncomingHttpRequest =
+        system.eventbus.getAsyncLine<IncomingHttpRequestEvent>();
+    onHttpRequestRespond =
+        system.eventbus.getAsyncLine<HttpRequestRespondEvent>();
     var pipeline = Pipeline();
     for (var middleware in plugin.shelfMiddlewares) {
       pipeline = pipeline.addMiddleware(middleware);
     }
     var handler = pipeline.addHandler(handleRequest);
-    server = await shelf_io.serve(handler, plugin.address, plugin.port, securityContext: plugin.securityContext, poweredByHeader: "darwin/shelf");
+    server = await shelf_io.serve(handler, plugin.address, plugin.port,
+        securityContext: plugin.securityContext,
+        poweredByHeader: "darwin/shelf");
     var completer = Completer();
     /*
     // Never complete until I find a way to link it to the isolate
@@ -83,7 +86,6 @@ class DarwinHttpServer extends ServiceBase {
 }
 
 class DefaultHttpRequestModule extends Module {
-  
   DefaultHttpRequestModule() {
     bind(HttpConnectionInfo).toContextFunction((injector) async {
       RequestContext context = await injector.get(RequestContext);

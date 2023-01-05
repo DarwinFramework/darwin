@@ -22,7 +22,6 @@ class ServiceBinding {
 
   String get key => "$package#$name";
 
-  //<editor-fold desc="Data Methods">
   ServiceBinding(
       {required this.name,
       required this.package,
@@ -67,10 +66,10 @@ class ServiceBinding {
 
   Map<String, dynamic> toMap() {
     return {
-      'name': this.name,
-      'package': this.package,
-      'descriptorName': this.descriptorName,
-      'descriptorPackage': this.descriptorPackage,
+      'name': name,
+      'package': package,
+      'descriptorName': descriptorName,
+      'descriptorPackage': descriptorPackage,
     };
   }
 
@@ -82,5 +81,4 @@ class ServiceBinding {
       descriptorPackage: map['descriptorPackage'] as String,
     );
   }
-//</editor-fold>
 }

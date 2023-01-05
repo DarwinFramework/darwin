@@ -14,10 +14,7 @@
  *    limitations under the License.
  */
 
-import 'package:darwin_injector/darwin_injector.dart';
-
 class InjectorMetadata {
-
   final InjectorMetadata? _parent;
   final Map<dynamic, dynamic> _data = const {};
 
@@ -33,12 +30,11 @@ class InjectorMetadata {
     return _data[key];
   }
 
-  bool containsKey(dynamic key) => _data.containsKey(key) || (_parent?.containsKey(key) ?? false);
-
+  bool containsKey(dynamic key) =>
+      _data.containsKey(key) || (_parent?.containsKey(key) ?? false);
 }
 
 mixin MetadataMixin {
-
   InjectorMetadata get metadata;
 
   operator []=(dynamic key, dynamic value) => metadata[key] = value;
@@ -46,5 +42,4 @@ mixin MetadataMixin {
   operator [](dynamic key) => metadata[key];
 
   bool containsKey(dynamic key) => metadata.containsKey(key);
-
 }

@@ -17,7 +17,6 @@
 import 'context.dart';
 
 abstract class DarwinMapper<MappedType> {
-
   int get priority => 0;
 
   bool checkSerialize(SerializationContext context);
@@ -25,5 +24,4 @@ abstract class DarwinMapper<MappedType> {
 
   List<int> serialize(MappedType? obj, SerializationContext context);
   MappedType? deserialize(List<int> data, DeserializationContext context);
-
 }

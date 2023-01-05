@@ -26,7 +26,6 @@ import 'package:darwin_sdk/darwin.dart';
 /// with this annotation to create a bean. Static methods and methods with
 /// arguments can't be registered as beans.
 class Bean {
-
   /// Defines the name of the bean. This value will be ignored when [isUnnamed]
   /// is true.
   final String? name;
@@ -68,7 +67,6 @@ class Bean {
 }
 
 mixin DarwinSystemBeanMixin on DarwinSystem {
-
   /// Registers a [bean] at runtime with its supplier function [func].
   void registerBean(Bean bean, FutureOr<dynamic> Function() func) {
     darwinSystemModule
@@ -79,7 +77,7 @@ mixin DarwinSystemBeanMixin on DarwinSystem {
 
   /// Unregisters a [bean] at runtime if present.
   void unregisterBean(Bean bean) {
-    darwinSystemModule.unbind(InjectorKey.create(bean.bindingType!, name: bean.isUnnamed ? null : bean.name));
+    darwinSystemModule.unbind(InjectorKey.create(bean.bindingType!,
+        name: bean.isUnnamed ? null : bean.name));
   }
-
 }

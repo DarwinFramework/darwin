@@ -17,7 +17,6 @@
 import 'package:darwin_injector/darwin_injector.dart';
 
 class ConstantProvider extends DependencyProvider {
-
   final dynamic constant;
 
   const ConstantProvider(this.constant);
@@ -26,5 +25,4 @@ class ConstantProvider extends DependencyProvider {
   Future get(Injector injector) async {
     return constant;
   }
-
 }

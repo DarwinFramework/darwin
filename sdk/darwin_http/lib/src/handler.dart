@@ -21,21 +21,16 @@ import 'package:darwin_http/src/context.dart';
 import 'package:shelf/shelf.dart';
 
 abstract class DarwinHttpRequestHandler {
-
   Future<Response?> handle(RequestContext context);
-
 }
 
-abstract class HttpRequestInterceptor  {
-
+abstract class HttpRequestInterceptor {
   const HttpRequestInterceptor();
 
   Future<Response?> intercept(RequestContext context);
-
 }
 
 class HeaderEqualsInterceptor extends HttpRequestInterceptor {
-
   final String key;
   final String value;
 
@@ -49,11 +44,9 @@ class HeaderEqualsInterceptor extends HttpRequestInterceptor {
 
     return null;
   }
-
 }
 
 extension InterceptorIterableExtension on Iterable<HttpRequestInterceptor> {
-
   Future<Response?> intercept(RequestContext context) async {
     for (var interceptor in this) {
       var value = await interceptor.intercept(context);
@@ -61,5 +54,4 @@ extension InterceptorIterableExtension on Iterable<HttpRequestInterceptor> {
     }
     return null;
   }
-
 }

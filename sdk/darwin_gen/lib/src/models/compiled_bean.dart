@@ -19,7 +19,6 @@ import 'package:darwin_gen/darwin_gen.dart';
 import 'package:darwin_injector/darwin_injector.dart';
 
 class CompiledBean {
-
   final String? name;
   final LoadingStrategy strategy;
   final bool isUnnamed;
@@ -34,12 +33,14 @@ class CompiledBean {
 
   String getCode(String methodName, String returnType, {bool aliased = true}) {
     var nameArg = name ?? methodName;
-    var typeArg = bindingType?.getDisplayString(withNullability: false) ?? returnType;
+    var typeArg =
+        bindingType?.getDisplayString(withNullability: false) ?? returnType;
     return "${aliased ? "$genAlias." : ""}Bean(name: '$nameArg', strategy: ${aliased ? "$genAlias." : ""}$strategy, isUnnamed: $isUnnamed, bindingType: $typeArg)";
   }
 
   CompiledInjectorKey getInjectorKey(String returnType, String methodName) {
-    return CompiledInjectorKey.fromString(bindingType?.getDisplayString(withNullability: false) ?? returnType, isUnnamed ? null : (name ?? methodName));
+    return CompiledInjectorKey.fromString(
+        bindingType?.getDisplayString(withNullability: false) ?? returnType,
+        isUnnamed ? null : (name ?? methodName));
   }
-
 }

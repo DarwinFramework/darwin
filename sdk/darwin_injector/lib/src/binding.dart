@@ -19,21 +19,20 @@ import 'dart:async';
 import 'package:darwin_injector/darwin_injector.dart';
 
 class BindingBuilder {
-
   Module module;
   Type type;
   String? name;
   dynamic data;
-  
+
   BindingBuilder(this.module, this.type);
 
   InjectorKey get key => InjectorKey(type, name, data);
-  
+
   BindingBuilder withName(String? name) {
     this.name = name;
     return this;
   }
-  
+
   InjectorKey to(DependencyProvider provider) {
     module.providers[key] = provider;
     return key;
@@ -44,15 +43,15 @@ class BindingBuilder {
     return key;
   }
 
-  InjectorKey toFunction(FutureOr<dynamic> Function() func, {LoadingStrategy strategy = LoadingStrategy.direct}) {
+  InjectorKey toFunction(FutureOr<dynamic> Function() func,
+      {LoadingStrategy strategy = LoadingStrategy.direct}) {
     module.providers[key] = FunctionProvider(func, strategy);
     return key;
   }
 
-  InjectorKey toContextFunction(FutureOr<dynamic> Function(Injector injector) func) {
+  InjectorKey toContextFunction(
+      FutureOr<dynamic> Function(Injector injector) func) {
     module.providers[key] = ContextFunctionProvider(func);
     return key;
   }
-
-
 }

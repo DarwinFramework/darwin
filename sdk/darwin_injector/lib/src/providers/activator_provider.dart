@@ -17,7 +17,6 @@
 import 'package:darwin_injector/darwin_injector.dart';
 
 class ActivatorProvider extends DependencyProvider {
-
   final Activator activator;
 
   const ActivatorProvider(this.activator);
@@ -26,5 +25,4 @@ class ActivatorProvider extends DependencyProvider {
   Future get(Injector injector) async {
     return await activator.instantiate(injector);
   }
-
 }

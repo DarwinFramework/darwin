@@ -17,7 +17,6 @@
 import 'package:darwin_eventbus/darwin_eventbus.dart';
 
 class EventBus {
-
   final Map<Type, SyncEventLine> _syncLines = {};
   final Map<Type, AsyncEventLine> _asyncLines = {};
 
@@ -31,12 +30,11 @@ class EventBus {
   }
 
   /// Gets or creates a [AsyncEventLine] for the type [T].
-  AsyncEventLine<T> getAsyncLine<T>(){
+  AsyncEventLine<T> getAsyncLine<T>() {
     var line = _asyncLines[T];
     if (line != null) return line as AsyncEventLine<T>;
     var newLine = AsyncEventLine<T>();
     _asyncLines[T] = newLine;
     return newLine;
   }
-
 }

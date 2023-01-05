@@ -17,7 +17,6 @@
 part of 'http_server.dart';
 
 extension HttpServerHandler on DarwinHttpServer {
-
   Future<Response> handleRequest(Request request) async {
     var completer = Completer<Response>();
     Zone? requestZone;
@@ -25,22 +24,30 @@ extension HttpServerHandler on DarwinHttpServer {
       requestZone = Zone.current;
       _handleRequestInternal(request).then(completer.complete);
     }, (error, stack) {
-      logger.log(Level.SEVERE, "Caught exception while processing an http request", error, stack, requestZone);
+      logger.log(
+          Level.SEVERE,
+          "Caught exception while processing an http request",
+          error,
+          stack,
+          requestZone);
       completer.complete(Response.internalServerError());
     });
     return completer.future;
   }
-  
+
   Future<Response> _handleRequestInternal(Request request) async {
     var method = HttpMethods.parse(request.method);
     var childInjector = system.injector.createChildInjector();
-    var connectionInfo = request.context["shelf.io.connection_info"] as HttpConnectionInfo;
-    var context = RequestContext(system, this, childInjector, request, method, connectionInfo, {});
+    var connectionInfo =
+        request.context["shelf.io.connection_info"] as HttpConnectionInfo;
+    var context = RequestContext(
+        system, this, childInjector, request, method, connectionInfo, {});
     var childModule = Module();
     childInjector.registerModule(childModule);
     childInjector.registerAllModules(requestModules);
     childModule.bind(RequestContext).toConstant(context);
-    logger.finest("${request.method} ${request.url} from ${connectionInfo.remoteAddress.address}:${connectionInfo.remotePort}");
+    logger.finest(
+        "${request.method} ${request.url} from ${connectionInfo.remoteAddress.address}:${connectionInfo.remotePort}");
 
     // Dispatch incoming request event before handling the request
     var requestEvent = IncomingHttpRequestEvent(context, false);
@@ -48,7 +55,7 @@ extension HttpServerHandler on DarwinHttpServer {
     if (requestEvent.isCancelled) {
       return requestEvent.response ?? Response.notFound("");
     }
-    
+
     // Handle request normally
     var response = Response.notFound("");
     var hasBeenHandled = false;
@@ -65,9 +72,9 @@ extension HttpServerHandler on DarwinHttpServer {
     }
 
     // Dispatch response event before sending the response
-    var responseEvent = HttpRequestRespondEvent(context, response, hasBeenHandled);
+    var responseEvent =
+        HttpRequestRespondEvent(context, response, hasBeenHandled);
     await onHttpRequestRespond.dispatch(responseEvent);
     return responseEvent.response;
   }
-
 }

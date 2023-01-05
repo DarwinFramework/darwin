@@ -57,11 +57,9 @@ class DeleteMapping {
 }
 
 class RequestMapping {
-
   final HttpMethods? method;
   final String path;
   const RequestMapping(this.path, [this.method]);
-
 }
 
 class Body {
@@ -108,8 +106,6 @@ enum HttpMethods {
   final String str;
   const HttpMethods(this.str);
 
-  static HttpMethods parse(String src) => HttpMethods.values
-      .firstWhere((element) => element.str == src);
-
+  static HttpMethods parse(String src) =>
+      HttpMethods.values.firstWhere((element) => element.str == src);
 }
-

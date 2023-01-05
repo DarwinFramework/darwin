@@ -33,7 +33,7 @@ class GeneratedBeanDefinition {
 
   String getCode() {
     var manuallyRevivedBean =
-    bean.getCode(accessor.sourceName, accessor.sourceType);
+        bean.getCode(accessor.sourceName, accessor.sourceType);
     var registerStatement =
         "system.beanMixin.registerBean($manuallyRevivedBean, ${accessor.accessor});";
     if (conditionSourceArray == null) {

@@ -17,7 +17,6 @@
 import '../darwin_marshal.dart';
 
 class SerializationContext {
-
   Type type;
   String? mime;
   Map<dynamic, dynamic> meta;
@@ -27,7 +26,6 @@ class SerializationContext {
 }
 
 class DeserializationContext {
-
   String? mime;
   Type target;
   Map<dynamic, dynamic> meta;

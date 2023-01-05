@@ -22,9 +22,7 @@ export 'providers/context_function_provider.dart';
 export 'providers/function_provider.dart';
 
 abstract class DependencyProvider {
-
   const DependencyProvider();
 
   Future<dynamic> get(Injector injector);
-
 }

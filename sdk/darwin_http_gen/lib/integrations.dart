@@ -17,5 +17,7 @@
 import 'package:build/build.dart';
 import 'package:darwin_http_gen/builders/http_builder.dart';
 
-Builder darwinHttpServiceCreator(BuilderOptions options) => HttpBuilder().serviceBuilder;
-Builder darwinHttpServiceBindings(BuilderOptions options) => HttpBuilder().bindingBuilder;
+Builder darwinHttpServiceCreator(BuilderOptions options) =>
+    HttpBuilder().serviceBuilder;
+Builder darwinHttpServiceBindings(BuilderOptions options) =>
+    HttpBuilder().bindingBuilder;

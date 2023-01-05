@@ -24,7 +24,6 @@ import 'package:meta/meta.dart';
 import '../darwin.dart';
 
 class DarwinApplication {
-
   List<DarwinPlugin> plugins = [];
   Module module = Module();
 
@@ -45,7 +44,8 @@ class DarwinApplication {
   bool _isShuttingDown = false;
 
   void setLogLevel(Level level) => system.loggingMixin.level = level;
-  void setLogHandler(LogHandler handler) => system.loggingMixin.handler = handler;
+  void setLogHandler(LogHandler handler) =>
+      system.loggingMixin.handler = handler;
   void setProfile(String profile) => system.profileMixin.profile = profile;
 
   /// Installs a [DarwinPlugin] onto this application.
@@ -62,7 +62,8 @@ class DarwinApplication {
     currentSystem ??= DarwinSystem.internalInstance;
     _system = currentSystem;
     DarwinSystem.internalInstance = currentSystem;
-    plugins.sort((a,b) => a.loadOrder.compareTo(b.loadOrder)); // Sort plugins by priority
+    plugins.sort((a, b) =>
+        a.loadOrder.compareTo(b.loadOrder)); // Sort plugins by priority
     var userArgs = DarwinSystemUserArgs(appModule: module, plugins: plugins);
     await currentSystem.start(_generatedArgs!, userArgs);
     _hookDaemons();
@@ -77,7 +78,7 @@ class DarwinApplication {
     await _system!.stop();
     if (exitProcessOnStop) exit(0);
   }
-  
+
   void _hookDaemons() async {
     await Future.wait(_system!.daemons);
     stop();
@@ -87,5 +88,4 @@ class DarwinApplication {
     await ProcessSignal.sigterm.watch().first.then((value) => stop());
     await ProcessSignal.sigint.watch().first.then((value) => stop());
   }
-  
 }

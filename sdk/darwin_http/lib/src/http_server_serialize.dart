@@ -17,7 +17,6 @@
 part of 'http_server.dart';
 
 extension HttpServerSerialize on DarwinHttpServer {
-
   Future<dynamic> deserializeBody(RequestContext context, Type type) async {
     var data = <int>[];
     await context.request.read().listen((event) {
@@ -28,26 +27,32 @@ extension HttpServerSerialize on DarwinHttpServer {
     if (type == String) return utf8.decode(data);
 
     var contentType = context.request.headers["Content-Type"] ?? "text/plain";
-    var deserializationContext = DeserializationContext(contentType, type, {}, marshal);
+    var deserializationContext =
+        DeserializationContext(contentType, type, {}, marshal);
     var mapper = marshal.findDeserializer(deserializationContext);
     if (mapper == null) throw Exception("No mapper found");
     var value = mapper.deserialize(data, deserializationContext);
     return value;
   }
 
-  Future<Response> serializeResponse(FutureOr<dynamic> valueOrFuture, Type type, String? explicitContentType) async {
+  Future<Response> serializeResponse(FutureOr<dynamic> valueOrFuture, Type type,
+      String? explicitContentType) async {
     var value = await valueOrFuture;
-    if (type == Response || (type == dynamic && value is Response)) return value;
-    if ((type == List<int>) || (type == dynamic && value is List<int>)) return Response.ok(value);
+    if (type == Response || (type == dynamic && value is Response)) {
+      return value;
+    }
+    if ((type == List<int>) || (type == dynamic && value is List<int>)) {
+      return Response.ok(value);
+    }
     if (value is Stream) value = await value.toList();
-    var isPrimitive = (type == String || type == int || type == double || type == bool);
-    var contentType = explicitContentType ?? (isPrimitive ? "text/plain" : "application/json");
-    var serializationContext = SerializationContext(type, contentType, {}, marshal);
+    var isPrimitive =
+        (type == String || type == int || type == double || type == bool);
+    var contentType = explicitContentType ??
+        (isPrimitive ? "text/plain" : "application/json");
+    var serializationContext =
+        SerializationContext(type, contentType, {}, marshal);
     var serializer = marshal.findSerializer(serializationContext);
     var data = serializer!.serialize(value, serializationContext);
-    return Response.ok(data, headers: {
-      "Content-Type": contentType
-    });
+    return Response.ok(data, headers: {"Content-Type": contentType});
   }
-
 }

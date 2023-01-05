@@ -15,7 +15,6 @@
  */
 
 class PathUtils {
-
   static RegExp variableRegex = RegExp("%([A-z0-9_-]*)%");
 
   /// Combines the two paths [a] and [b] by adding a / between them.
@@ -34,7 +33,7 @@ class PathUtils {
     }
     // Remove leading and trailing slashes
     if (str.startsWith("/")) str = str.substring(1);
-    if (str.endsWith("/")) str = str.substring(0, str.length-1);
+    if (str.endsWith("/")) str = str.substring(0, str.length - 1);
     return str;
   }
 
@@ -87,11 +86,9 @@ class PathUtils {
     if (buffer.isNotEmpty) fragments.add(buffer.toString());
     return fragments;
   }
-
 }
 
 class PathMatcher {
-
   String sourcePath;
   List<PathMatcherFragment> fragments;
 
@@ -103,7 +100,7 @@ class PathMatcher {
   PathMatch match(Uri uri) {
     var segments = uri.pathSegments;
     if (segments.length != fragments.length) return PathMatch(false, {});
-    var data = <String,String>{};
+    var data = <String, String>{};
     for (var i = 0; i < fragments.length; i++) {
       if (!fragments[i].match(segments[i], data)) {
         return PathMatch(false, data);
@@ -117,34 +114,26 @@ class PathMatcher {
 }
 
 class PathMatch {
-
   bool result;
-  Map<String,String> data;
+  Map<String, String> data;
 
   PathMatch(this.result, this.data);
-
 }
 
 abstract class PathMatcherFragment {
-
-  bool match(String input, Map<String,String> variables);
-
+  bool match(String input, Map<String, String> variables);
 }
 
 class FixedPathMatcherFragment extends PathMatcherFragment {
-
   String value;
 
   FixedPathMatcherFragment(this.value);
 
   @override
-  bool match(String input, Map<String,String> variables) => input == value;
-
+  bool match(String input, Map<String, String> variables) => input == value;
 }
 
-
 class VariablePathMatcherFragment extends PathMatcherFragment {
-
   String variableName;
 
   VariablePathMatcherFragment(this.variableName);

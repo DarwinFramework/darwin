@@ -26,7 +26,8 @@ import 'package:source_gen/source_gen.dart';
 class HttpServiceDescriptorGenerator {
   static final String httpServerStrRef = "$genAlias.DarwinHttpServer";
   static final String pathUtilsStrRef = "$genAlias.PathUtils";
-  static final String generatedRouteBaseStrRef = "$genAlias.DarwinGeneratedHttpRoute";
+  static final String generatedRouteBaseStrRef =
+      "$genAlias.DarwinGeneratedHttpRoute";
 
   static final bodyChecker = TypeChecker.fromRuntime(Body);
   static final queryParamChecker = TypeChecker.fromRuntime(QueryParameter);
@@ -62,11 +63,16 @@ class HttpServiceDescriptorGenerator {
                 parseRequestMapper(
                     requestMappingChecker.firstAnnotationOf(e)!))));
 
-    _addSpecificMapping(controllerMethods, requestMap, getMappingChecker, HttpMethods.get);
-    _addSpecificMapping(controllerMethods, requestMap, postMappingChecker, HttpMethods.post);
-    _addSpecificMapping(controllerMethods, requestMap, putMappingChecker, HttpMethods.put);
-    _addSpecificMapping(controllerMethods, requestMap, deleteMappingChecker, HttpMethods.delete);
-    _addSpecificMapping(controllerMethods, requestMap, patchMappingChecker, HttpMethods.patch);
+    _addSpecificMapping(
+        controllerMethods, requestMap, getMappingChecker, HttpMethods.get);
+    _addSpecificMapping(
+        controllerMethods, requestMap, postMappingChecker, HttpMethods.post);
+    _addSpecificMapping(
+        controllerMethods, requestMap, putMappingChecker, HttpMethods.put);
+    _addSpecificMapping(controllerMethods, requestMap, deleteMappingChecker,
+        HttpMethods.delete);
+    _addSpecificMapping(
+        controllerMethods, requestMap, patchMappingChecker, HttpMethods.patch);
 
     var descriptorClass = Class((builder) {
       ServiceGen.implementConstructor(builder, descriptorName);
@@ -124,31 +130,41 @@ class HttpServiceDescriptorGenerator {
     codeContext.codeBuffer.writeln(descriptorClass.accept(emitter));
   }
 
-  static void _addSpecificMapping(List<MethodElement> controllerMethods, Map<MethodElement, RequestMapping> requestMap, TypeChecker checker, HttpMethods method) {
-      controllerMethods
+  static void _addSpecificMapping(
+      List<MethodElement> controllerMethods,
+      Map<MethodElement, RequestMapping> requestMap,
+      TypeChecker checker,
+      HttpMethods method) {
+    controllerMethods
         .where((element) => checker.hasAnnotationOf(element))
         .forEach((element) {
       requestMap[element] = RequestMapping(
-          parseMappingPath(checker.annotationsOf(element).first),
-          method);
+          parseMappingPath(checker.annotationsOf(element).first), method);
     });
   }
 
   static String createHttpRegistration(ClassElement classElement,
       RequestMapping mapping, MethodElement element) {
-    var matcherStr = mapping.path ?? "/";
+    var matcherStr = mapping.path;
 
-    var classRequestMapping = requestMappingChecker.firstAnnotationOf(classElement);
+    var classRequestMapping =
+        requestMappingChecker.firstAnnotationOf(classElement);
     if (classRequestMapping != null) {
       var classPath = parseRequestMapper(classRequestMapping).path;
       matcherStr = PathUtils.combinePath(classPath, matcherStr);
     }
     matcherStr = PathUtils.sanitizePath(matcherStr);
 
-    var acceptContentType = acceptsChecker.annotationsOf(element)
-        .firstOrNull?.getField("contentType")?.toStringValue();
-    var returnContentType = returnsChecker.annotationsOf(element)
-        .firstOrNull?.getField("contentType")?.toStringValue();
+    var acceptContentType = acceptsChecker
+        .annotationsOf(element)
+        .firstOrNull
+        ?.getField("contentType")
+        ?.toStringValue();
+    var returnContentType = returnsChecker
+        .annotationsOf(element)
+        .firstOrNull
+        ?.getField("contentType")
+        ?.toStringValue();
 
     if (acceptContentType != null) acceptContentType = "'$acceptContentType'";
     if (returnContentType != null) returnContentType = "'$returnContentType'";

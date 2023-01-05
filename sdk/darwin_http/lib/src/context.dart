@@ -22,7 +22,6 @@ import 'package:darwin_sdk/darwin.dart';
 import 'package:shelf/shelf.dart';
 
 class RequestContext with MetadataMixin {
-
   final DarwinSystem system;
   final DarwinHttpServer httpServer;
   final Injector injector;
@@ -34,6 +33,6 @@ class RequestContext with MetadataMixin {
   @override
   InjectorMetadata get metadata => injector.metadata;
 
-  RequestContext(this.system, this.httpServer, this.injector, this.request, this.method, this.connection, this.pathData);
-
+  RequestContext(this.system, this.httpServer, this.injector, this.request,
+      this.method, this.connection, this.pathData);
 }

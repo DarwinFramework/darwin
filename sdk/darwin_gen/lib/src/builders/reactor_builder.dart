@@ -23,7 +23,6 @@ import 'package:darwin_gen/src/models/service_binding.dart';
 import 'package:glob/glob.dart';
 
 class ServiceReactorBuilder extends Builder {
-
   @override
   FutureOr<void> build(BuildStep buildStep) async {
     StringBuffer buffer = StringBuffer();
@@ -39,8 +38,7 @@ class ServiceReactorBuilder extends Builder {
       descriptorNames.add(binding.descriptorName);
     }
     buffer.writeln(importValues.map((e) => "import '$e';").join("\n"));
-    buffer.writeln(
-"""
+    buffer.writeln("""
 const darwinSystemGeneratedArgs = DarwinSystemGeneratedArgs([${descriptorNames.map((e) => "$e()").join(",\n")}]);
 
 late DarwinApplication application;
@@ -54,12 +52,13 @@ Future<DarwinApplication> initialiseDarwin() async {
 }
 
 """);
-    buildStep.writeAsString(AssetId(buildStep.inputId.package, "lib/darwin.g.dart"), DartFormatter().format(buffer.toString()));
+    buildStep.writeAsString(
+        AssetId(buildStep.inputId.package, "lib/darwin.g.dart"),
+        DartFormatter().format(buffer.toString()));
   }
 
   @override
   Map<String, List<String>> get buildExtensions => {
-    r"$lib$": ["darwin.g.dart"]
-  };
-
+        r"$lib$": ["darwin.g.dart"]
+      };
 }

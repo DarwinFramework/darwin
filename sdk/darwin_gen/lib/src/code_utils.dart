@@ -22,17 +22,14 @@ import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'models/compiled_bean.dart';
-
 const String genAlias = "gen";
 
 class AliasImport {
-
   final String import;
   final String? alias;
 
   const AliasImport(this.import, this.alias);
-  
+
   factory AliasImport.root(String import) => AliasImport(import, null);
   factory AliasImport.gen(String import) => AliasImport(import, genAlias);
 
@@ -56,10 +53,8 @@ String getImportString(LibraryElement library, AssetId id,
   importValues.addAll(additional);
   importValues.add(AliasImport.root(id.uri.toString()));
   for (var element in library.libraryImports) {
-    importValues.add(AliasImport(
-        element.importedLibrary!.identifier,
-        element.prefix?.element.displayName
-    ));
+    importValues.add(AliasImport(element.importedLibrary!.identifier,
+        element.prefix?.element.displayName));
   }
   return importValues.map((e) => e.code).join("\n");
 }
@@ -79,10 +74,13 @@ String? getConditionsSourceArray(Element element) {
   return "[${conditions.join(", ")}]";
 }
 
-CompiledInjectorKey dependencyFromParameter(ParameterElement element) => CompiledInjectorKey(
-    element.type,
-    namedChecker.firstAnnotationOf(element)?.getField("name")?.toStringValue()
-);
+CompiledInjectorKey dependencyFromParameter(ParameterElement element) =>
+    CompiledInjectorKey(
+        element.type,
+        namedChecker
+            .firstAnnotationOf(element)
+            ?.getField("name")
+            ?.toStringValue());
 
 CompiledBean parseBean(DartObject object) {
   var strategy = LoadingStrategy.values.firstWhere((element) =>
@@ -97,7 +95,9 @@ CompiledBean parseBean(DartObject object) {
 }
 
 String trimAsyncType(String src) {
-  if (src.startsWith("Future<") || src.startsWith("Stream<")) return removeOutermostGenerics(src);
+  if (src.startsWith("Future<") || src.startsWith("Stream<")) {
+    return removeOutermostGenerics(src);
+  }
   if (src == "Future" || src == "Stream") return "dynamic";
   return src;
 }
@@ -112,8 +112,7 @@ String removeOutermostGenerics(String src) {
 }
 
 extension MetadataExtension on List<ElementAnnotation> {
-
   List<ElementAnnotation> whereTypeChecker(TypeChecker checker) =>
-      where((element) => checker.isAssignableFrom(element.computeConstantValue()!.type!.element2!)).toList();
-
+      where((element) => checker.isAssignableFrom(
+          element.computeConstantValue()!.type!.element2!)).toList();
 }

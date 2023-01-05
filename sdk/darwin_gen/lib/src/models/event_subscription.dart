@@ -21,17 +21,17 @@ class EventSubscriptionDefinition {
   String accessor;
   String? conditionSourceArray;
 
-  EventSubscriptionDefinition(this.isSync, this.isAsync, this.type, this.accessor,
-      this.conditionSourceArray);
+  EventSubscriptionDefinition(this.isSync, this.isAsync, this.type,
+      this.accessor, this.conditionSourceArray);
 
   String getCode() {
     String registerStatement;
     if (isSync) {
       registerStatement =
-      "system.eventbus.getLine<$type>().subscribe($accessor);";
+          "system.eventbus.getLine<$type>().subscribe($accessor);";
     } else if (isAsync) {
       registerStatement =
-      "system.eventbus.getAsyncLine<$type>().subscribe($accessor);";
+          "system.eventbus.getAsyncLine<$type>().subscribe($accessor);";
     } else {
       throw Exception("Can't determine event type");
     }

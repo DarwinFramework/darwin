@@ -19,7 +19,6 @@ import 'dart:async';
 import 'package:darwin_injector/darwin_injector.dart';
 
 class ContextFunctionProvider extends DependencyProvider {
-
   final FutureOr<dynamic> Function(Injector injector) func;
 
   const ContextFunctionProvider(this.func);
@@ -28,5 +27,4 @@ class ContextFunctionProvider extends DependencyProvider {
   Future get(Injector injector) async {
     return await func(injector);
   }
-
 }

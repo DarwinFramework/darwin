@@ -41,15 +41,22 @@ abstract class ServiceAdapter {
   Future<ServiceGenContext?> _createContext(BuildStep step) async {
     var library = await step.inputLibrary;
     var reader = LibraryReader(library);
-    var foundServices = reader.annotatedWith(TypeChecker.fromRuntime(annotation));
+    var foundServices =
+        reader.annotatedWith(TypeChecker.fromRuntime(annotation));
     if (foundServices.isEmpty) return null;
-    if (foundServices.length > 1) throw Exception("A dart file can only contain one service");
+    if (foundServices.length > 1) {
+      throw Exception("A dart file can only contain one service");
+    }
     var serviceClass = foundServices.first.element;
-    if (serviceClass is! ClassElement) throw Exception("Only classes can be annotated with the service annotation $annotation");
+    if (serviceClass is! ClassElement) {
+      throw Exception(
+          "Only classes can be annotated with the service annotation $annotation");
+    }
     return ServiceGenContext(reader, serviceClass, step);
   }
 
-  Future<void> generateService(ServiceGenContext genContext, ServiceCodeContext codeContext);
+  Future<void> generateService(
+      ServiceGenContext genContext, ServiceCodeContext codeContext);
 
   Future<ServiceBinding> generateBinding(ServiceGenContext context);
 }
@@ -66,8 +73,9 @@ class ServiceGenContext {
       package: step.inputId.uri.toString(),
       descriptorName: "${element.name}Descriptor",
       descriptorPackage: step.inputId
-          .changeExtension(".${adapter.archetype}.g.dart").uri.toString()
-  );
+          .changeExtension(".${adapter.archetype}.g.dart")
+          .uri
+          .toString());
 }
 
 class ServiceCodeContext {
