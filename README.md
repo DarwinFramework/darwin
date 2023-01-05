@@ -16,8 +16,18 @@ in dart, using the inversion of control principle and
 a powerful annotation based code-generator.
 
 ## Goals
-- 
-- 
+- 🪟 **Clear and readable!**
+With almost no boilerplate code and services
+your code will be more readable than ever before.
+- 🔋 **Batteries included!**
+Darwin comes with a variety of packages and integrations,
+so you can fokus on creating your software.
+- 🚄 **We are speed!**
+Fast startups and no unnecessary code generation cycles make
+darwin fast.
+- 🎨 **Make it your own!**
+With a great amount of possible extension points, you can
+customize darwin to your hearth's content.
 
 ## Silent Code Generation
 A neat point about darwins **non-intrusive** code generation is, that it
