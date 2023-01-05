@@ -17,17 +17,13 @@ a powerful annotation based code-generator.
 
 ## Goals
 - 🪟 **Clear and readable!**
-Almost zero boilerplate and services
-make your code be more readable than ever before.
+with almost zero boilerplate and services.
 - 🔋 **Batteries included!**
-Included are a variety of packages and integrations,
-so you can fokus on creating.
+plus a variety of packages and integrations.
 - 🚄 **We are speed!**
-Fast startups and no unnecessary code generation cycles make
-darwin fast.
+Fast startups and delayable code generation.
 - 🎨 **Make it your own!**
-With many extension points, you can
-customize darwin to your hearth's content.
+Many extension points and configurations.
 
 ## Silent Code Generation
 A neat point about darwins **non-intrusive** code generation is, that it
