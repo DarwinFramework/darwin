@@ -1,5 +1,8 @@
 <h1 align="left">
     Darwin
+    <a href="https://pub.dev/packages/darwin_sdk">
+        <img src="https://img.shields.io/pub/v/darwin_sdk" alt="discord">
+    </a>
     <a href="https://discord.gg/6HKuGSzYKJ">
         <img src="https://img.shields.io/discord/1060355106522017924?label=discord" alt="discord">
     </a>
