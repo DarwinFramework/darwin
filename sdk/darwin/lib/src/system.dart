@@ -19,7 +19,7 @@ import 'dart:async';
 import 'package:darwin_eventbus/darwin_eventbus.dart';
 import 'package:darwin_injector/darwin_injector.dart';
 
-import '../darwin.dart';
+import '../darwin_sdk.dart';
 
 abstract class DarwinSystem {
   static late DarwinSystem internalInstance;

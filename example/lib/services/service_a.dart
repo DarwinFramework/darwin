@@ -1,6 +1,6 @@
 import 'package:darwin_eventbus/darwin_eventbus.dart';
 import 'package:darwin_injector/darwin_injector.dart';
-import 'package:darwin_sdk/darwin.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:logging/logging.dart';
 
 import 'service_b.dart';

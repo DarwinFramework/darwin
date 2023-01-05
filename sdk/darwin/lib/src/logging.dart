@@ -16,7 +16,7 @@
 
 import 'package:ansi_styles/ansi_styles.dart';
 import 'package:ansi_styles/extension.dart';
-import 'package:darwin_sdk/darwin.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:logging/logging.dart';
 
 typedef LogHandler = Function(LogRecord);

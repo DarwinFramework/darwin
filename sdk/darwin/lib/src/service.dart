@@ -17,7 +17,7 @@
 import 'dart:async';
 
 import 'package:darwin_injector/darwin_injector.dart';
-import 'package:darwin_sdk/darwin.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
 
 /// Class-Annotation for defining services.
 ///

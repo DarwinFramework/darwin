@@ -121,7 +121,7 @@ class HttpServiceDescriptorGenerator {
       //endregion
     });
     codeContext.additionalImports.addAll([
-      AliasImport.gen("package:darwin_sdk/darwin.dart"),
+      AliasImport.gen("package:darwin_sdk/darwin_sdk.dart"),
       AliasImport.gen("package:darwin_http/darwin_http.dart"),
       AliasImport.gen("package:darwin_injector/darwin_injector.dart"),
       AliasImport.root("dart:async"),

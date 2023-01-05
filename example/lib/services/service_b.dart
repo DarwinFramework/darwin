@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:darwin_injector/darwin_injector.dart' as darwin;
-import 'package:darwin_sdk/darwin.dart' as darwin;
+import 'package:darwin_sdk/darwin_sdk.dart' as darwin;
 import 'package:logging/logging.dart';
 
 @darwin.Service()

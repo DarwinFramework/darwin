@@ -17,7 +17,7 @@
 import 'dart:io';
 
 import 'package:darwin_http/src/http_server.dart';
-import 'package:darwin_sdk/darwin.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:shelf/shelf.dart';
 
 class HttpPlugin extends DarwinPlugin {

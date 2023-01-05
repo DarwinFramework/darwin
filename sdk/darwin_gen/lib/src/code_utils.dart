@@ -19,7 +19,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:darwin_gen/darwin_gen.dart';
 import 'package:darwin_injector/darwin_injector.dart';
-import 'package:darwin_sdk/darwin.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:source_gen/source_gen.dart';
 
 const String genAlias = "gen";

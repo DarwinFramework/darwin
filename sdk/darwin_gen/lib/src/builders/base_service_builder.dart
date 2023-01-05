@@ -15,7 +15,7 @@
  */
 
 import 'package:darwin_gen/darwin_gen.dart';
-import 'package:darwin_sdk/darwin.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
 
 class BaseServiceBuilder extends ServiceAdapter {
   BaseServiceBuilder() : super(archetype: "base", annotation: Service);

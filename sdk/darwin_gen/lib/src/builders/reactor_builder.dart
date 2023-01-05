@@ -29,7 +29,7 @@ class ServiceReactorBuilder extends Builder {
     var componentIds = await buildStep.findAssets(Glob("**.service")).toList();
     List<String> importValues = List.empty(growable: true);
     List<String> descriptorNames = List.empty(growable: true);
-    importValues.add("package:darwin_sdk/darwin.dart");
+    importValues.add("package:darwin_sdk/darwin_sdk.dart");
     for (var value in componentIds) {
       var bindingString = await buildStep.readAsString(value);
       var binding = ServiceBinding.fromMap(jsonDecode(bindingString));

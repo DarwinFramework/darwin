@@ -21,7 +21,7 @@ import 'package:darwin_injector/darwin_injector.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
-import '../darwin.dart';
+import '../darwin_sdk.dart';
 
 class DarwinApplication {
   List<DarwinPlugin> plugins = [];

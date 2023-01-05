@@ -10,7 +10,7 @@ Services are a abstract and high-level implementation of a dependency provider w
 
 {% code title="minimal_service.dart" %}
 ```dart
-import 'package:darwin_sdk/darwin.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
 
 @Service()
 class ServiceExample {}
@@ -21,7 +21,7 @@ Services can hook into their lifecycle signals by using the Start and Stop annot
 
 {% code title="lifecycle_service.dart" %}
 ```dart
-import 'package:darwin_sdk/darwin.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
 
 @Service()
 class ServiceExample {
@@ -40,7 +40,7 @@ Dependencies can be declared using a constructor-initialised field as previously
 {% code title="dependencies_service.dart" %}
 ```dart
 import 'package:darwin_injector/darwin_injector.dart';
-import 'package:darwin_sdk/darwin.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:example/services/service_a.dart';
 
 // In this example we expect, that both the String 'firstname', the int 'age' and
