@@ -3,6 +3,10 @@ repository: https://github.com/DarwinFramework/darwin
 packages:
   - sdk/**
 scripts:
+  copy-readme:
+    name: copy-readme
+    description: 'Copies the root-Readme to the darwin_sdk package'
+    run: cp README.md sdk/darwin/README.md
   analyze:
     name: analyze
     description: 'Runs the dart analyzer'
