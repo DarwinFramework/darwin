@@ -1,6 +1,6 @@
 name: darwin_http_gen
 description: A sample command-line application.
-version: 1.0.0
+version: 1.1.0-alpha.0
 repository: https://github.com/DarwinFramework/darwin
 
 environment:
@@ -18,12 +18,12 @@ dependencies:
   code_builder: 4.3.0
   dart_style: 2.2.4
 
-  darwin_sdk: any
-  darwin_injector: any
-  darwin_eventbus: any
-  darwin_marshal: any
-  darwin_gen: any
-  darwin_http: any
+  darwin_sdk: ^1.1.0-alpha.0
+  darwin_injector: ^1.1.0-alpha.0
+  darwin_eventbus: ^1.1.0-alpha.0
+  darwin_marshal: ^1.1.0-alpha.0
+  darwin_gen: ^1.1.0-alpha.0
+  darwin_http: ^1.1.0-alpha.0
 
 dependency_overrides:
   darwin_sdk:

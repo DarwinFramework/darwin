@@ -1,6 +1,6 @@
 name: darwin_test
 description: A starting point for Dart libraries or applications.
-version: 1.0.0
+version: 1.1.0-alpha.0
 repository: https://github.com/DarwinFramework/darwin
 
 environment:
@@ -8,8 +8,8 @@ environment:
 
 dependencies:
   path: ^1.8.0
-  darwin_sdk: any
-  darwin_injector: any
+  darwin_sdk: ^1.1.0-alpha.0
+  darwin_injector: ^1.1.0-alpha.0
 
 dependency_overrides:
   darwin_sdk:
