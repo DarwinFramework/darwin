@@ -1,4 +1,4 @@
-<h1 align="left">
+<h1>
     Darwin
     <a href="https://pub.dev/packages/darwin_sdk">
         <img src="https://img.shields.io/pub/v/darwin_sdk" alt="discord">
@@ -27,6 +27,29 @@ plus a variety of packages and integrations.
 Fast startups and delayable code generation.
 - 🎨 **Make it your own!**
 Many extension points and configurations.
+
+## Have a look yourself!
+```dart
+@RestController()
+@RequestMapping("/api/cats")
+class CatController {
+
+  CatService service;
+  CatController(this.service);
+
+  @GetMapping("%name%")
+  Cat retrieveCat(@PathParameter() String name) {
+    return service.getNamedCat(name);
+  }
+
+  @PostMapping()
+  Cat saveCat(@Body() cat) => service.addCat(cat);
+
+  @GetMapping()
+  List<Cat> retrieveAll() => service.getAllCats();
+
+}
+```
 
 ## Silent Code Generation
 A neat point about darwins **non-intrusive** code generation is, that it
