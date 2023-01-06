@@ -1,3 +1,7 @@
+## 1.1.0-alpha.3
+
+ - **FIX**: export files in marshal.
+
 ## 1.1.0-alpha.2
 
  - **REFACTOR**: extract pubspec overrides.

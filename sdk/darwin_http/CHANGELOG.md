@@ -1,3 +1,7 @@
+## 1.1.0-alpha.5
+
+ - **FIX**: handle null responses correctly.
+
 ## 1.1.0-alpha.4
 
  - **FIX**: pubspec yaml.
