@@ -21,6 +21,7 @@ library darwin_http;
 
 export 'src/context.dart';
 export 'src/events.dart';
+export 'src/exceptions.dart';
 export 'src/handler.dart';
 export 'src/http_server.dart';
 export 'src/path.dart';

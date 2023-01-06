@@ -35,7 +35,7 @@ class ApiController {
 
   @PostMapping("/call")
   void call() {
-
+    throw RequestException.gone();
   }
 
 }

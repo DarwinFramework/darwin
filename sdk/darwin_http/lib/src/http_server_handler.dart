@@ -62,7 +62,13 @@ extension HttpServerHandler on DarwinHttpServer {
     for (var entry in routes) {
       if (!await entry.checkRequest(context)) continue;
       hasBeenHandled = true;
-      var handledResponse = await entry.handle(context);
+      Response? handledResponse;
+      try {
+        handledResponse = await entry.handle(context);
+      } on RequestException catch(exception,trace) {
+        logger.log(Level.FINE, "Request handler '$entry' threw a request exception", exception);
+        handledResponse = exception.response;
+      }
       if (handledResponse == null) {
         response = Response.internalServerError();
         break;
