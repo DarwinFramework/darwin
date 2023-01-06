@@ -28,7 +28,7 @@ Fast startups and delayable code generation.
 - 🎨 **Make it your own!**
 Many extension points and configurations.
 
-## Have a look yourself!
+## Have a look for yourself!
 ```dart
 @RestController()
 @RequestMapping("/api/cats")
