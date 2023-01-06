@@ -1,5 +1,8 @@
 <h1 align="left">
     Darwin
+    <a href="https://pub.dev/packages/darwin_sdk">
+        <img src="https://img.shields.io/pub/v/darwin_sdk" alt="discord">
+    </a>
     <a href="https://discord.gg/6HKuGSzYKJ">
         <img src="https://img.shields.io/discord/1060355106522017924?label=discord" alt="discord">
     </a>
@@ -16,8 +19,14 @@ in dart, using the inversion of control principle and
 a powerful annotation based code-generator.
 
 ## Goals
-- 
-- 
+- 🪟 **Clear and readable!**
+with almost zero boilerplate and services.
+- 🔋 **Batteries included!**
+plus a variety of packages and integrations.
+- 🚄 **We are speed!**
+Fast startups and delayable code generation.
+- 🎨 **Make it your own!**
+Many extension points and configurations.
 
 ## Silent Code Generation
 A neat point about darwins **non-intrusive** code generation is, that it
