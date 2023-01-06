@@ -173,8 +173,12 @@ class HttpServiceDescriptorGenerator {
         .map(createParameterFactory)
         .where((element) => element != null)
         .join(", ");
+
+    //TODO: Use real dart types
     var responseMarshalType = trimAsyncType(
         element.returnType.getDisplayString(withNullability: false));
+
+    if (responseMarshalType == "void") responseMarshalType = "dynamic";
 
     var appendedConditions = "";
     var conditionSourceArray = getConditionsSourceArray(element);

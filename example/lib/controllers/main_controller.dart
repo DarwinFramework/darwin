@@ -7,7 +7,6 @@ import 'package:darwin_sdk/darwin_sdk.dart';
 
 @RestController()
 @RequestMapping("/api")
-@HeaderEqualsInterceptor("X-Test", "true")
 class ApiController {
 
   @Profile("debug")
@@ -33,4 +32,10 @@ class ApiController {
       "ip": info.remoteAddress.address
     };
   }
+
+  @PostMapping("/call")
+  void call() {
+
+  }
+
 }

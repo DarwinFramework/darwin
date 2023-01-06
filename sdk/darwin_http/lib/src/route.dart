@@ -67,6 +67,7 @@ class DarwinGeneratedHttpRoute extends DarwinHttpRoute {
     var interceptedResponse = await interceptors.intercept(context);
     if (interceptedResponse != null) return interceptedResponse;
     var methodOutput = await proxyFunc(context);
+    if (methodOutput == null) return Response(204);
     var response = await context.httpServer
         .serializeResponse(methodOutput, resultType, returnContentType);
     return response;
