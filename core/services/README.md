@@ -6,6 +6,10 @@ Services are a abstract and high-level implementation of a dependency provider w
 
 <figure><img src="../../.gitbook/assets/darwin_service_structure.png" alt=""><figcaption></figcaption></figure>
 
+### Dependency Declaration
+
+Services define their dependencies using unnamed required constructor parameters which must reference instance fields of the service. There is no requirement for a specific parameter order, although it is advised to follow the order of the field declarations for code style reasons.
+
 ## Code Examples
 
 {% code title="minimal_service.dart" %}
