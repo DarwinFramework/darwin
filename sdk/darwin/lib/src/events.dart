@@ -17,6 +17,9 @@
 import 'package:darwin_eventbus/darwin_eventbus.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
 
+
+/// Event that gets triggered after the initial service startup completed for
+/// all initially registered services.
 class LateStartupEvent extends AsyncEvent {
   final DarwinSystem system;
 

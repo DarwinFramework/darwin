@@ -19,6 +19,7 @@ import 'dart:async';
 import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
 
+/// Annotation base to specify binding conditions for services or beans.
 abstract class Condition {
   const Condition();
 

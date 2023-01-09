@@ -23,6 +23,10 @@ import 'package:meta/meta.dart';
 
 import '../darwin_sdk.dart';
 
+/// Builder for [DarwinSystem].
+/// Combines generated [DarwinSystemGeneratedArgs] and creates the
+/// [DarwinSystemUserArgs]. Also has options for configuring the created
+/// [DarwinSystem].
 class DarwinApplication {
   List<DarwinPlugin> plugins = [];
   Module module = Module();
@@ -43,9 +47,15 @@ class DarwinApplication {
   bool get isShuttingDown => _isShuttingDown;
   bool _isShuttingDown = false;
 
+  /// Manually overrides [DarwinSystemLoggingMixin.level].
   void setLogLevel(Level level) => system.loggingMixin.level = level;
+
+  /// Manually overrides [DarwinSystemLoggingMixin.handler].
   void setLogHandler(LogHandler handler) =>
       system.loggingMixin.handler = handler;
+
+  /// Sets the [DarwinSystemProfileMixin.profile] for this application.
+  /// Can be used to define logical execute environments.
   void setProfile(String profile) => system.profileMixin.profile = profile;
 
   /// Installs a [DarwinPlugin] onto this application.

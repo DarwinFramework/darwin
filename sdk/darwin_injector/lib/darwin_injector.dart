@@ -14,9 +14,7 @@
  *    limitations under the License.
  */
 
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// Extensible dependency injection library used as the foundation of the darwin framework.
 library darwin_injector;
 
 export 'src/activator.dart';

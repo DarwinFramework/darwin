@@ -37,13 +37,19 @@ mixin DarwinSystemLoggingMixin on DarwinSystem {
     Logger.root.onRecord.listen(handler);
   }
 
+  /// Creates a detached [Logger] with the specified [name], that is linked
+  /// to the [handler] and has configured sound [Level] of [level].
   Logger createLogger(String name) => Logger.detached(name)
     ..level = level
     ..onRecord.listen(handler);
 }
 
 class DarwinDefaultLogger {
+
+  /// Disables the ansi formatting for the default logger.
   static bool noAnsi = false;
+
+  /// Sets the box width for the name group.
   static const int groupWidth = 15;
 
   static void log(LogRecord record) {
@@ -73,6 +79,9 @@ class DarwinDefaultLogger {
 }
 
 extension LogLevelColorExtension on Level {
+
+  /// Returns the formatted name of the log level
+  /// for the [DarwinDefaultLogger].
   String get coloredName {
     if (value <= Level.FINEST.value) {
       return "TRACE   ".cyan;

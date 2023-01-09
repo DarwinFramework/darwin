@@ -42,6 +42,11 @@ import 'package:darwin_sdk/darwin_sdk.dart';
 /// base classes. The terminal implementation of the service can further
 /// specify start and stop methods with the @[Start] and @[Stop] annotations.
 /// These methods must have no arguments and can either be a void or a [Future].
+///
+/// Services can also define binding conditions, which must be met for the
+/// service to be marked eligible for registration. Conditions can be specified
+/// by annotating the implementing type with a const class implementing
+/// condition. One example for this is the [Profile] annotation.
 class Service {
   final Type? type;
   const Service([this.type]);
@@ -116,8 +121,20 @@ class RunningService {
 mixin DarwinSystemServiceMixin on DarwinSystem {
   List<RunningService> runningServices = [];
   final List<ServiceDescriptor> serviceDescriptors = [];
+
+  /// The current lifecycle start of this service system.
+  /// Modifications to this systems state must be made at
+  /// [SystemLifecycleState.initial] or after the startup
+  /// at [SystemLifecycleState.started].
   SystemLifecycleState lifecycleState = SystemLifecycleState.initial;
 
+  /// Starts all services described by [serviceDescriptors],
+  /// solving dependencies by recursively starting only satisfied services
+  /// until all descriptors have either declined registration or have been started.
+  ///
+  /// If a dependency resolution cycle elapses without any emitted services,
+  /// the service graph is considered broken and an [UnsatisfiedServiceDependenciesException]
+  /// will be thrown.
   Future<void> startServices() async {
     lifecycleState = SystemLifecycleState.starting;
     var unsolved = serviceDescriptors.toList();
@@ -142,13 +159,19 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
     lifecycleState = SystemLifecycleState.started;
   }
 
+  /// Constructs and starts the service described by [descriptor] and returns
+  /// if the service has been started and registered successfully.
+  ///
+  /// Service dependencies aren't checked or validated by this method, when
+  /// calling manually, make sure to check [ServiceDescriptor.isSatisfied]
+  /// before invoking this method.
   Future<bool> startService(ServiceDescriptor descriptor) async {
     loggingMixin.logger
         .finer("Trying to start service ${descriptor.serviceType}...");
     var matchesConditions = await descriptor.conditions.match(this);
     if (!matchesConditions) {
       loggingMixin.logger
-          .finer("Service conditions aren't met, skipping service");
+          .finer("Service conditions aren't met, skipping service registration");
       return false;
     }
     var obj = await descriptor.instantiate(injector);
@@ -159,22 +182,28 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
     return true;
   }
 
+  /// Returns all service descriptors which bind to [type].
   List<ServiceDescriptor> findDescriptors(Type type) => serviceDescriptors
       .where((element) => element.bindingType == type)
       .toList();
 
+  /// Returns all service descriptors which have the implementation class [type].
   List<ServiceDescriptor> findDescriptorsExact(Type type) => serviceDescriptors
       .where((element) => element.serviceType == type)
       .toList();
 
+
+  /// Returns all running services which are bound to [type].
   List<RunningService> findServices(Type type) => runningServices
       .where((element) => element.descriptor.bindingType == type)
       .toList();
 
+  /// Returns all running services which have the implementation class [type].
   List<RunningService> findServicesExact(Type type) => runningServices
       .where((element) => element.obj.runtimeType == type)
       .toList();
 
+  /// Returns all running services which have the associated [descriptor].
   List<RunningService> findServicesWithDescriptor(
           ServiceDescriptor descriptor) =>
       runningServices

@@ -14,9 +14,7 @@
  *    limitations under the License.
  */
 
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// Code generator for the base darwin_sdk package of the darwin framework.
 library darwin_gen;
 
 export 'src/adapters/service_adapter.dart';

@@ -47,6 +47,7 @@ extension DarwinSystemExtensions on DarwinSystem {
   DarwinSystemProfileMixin get profileMixin => this as DarwinSystemProfileMixin;
 }
 
+/// Default [DarwinSystem] base class containing all common mixins. 
 abstract class DefaultDarwinSystem extends DarwinSystem
     with
         DarwinSystemServiceMixin,
@@ -62,7 +63,7 @@ abstract class DefaultDarwinSystem extends DarwinSystem
     var stopwatch = Stopwatch();
     stopwatch.start();
     await initSystem(this, user);
-    await prepareServices(this, generated, user);
+    await prepareAndStartServices(this, generated, user);
     await runLateStartup(this);
     stopwatch.stop();
     loggingMixin.logger.info(
@@ -76,7 +77,9 @@ abstract class DefaultDarwinSystem extends DarwinSystem
         .dispatch(lateStartupEvent);
   }
 
-  static Future<void> prepareServices(DarwinSystem system,
+  /// Prepares all collected service descriptions and starts them via
+  /// [DarwinSystemServiceMixin.startServices].
+  static Future<void> prepareAndStartServices(DarwinSystem system,
       DarwinSystemGeneratedArgs generated, DarwinSystemUserArgs user) async {
     if (system is! DarwinSystemServiceMixin) throw Exception();
     var services = generated.services.toList();

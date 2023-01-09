@@ -14,9 +14,7 @@
  *    limitations under the License.
  */
 
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// An object serialization library used by the darwin_http package of the darwin framework.
 library darwin_marshal;
 
 export 'src/adapters.dart';

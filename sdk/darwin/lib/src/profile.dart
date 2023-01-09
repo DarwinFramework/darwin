@@ -18,6 +18,10 @@ import 'dart:async';
 
 import 'package:darwin_sdk/darwin_sdk.dart';
 
+/// Execution profile based service registration condition.
+/// This conditions matches true, if the application is running in the profile
+/// specified by [Profile.profile], this behaviour can be inverted by using
+/// [Profile.inverse].
 class Profile extends Condition {
   final String profile;
   final bool inverse;
@@ -34,5 +38,6 @@ class Profile extends Condition {
 }
 
 mixin DarwinSystemProfileMixin on DarwinSystem {
+  /// The execution profile of the application.
   String? profile;
 }

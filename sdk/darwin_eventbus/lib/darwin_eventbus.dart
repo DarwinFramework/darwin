@@ -14,9 +14,7 @@
  *    limitations under the License.
  */
 
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// Synchronous and asynchronous eventbus implementations used by the drawin framework.
 library darwin_eventbus;
 
 import 'dart:async';
