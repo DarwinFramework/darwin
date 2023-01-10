@@ -65,6 +65,7 @@ extension HttpServerHandler on DarwinHttpServer {
       Response? handledResponse;
       try {
         handledResponse = await entry.handle(context);
+        handledResponse?.context["darwin.original"] = true;
       } on RequestException catch(exception,trace) {
         logger.log(Level.FINE, "Request handler '$entry' threw a request exception", exception);
         handledResponse = exception.response;
@@ -83,4 +84,13 @@ extension HttpServerHandler on DarwinHttpServer {
     await onHttpRequestRespond.dispatch(responseEvent);
     return responseEvent.response;
   }
+}
+
+extension DarwinHttpServiceResponseExtension on Response {
+
+  /// Returns if this response is derived from the initially return response.
+  /// Returns false, if the response has been replaced or an error response
+  /// has been emitted.
+  bool get isOriginal => context["darwin.original"] == true;
+  
 }
