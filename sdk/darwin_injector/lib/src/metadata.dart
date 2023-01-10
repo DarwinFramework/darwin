@@ -16,9 +16,9 @@
 
 class InjectorMetadata {
   final InjectorMetadata? _parent;
-  final Map<dynamic, dynamic> _data = const {};
+  final Map<dynamic, dynamic> _data = {};
 
-  const InjectorMetadata(this._parent);
+  InjectorMetadata(this._parent);
 
   operator []=(dynamic key, dynamic value) => _data[key] = value;
 
