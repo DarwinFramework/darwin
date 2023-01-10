@@ -1,3 +1,7 @@
+## 1.1.0-alpha.7
+
+ - **REFACTOR**: reformat code.
+
 ## 1.1.0-alpha.6
 
  - **REFACTOR**: void trace for request exceptions.

@@ -1,6 +1,6 @@
 name: darwin_test
 description: A simple test library for the darwin framework
-version: 1.1.0-alpha.3
+version: 1.1.0-alpha.4
 repository: https://github.com/DarwinFramework/darwin
 
 environment:
@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   path: ^1.8.0
-  darwin_sdk: ^1.1.0-alpha.3
+  darwin_sdk: ^1.1.0-alpha.4
   darwin_injector: ^1.1.0-alpha.1
 dev_dependencies:
   lints: ^2.0.0

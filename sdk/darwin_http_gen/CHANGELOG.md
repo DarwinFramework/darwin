@@ -1,3 +1,7 @@
+## 1.1.0-alpha.8
+
+ - **FIX**: default to empty string for parseMappingPath.
+
 ## 1.1.0-alpha.7
 
  - Update a dependency to the latest release.
