@@ -70,6 +70,10 @@ extension HttpServerHandler on DarwinHttpServer {
         logger.log(Level.FINE, "Request handler '$entry' threw a request exception", exception);
         handledResponse = exception.response;
       }
+      if (context[DarwinHttpServer.requestDrainedKey] != true) {
+        await context.request.read().drain(); // Drain body
+        context[DarwinHttpServer.requestDrainedKey] = true;
+      }
       if (handledResponse == null) {
         response = Response.internalServerError();
         break;

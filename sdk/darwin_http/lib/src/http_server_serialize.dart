@@ -17,11 +17,13 @@
 part of 'http_server.dart';
 
 extension HttpServerSerialize on DarwinHttpServer {
+  
   Future<dynamic> deserializeBody(RequestContext context, Type type) async {
     var data = <int>[];
     await context.request.read().listen((event) {
       data.addAll(event);
     }).asFuture();
+    context[DarwinHttpServer.requestDrainedKey] = true;
 
     if (type == List<int>) return data;
     if (type == String) return utf8.decode(data);
