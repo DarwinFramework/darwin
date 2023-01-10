@@ -66,7 +66,7 @@ extension HttpServerHandler on DarwinHttpServer {
       try {
         handledResponse = await entry.handle(context);
         handledResponse?.context["darwin.original"] = true;
-      } on RequestException catch(exception,trace) {
+      } on RequestException catch(exception,_) {
         logger.log(Level.FINE, "Request handler '$entry' threw a request exception", exception);
         handledResponse = exception.response;
       }
