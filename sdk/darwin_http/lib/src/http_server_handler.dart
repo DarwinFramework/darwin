@@ -65,11 +65,11 @@ extension HttpServerHandler on DarwinHttpServer {
       Response? handledResponse;
       try {
         handledResponse = await entry.handle(context);
-        handledResponse = handledResponse?.change(context: {
-          "darwin.original": true
-        });
-      } on RequestException catch(exception,_) {
-        logger.log(Level.FINE, "Request handler '$entry' threw a request exception", exception);
+        handledResponse =
+            handledResponse?.change(context: {"darwin.original": true});
+      } on RequestException catch (exception, _) {
+        logger.log(Level.FINE,
+            "Request handler '$entry' threw a request exception", exception);
         handledResponse = exception.response;
       }
       if (context[DarwinHttpServer.requestDrainedKey] != true) {
@@ -93,10 +93,8 @@ extension HttpServerHandler on DarwinHttpServer {
 }
 
 extension DarwinHttpServiceResponseExtension on Response {
-
   /// Returns if this response is derived from the initially return response.
   /// Returns false, if the response has been replaced or an error response
   /// has been emitted.
   bool get isOriginal => context["darwin.original"] == true;
-  
 }

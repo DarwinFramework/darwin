@@ -32,7 +32,6 @@ part 'http_server_handler.dart';
 part 'http_server_serialize.dart';
 
 class DarwinHttpServer extends ServiceBase {
-
   static const String requestDrainedKey = "request.drained";
 
   final HttpPlugin plugin;

@@ -1,5 +1,4 @@
 import 'package:darwin_marshal/darwin_marshal.dart';
-import 'package:darwin_marshal/src/adapters.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 

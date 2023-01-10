@@ -170,8 +170,8 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
         .finer("Trying to start service ${descriptor.serviceType}...");
     var matchesConditions = await descriptor.conditions.match(this);
     if (!matchesConditions) {
-      loggingMixin.logger
-          .finer("Service conditions aren't met, skipping service registration");
+      loggingMixin.logger.finer(
+          "Service conditions aren't met, skipping service registration");
       return false;
     }
     var obj = await descriptor.instantiate(injector);
@@ -191,7 +191,6 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
   List<ServiceDescriptor> findDescriptorsExact(Type type) => serviceDescriptors
       .where((element) => element.serviceType == type)
       .toList();
-
 
   /// Returns all running services which are bound to [type].
   List<RunningService> findServices(Type type) => runningServices

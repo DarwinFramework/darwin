@@ -17,9 +17,6 @@
 import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
 
-import 'plugin.dart';
-import 'service.dart';
-
 /// Arguments supplied by the code generator to the [DarwinSystem].
 class DarwinSystemGeneratedArgs {
   final List<ServiceDescriptor> services;

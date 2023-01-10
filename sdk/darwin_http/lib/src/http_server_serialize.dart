@@ -17,7 +17,6 @@
 part of 'http_server.dart';
 
 extension HttpServerSerialize on DarwinHttpServer {
-  
   Future<dynamic> deserializeBody(RequestContext context, Type type) async {
     var data = <int>[];
     await context.request.read().listen((event) {

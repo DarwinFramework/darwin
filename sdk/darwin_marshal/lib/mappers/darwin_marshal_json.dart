@@ -17,7 +17,6 @@
 import 'dart:convert';
 
 import 'package:darwin_marshal/darwin_marshal.dart';
-import 'package:darwin_marshal/src/utils.dart';
 
 typedef StringKeyedMap = Map<String, dynamic>;
 

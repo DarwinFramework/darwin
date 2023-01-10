@@ -45,7 +45,6 @@ mixin DarwinSystemLoggingMixin on DarwinSystem {
 }
 
 class DarwinDefaultLogger {
-
   /// Disables the ansi formatting for the default logger.
   static bool noAnsi = false;
 
@@ -79,7 +78,6 @@ class DarwinDefaultLogger {
 }
 
 extension LogLevelColorExtension on Level {
-
   /// Returns the formatted name of the log level
   /// for the [DarwinDefaultLogger].
   String get coloredName {

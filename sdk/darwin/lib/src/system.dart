@@ -47,7 +47,7 @@ extension DarwinSystemExtensions on DarwinSystem {
   DarwinSystemProfileMixin get profileMixin => this as DarwinSystemProfileMixin;
 }
 
-/// Default [DarwinSystem] base class containing all common mixins. 
+/// Default [DarwinSystem] base class containing all common mixins.
 abstract class DefaultDarwinSystem extends DarwinSystem
     with
         DarwinSystemServiceMixin,

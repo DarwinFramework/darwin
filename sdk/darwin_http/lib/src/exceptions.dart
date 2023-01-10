@@ -18,17 +18,23 @@ import 'package:shelf/shelf.dart';
 
 /// Interrupts a request handler with a response.
 class RequestException implements Exception {
-
   Response response;
   RequestException(this.response);
 
-  factory RequestException.notFound([Object? body]) => RequestException(Response.notFound(body));
-  factory RequestException.badRequest() => RequestException(Response.badRequest());
-  factory RequestException.forbidden([Object? body]) => RequestException(Response.forbidden(body));
-  factory RequestException.unauthorized([Object? body]) => RequestException(Response.unauthorized(body));
-  factory RequestException.conflict([Object? body]) => RequestException(Response(409, body: body ?? "Conflict"));
-  factory RequestException.gone([Object? body]) => RequestException(Response(410, body: body ?? "Gone"));
-  factory RequestException.status(int code, [Object? body]) => RequestException(Response(code, body: body));
+  factory RequestException.notFound([Object? body]) =>
+      RequestException(Response.notFound(body));
+  factory RequestException.badRequest() =>
+      RequestException(Response.badRequest());
+  factory RequestException.forbidden([Object? body]) =>
+      RequestException(Response.forbidden(body));
+  factory RequestException.unauthorized([Object? body]) =>
+      RequestException(Response.unauthorized(body));
+  factory RequestException.conflict([Object? body]) =>
+      RequestException(Response(409, body: body ?? "Conflict"));
+  factory RequestException.gone([Object? body]) =>
+      RequestException(Response(410, body: body ?? "Gone"));
+  factory RequestException.status(int code, [Object? body]) =>
+      RequestException(Response(code, body: body));
 
   @override
   String toString() {
