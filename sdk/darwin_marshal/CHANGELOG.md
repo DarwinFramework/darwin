@@ -1,3 +1,7 @@
+## 1.1.0-alpha.4
+
+ - **DOCS**: darwin_sdk extended documentation.
+
 ## 1.1.0-alpha.3
 
  - **FIX**: export files in marshal.
