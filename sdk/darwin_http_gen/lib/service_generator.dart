@@ -246,7 +246,7 @@ RequestMapping parseRequestMapper(DartObject object) {
 }
 
 String parseMappingPath(DartObject object) {
-  return object.getField("path")!.toStringValue()!;
+  return object.getField("path")?.toStringValue() ?? "";
 }
 
 PathParameter parsePathParameter(DartObject object) {
