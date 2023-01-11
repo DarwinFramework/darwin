@@ -18,14 +18,16 @@ import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:logging/logging.dart';
 
-DarwinSystem createInfantSystem({Module? appModule, List<DarwinPlugin> plugins = const [], List<ServiceDescriptor>? services}) {
+DarwinSystem createInfantSystem(
+    {Module? appModule,
+    List<DarwinPlugin> plugins = const [],
+    List<ServiceDescriptor>? services}) {
   var system = DefaultDarwinSystemImpl();
   system.loggingMixin.handler = (log) => print(log);
   system.loggingMixin.level = Level.ALL;
   system.loggingMixin.enableLogging();
-  DefaultDarwinSystem.initSystem(system, DarwinSystemUserArgs(
-      appModule: appModule ?? Module(), plugins: plugins
-  ));
+  DefaultDarwinSystem.initSystem(system,
+      DarwinSystemUserArgs(appModule: appModule ?? Module(), plugins: plugins));
   if (services != null) system.serviceMixin.serviceDescriptors.addAll(services);
   return system;
 }
@@ -33,9 +35,8 @@ DarwinSystem createInfantSystem({Module? appModule, List<DarwinPlugin> plugins =
 Future<DarwinSystem> startSystem(List<ServiceDescriptor> services,
     {Module? appModule, List<DarwinPlugin> plugins = const []}) async {
   var generated = DarwinSystemGeneratedArgs(services);
-  var userArgs = DarwinSystemUserArgs(
-      appModule: appModule ?? Module(), plugins: plugins
-  );
+  var userArgs =
+      DarwinSystemUserArgs(appModule: appModule ?? Module(), plugins: plugins);
   var system = DefaultDarwinSystemImpl();
   system.loggingMixin.handler = (log) => print(log);
   system.loggingMixin.level = Level.ALL;

@@ -22,13 +22,13 @@ import 'package:test/scaffolding.dart';
 import 'package:darwin_test/darwin_test.dart';
 
 void main() {
-
   test("Descriptor start methods", () async {
     var startCompleter = Completer();
     var stopCompleter = Completer();
-    var descriptor = ServiceDescriptor.create(String, (p0) => "Hello World", start: (system,str) {
+    var descriptor = ServiceDescriptor.create(String, (p0) => "Hello World",
+        start: (system, str) {
       startCompleter.complete();
-    }, stop: (system,str) {
+    }, stop: (system, str) {
       stopCompleter.complete();
     });
 
@@ -42,9 +42,10 @@ void main() {
   test("Descriptor stop methods", () async {
     var startCompleter = Completer();
     var stopCompleter = Completer();
-    var descriptor = ServiceDescriptor.create(String, (p0) => "Hello World", start: (system,str) {
+    var descriptor = ServiceDescriptor.create(String, (p0) => "Hello World",
+        start: (system, str) {
       startCompleter.complete();
-    }, stop: (system,str) {
+    }, stop: (system, str) {
       stopCompleter.complete();
     });
 
@@ -55,6 +56,4 @@ void main() {
     expect(stopCompleter.future, completes);
     expect(system, isNotRunning<String>());
   });
-
-
 }

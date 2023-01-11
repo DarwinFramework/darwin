@@ -18,7 +18,6 @@ import 'dart:async';
 
 import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
-import 'package:logging/logging.dart';
 
 /// Class-Annotation for defining services.
 ///
@@ -116,17 +115,18 @@ abstract class ServiceDescriptor implements Activator {
   /// The stop signal handler of this service.
   Future<void> stop(DarwinSystem system, dynamic obj);
 
-  static ServiceDescriptor create(Type serviceType,
-      FutureOr<dynamic> Function(Injector) instantiate, {
-        Type? bindingType,
-        bool optional = false,
-        List<InjectorKey> publications = const [],
-        List<InjectorKey> dependencies = const [],
-        List<InjectorKey> optionalDependencies = const [],
-        List<Condition> conditions = const [],
-        FutureOr<void> Function(DarwinSystem, dynamic)? start,
-        FutureOr<void> Function(DarwinSystem, dynamic)? stop,
-      }) {
+  static ServiceDescriptor create(
+    Type serviceType,
+    FutureOr<dynamic> Function(Injector) instantiate, {
+    Type? bindingType,
+    bool optional = false,
+    List<InjectorKey> publications = const [],
+    List<InjectorKey> dependencies = const [],
+    List<InjectorKey> optionalDependencies = const [],
+    List<Condition> conditions = const [],
+    FutureOr<void> Function(DarwinSystem, dynamic)? start,
+    FutureOr<void> Function(DarwinSystem, dynamic)? stop,
+  }) {
     var actualBindingType = bindingType ?? serviceType;
     var publicationList = publications.toList();
     if (!publicationList.any((element) => element.type == actualBindingType)) {
@@ -142,8 +142,7 @@ abstract class ServiceDescriptor implements Activator {
         publications: publicationList,
         instantiateFunc: instantiate,
         startFunc: start ?? _lifecycleNoop,
-        stopFunc: stop ?? _lifecycleNoop
-    );
+        stopFunc: stop ?? _lifecycleNoop);
   }
 }
 
@@ -210,7 +209,6 @@ class RunningService {
   RunningService(this.obj, this.descriptor);
 }
 
-
 mixin DarwinSystemServiceMixin on DarwinSystem {
   List<RunningService> runningServices = [];
   final List<ServiceDescriptor> serviceDescriptors = [];
@@ -249,7 +247,9 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
   Future<bool> startService(ServiceDescriptor descriptor) async {
     loggingMixin.logger
         .finer("Trying to start service ${descriptor.serviceType}...");
-    if (!serviceDescriptors.contains(descriptor)) serviceDescriptors.add(descriptor);
+    if (!serviceDescriptors.contains(descriptor)) {
+      serviceDescriptors.add(descriptor);
+    }
     var matchesConditions = await descriptor.conditions.match(this);
     if (!matchesConditions) {
       loggingMixin.logger.finer(
@@ -275,32 +275,28 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
   }
 
   /// Returns all service descriptors which bind to [type].
-  List<ServiceDescriptor> findDescriptors(Type type) =>
-      serviceDescriptors
-          .where((element) => element.bindingType == type)
-          .toList();
+  List<ServiceDescriptor> findDescriptors(Type type) => serviceDescriptors
+      .where((element) => element.bindingType == type)
+      .toList();
 
   /// Returns all service descriptors which have the implementation class [type].
-  List<ServiceDescriptor> findDescriptorsExact(Type type) =>
-      serviceDescriptors
-          .where((element) => element.serviceType == type)
-          .toList();
+  List<ServiceDescriptor> findDescriptorsExact(Type type) => serviceDescriptors
+      .where((element) => element.serviceType == type)
+      .toList();
 
   /// Returns all running services which are bound to [type].
-  List<RunningService> findServices(Type type) =>
-      runningServices
-          .where((element) => element.descriptor.bindingType == type)
-          .toList();
+  List<RunningService> findServices(Type type) => runningServices
+      .where((element) => element.descriptor.bindingType == type)
+      .toList();
 
   /// Returns all running services which have the implementation class [type].
-  List<RunningService> findServicesExact(Type type) =>
-      runningServices
-          .where((element) => element.obj.runtimeType == type)
-          .toList();
+  List<RunningService> findServicesExact(Type type) => runningServices
+      .where((element) => element.obj.runtimeType == type)
+      .toList();
 
   /// Returns all running services which have the associated [descriptor].
   List<RunningService> findServicesWithDescriptor(
-      ServiceDescriptor descriptor) =>
+          ServiceDescriptor descriptor) =>
       runningServices
           .where((element) => element.descriptor == descriptor)
           .toList();

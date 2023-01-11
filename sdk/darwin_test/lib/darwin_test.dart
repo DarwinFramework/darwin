@@ -23,5 +23,6 @@ import 'package:darwin_sdk/darwin_sdk.dart';
 export 'src/bootstrap.dart';
 export 'src/matchers.dart';
 
-DarwinSystemUserArgs emptyUserArgs = DarwinSystemUserArgs(appModule: Module(), plugins: []);
+DarwinSystemUserArgs emptyUserArgs =
+    DarwinSystemUserArgs(appModule: Module(), plugins: []);
 DarwinSystemGeneratedArgs emptyGeneratedArgs = DarwinSystemGeneratedArgs([]);

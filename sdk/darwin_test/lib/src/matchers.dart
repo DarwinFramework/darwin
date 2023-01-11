@@ -24,7 +24,6 @@ Matcher isBound(InjectorKey key) => IsBound(key);
 Matcher isUnbound(InjectorKey key) => IsUnbound(key);
 
 class IsBound extends Matcher {
-
   InjectorKey key;
   IsBound(this.key);
 
@@ -45,7 +44,6 @@ class IsBound extends Matcher {
 }
 
 class IsUnbound extends Matcher {
-
   InjectorKey key;
   IsUnbound(this.key);
 
@@ -66,9 +64,8 @@ class IsUnbound extends Matcher {
 }
 
 class IsRunning extends Matcher {
-
   Type type;
-  
+
   IsRunning(this.type);
 
   @override
@@ -81,11 +78,9 @@ class IsRunning extends Matcher {
     if (item is! DarwinSystem) throw ArgumentError("Must be DarwinSystem");
     return item.serviceMixin.findServices(type).isNotEmpty;
   }
-
 }
 
 class IsNotRunning extends Matcher {
-
   Type type;
 
   IsNotRunning(this.type);

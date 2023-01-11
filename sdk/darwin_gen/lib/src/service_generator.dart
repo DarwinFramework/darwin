@@ -98,7 +98,8 @@ class ServiceGen {
     return BaseServiceResults(descriptorName, dependencies);
   }
 
-  static void implementOptional(ClassBuilder builder, ClassElement serviceClass) {
+  static void implementOptional(
+      ClassBuilder builder, ClassElement serviceClass) {
     builder.methods.add(Method((builder) => builder
       ..name = "optional"
       ..type = MethodType.getter

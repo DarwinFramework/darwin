@@ -27,19 +27,18 @@ extension ResolutionExtension on ServiceDescriptor {
   /// by the [injector] or could still become available as
   /// promised by [futurePromises].
   bool isSolvable(Injector injector, List<InjectorKey> futurePromises) =>
-      isSatisfied(injector)
-          || collectDependencies().any((element) =>
-          futurePromises.contains(element));
+      isSatisfied(injector) ||
+      collectDependencies().any((element) => futurePromises.contains(element));
 
   /// Returns if the [DarwinSystemServiceMixin] should wait another dependency
   /// cycle before trying to create this service, either because it is currently
   /// lacking required dependencies, or optional dependencies are still being
   /// possibly promised by [futurePromises].
-  bool skipDependencyCycle(Injector injector,
-      List<InjectorKey> futurePromises) =>
-      !isSatisfied(injector)
-          || collectOptionalDependencies().any((element) =>
-          futurePromises.contains(element));
+  bool skipDependencyCycle(
+          Injector injector, List<InjectorKey> futurePromises) =>
+      !isSatisfied(injector) ||
+      collectOptionalDependencies()
+          .any((element) => futurePromises.contains(element));
 
   /// Collects all required dependencies of this service and its conditions.
   Iterable<InjectorKey> collectDependencies() sync* {
@@ -59,12 +58,12 @@ extension ResolutionExtension on ServiceDescriptor {
 }
 
 class ServiceMixinResolver extends ServiceResolver {
-
   DarwinSystemServiceMixin serviceMixin;
   ServiceMixinResolver(this.serviceMixin);
 
   @override
-  Future activate(ServiceDescriptor descriptor) => serviceMixin.startService(descriptor);
+  Future activate(ServiceDescriptor descriptor) =>
+      serviceMixin.startService(descriptor);
 
   @override
   Injector get injector => serviceMixin.injector;
@@ -72,7 +71,6 @@ class ServiceMixinResolver extends ServiceResolver {
 
 /// Dependency resolver for [ServiceDescriptor]s.
 abstract class ServiceResolver {
-
   Injector get injector;
 
   /// Starts the [descriptor] asynchronously.
@@ -104,14 +102,19 @@ abstract class ServiceResolver {
     while (true) {
       var lenBefore = unsolved.length; // Remember length before cycle
       // Collect injector keys which could possibly become available
-      var futurePromises = unsolved.expand((element) => element.publications).toList();
+      var futurePromises =
+          unsolved.expand((element) => element.publications).toList();
       for (var descriptor in unsolved.toList()) {
         // If the service is optional and not solvable in this context, skip it
-        if (descriptor.optional && !descriptor.isSolvable(injector, futurePromises)) {
+        if (descriptor.optional &&
+            !descriptor.isSolvable(injector, futurePromises)) {
           unsolved.remove(descriptor);
-          yield ResolveEvent(ResolveEventType.serviceSkipped, descriptor,
-              descriptor.dependencies.where((element) => !injector.checkKey(element)).toList()
-          );
+          yield ResolveEvent(
+              ResolveEventType.serviceSkipped,
+              descriptor,
+              descriptor.dependencies
+                  .where((element) => !injector.checkKey(element))
+                  .toList());
           continue;
         }
         // If the service has unfulfilled dependencies or optional dependencies
@@ -132,9 +135,12 @@ abstract class ServiceResolver {
       }
       if (lenBefore != lenAfter) continue; // At least one declined
       for (var descriptor in unsolved) {
-        yield ResolveEvent(ResolveEventType.serviceError, descriptor,
-            descriptor.dependencies.where((element) => !injector.checkKey(element)).toList()
-        );
+        yield ResolveEvent(
+            ResolveEventType.serviceError,
+            descriptor,
+            descriptor.dependencies
+                .where((element) => !injector.checkKey(element))
+                .toList());
       }
       yield ResolveEvent(ResolveEventType.failed, null);
       break;
@@ -156,7 +162,7 @@ enum ResolveEventType {
   failed(Level.SEVERE, _logFailed),
   serviceStarted(Level.FINER, _logServiceStarted),
   serviceSkipped(Level.FINE, _logServiceSkipped),
-  serviceError(Level.WARNING, _logServiceSkipped);
+  serviceError(Level.WARNING, _logServiceError);
 
   final LogRecord Function(ResolveEvent) logConverter;
   final Level level;
@@ -171,10 +177,16 @@ enum ResolveEventType {
   static LogRecord _logFailed(ResolveEvent event) =>
       LogRecord(failed.level, "Resolution failed!", "Service Resolution");
 
-  static LogRecord _logServiceStarted(ResolveEvent event) =>
-      LogRecord(serviceStarted.level, "Service ${event.descriptor} resolved", "Service Resolution");
-  static LogRecord _logServiceSkipped(ResolveEvent event) =>
-      LogRecord(serviceSkipped.level, "Service ${event.descriptor} skipped! Missing ${event.offendingKeys}", "Service Resolution");
-  static LogRecord _logServiceError(ResolveEvent event) =>
-      LogRecord(serviceError.level, "Service ${event.descriptor} can't be started! Missing ${event.offendingKeys}", "Service Resolution");
+  static LogRecord _logServiceStarted(ResolveEvent event) => LogRecord(
+      serviceStarted.level,
+      "Service ${event.descriptor} resolved",
+      "Service Resolution");
+  static LogRecord _logServiceSkipped(ResolveEvent event) => LogRecord(
+      serviceSkipped.level,
+      "Service ${event.descriptor} skipped! Missing ${event.offendingKeys}",
+      "Service Resolution");
+  static LogRecord _logServiceError(ResolveEvent event) => LogRecord(
+      serviceError.level,
+      "Service ${event.descriptor} can't be started! Missing ${event.offendingKeys}",
+      "Service Resolution");
 }
