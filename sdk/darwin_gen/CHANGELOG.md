@@ -1,3 +1,8 @@
+## 1.1.0-alpha.5
+
+ - **REFACTOR**: format code and some small fixes.
+ - **FEAT**: implement optional dependencies and add tests.
+
 ## 1.1.0-alpha.4
 
  - Update a dependency to the latest release.

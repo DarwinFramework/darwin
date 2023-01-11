@@ -1,3 +1,8 @@
+## 1.1.0-alpha.5
+
+ - **REFACTOR**: format code and some small fixes.
+ - **FEAT**: implement basic darwin_test functionality.
+
 ## 1.1.0-alpha.4
 
  - Update a dependency to the latest release.
