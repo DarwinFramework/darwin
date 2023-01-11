@@ -27,6 +27,9 @@ abstract class Condition {
   /// condition check.
   List<InjectorKey> get dependencies => [];
 
+  /// Additional optional dependencies
+  List<InjectorKey> get optionalDependencies => [];
+
   /// Validates the conditions for the given [DarwinSystem].
   FutureOr<bool> match(DarwinSystem system);
 }

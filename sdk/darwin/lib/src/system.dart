@@ -107,13 +107,7 @@ abstract class DefaultDarwinSystem extends DarwinSystem
   Future<void> stop() async {
     loggingMixin.logger.info("Stopping darwin application...");
     var stopwatch = Stopwatch();
-    // Stop services in reversed order so children shut down before their parents do
-    for (var service in runningServices.reversed) {
-      var obj = service.obj;
-      var descriptor = service.descriptor;
-      await descriptor.stop(this, obj);
-    }
-    runningServices.clear();
+    await stopServices();
     loggingMixin.logger.info(
         "Stopped darwin application in ${stopwatch.elapsedMilliseconds}ms. Goodbye!");
   }

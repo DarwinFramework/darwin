@@ -44,6 +44,7 @@ class ServiceGen {
   static final String serviceBaseStrRef = "$genAlias.ServiceBase";
 
   static final serviceChecker = TypeChecker.fromRuntime(Service);
+  static final optionalChecker = TypeChecker.fromRuntime(Optional);
   static final startChecker = TypeChecker.fromRuntime(Start);
   static final stopChecker = TypeChecker.fromRuntime(Stop);
   static final beanChecker = TypeChecker.fromRuntime(Bean);
@@ -82,6 +83,7 @@ class ServiceGen {
       implementDependencies(builder, dependencies);
       implementConditions(builder, serviceClass);
       implementBindings(builder, serviceClass, boundType);
+      implementOptional(builder, serviceClass);
       implementInstantiate(builder, serviceClass, dependencies);
       implementStartMethod(serviceClass, beans, eventSubscriptions, builder);
       implementStopMethod(serviceClass, builder);
@@ -94,6 +96,16 @@ class ServiceGen {
     ]);
     codeContext.codeBuffer.writeln(descriptorClass.accept(emitter));
     return BaseServiceResults(descriptorName, dependencies);
+  }
+
+  static void implementOptional(ClassBuilder builder, ClassElement serviceClass) {
+    builder.methods.add(Method((builder) => builder
+      ..name = "optional"
+      ..type = MethodType.getter
+      ..returns = Reference("bool")
+      ..annotations.add(CodeExpression(Code("override")))
+      ..lambda = true
+      ..body = Code(optionalChecker.hasAnnotationOf(serviceClass).toString())));
   }
 
   static List<GeneratedBeanDefinition> getBeanDefinitions(

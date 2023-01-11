@@ -18,6 +18,7 @@ import 'dart:async';
 
 import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
+import 'package:logging/logging.dart';
 
 /// Class-Annotation for defining services.
 ///
@@ -49,7 +50,15 @@ import 'package:darwin_sdk/darwin_sdk.dart';
 /// condition. One example for this is the [Profile] annotation.
 class Service {
   final Type? type;
+
   const Service([this.type]);
+}
+
+/// Marks a service implementation as optional.
+/// Optional services don't crash the dependency resolution if their dependencies
+/// are not met and instead just get skipped.
+class Optional {
+  const Optional();
 }
 
 /// Method annotation for declaring start methods for [Service]s.
@@ -68,6 +77,7 @@ class Stop {
 /// lifecycle. Can also obtain the current instance of [DarwinSystem].
 abstract class ServiceBase {
   FutureOr<void> start(DarwinSystem system);
+
   FutureOr<void> stop(DarwinSystem system);
 }
 
@@ -85,29 +95,111 @@ abstract class ServiceDescriptor implements Activator {
   /// Type to which this service is going to get bound to.
   Type get bindingType;
 
+  /// Defines if this service is optional and can be skipped.
+  bool get optional => false;
+
   /// Dependencies required by this service.
   List<InjectorKey> get dependencies;
 
-  /// All unconditional dependencies which will be published by this service.
-  /// Conditional dependencies such as conditional beans will not be included
-  /// here since their presence can't be generally guaranteed.
-  List<InjectorKey> get publications; // Currently unused.
+  /// Optional dependencies of this service.
+  List<InjectorKey> get optionalDependencies => [];
+
+  /// All dependencies which could be published by this service.
+  List<InjectorKey> get publications;
 
   /// Conditions required by this service.
   List<Condition> get conditions;
 
+  /// The start signal handler of this service.
   Future<void> start(DarwinSystem system, dynamic obj);
+
+  /// The stop signal handler of this service.
   Future<void> stop(DarwinSystem system, dynamic obj);
 
-  /// [_combineDependencies] check via an [Injector].
-  bool isSatisfied(Injector injector) =>
-      _combineDependencies().every((element) => injector.checkKey(element));
-
-  Iterable<InjectorKey> _combineDependencies() sync* {
-    yield* dependencies;
-    for (var condition in conditions) {
-      yield* condition.dependencies;
+  static ServiceDescriptor create(Type serviceType,
+      FutureOr<dynamic> Function(Injector) instantiate, {
+        Type? bindingType,
+        bool optional = false,
+        List<InjectorKey> publications = const [],
+        List<InjectorKey> dependencies = const [],
+        List<InjectorKey> optionalDependencies = const [],
+        List<Condition> conditions = const [],
+        FutureOr<void> Function(DarwinSystem, dynamic)? start,
+        FutureOr<void> Function(DarwinSystem, dynamic)? stop,
+      }) {
+    var actualBindingType = bindingType ?? serviceType;
+    var publicationList = publications.toList();
+    if (!publicationList.any((element) => element.type == actualBindingType)) {
+      publicationList.add(InjectorKey.create(actualBindingType));
     }
+    return ServiceDescriptorImpl(
+        bindingType: actualBindingType,
+        serviceType: serviceType,
+        optional: optional,
+        conditions: conditions,
+        dependencies: dependencies,
+        optionalDependencies: optionalDependencies,
+        publications: publicationList,
+        instantiateFunc: instantiate,
+        startFunc: start ?? _lifecycleNoop,
+        stopFunc: stop ?? _lifecycleNoop
+    );
+  }
+}
+
+void _lifecycleNoop(DarwinSystem system, dynamic obj) {}
+
+class ServiceDescriptorImpl extends ServiceDescriptor {
+  @override
+  Type bindingType;
+  @override
+  Type serviceType;
+  @override
+  List<Condition> conditions;
+  @override
+  List<InjectorKey> dependencies;
+  @override
+  List<InjectorKey> optionalDependencies;
+  @override
+  List<InjectorKey> publications;
+  @override
+  bool optional;
+  FutureOr<dynamic> Function(Injector) instantiateFunc;
+  FutureOr<void> Function(DarwinSystem, dynamic) startFunc;
+  FutureOr<void> Function(DarwinSystem, dynamic) stopFunc;
+
+  @override
+  Future<dynamic> instantiate(Injector injector) async {
+    return await instantiateFunc(injector);
+  }
+
+  @override
+  Future<void> start(DarwinSystem system, dynamic obj) async {
+    await startFunc(system, obj);
+  }
+
+  @override
+  Future<void> stop(DarwinSystem system, dynamic obj) async {
+    await stopFunc(system, obj);
+  }
+
+  ServiceDescriptorImpl({
+    required this.bindingType,
+    required this.serviceType,
+    required this.optional,
+    required this.conditions,
+    required this.dependencies,
+    required this.optionalDependencies,
+    required this.publications,
+    required this.instantiateFunc,
+    required this.startFunc,
+    required this.stopFunc,
+  });
+
+  @override
+  String toString() {
+    if (bindingType == serviceType) return "Descriptor [$bindingType]";
+    return "Descriptor [$bindingType:$serviceType]";
   }
 }
 
@@ -117,6 +209,7 @@ class RunningService {
 
   RunningService(this.obj, this.descriptor);
 }
+
 
 mixin DarwinSystemServiceMixin on DarwinSystem {
   List<RunningService> runningServices = [];
@@ -137,25 +230,13 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
   /// will be thrown.
   Future<void> startServices() async {
     lifecycleState = SystemLifecycleState.starting;
-    var unsolved = serviceDescriptors.toList();
-    while (true) {
-      var lenBefore = unsolved.length;
-      for (var descriptor in unsolved.toList()) {
-        if (descriptor.isSatisfied(injector)) {
-          unsolved.remove(descriptor);
-          await startService(descriptor);
-        }
+    var resolver = ServiceMixinResolver(this);
+    await resolver.solve(serviceDescriptors).forEach((element) {
+      if (loggingMixin.level.value <= element.type.level.value) {
+        loggingMixin.handler(element.type.createLog(element));
       }
-      var lenAfter = unsolved.length;
-      if (lenAfter == 0) break;
-      if (lenBefore == lenAfter) {
-        var unsolvedDependencies = unsolved
-            .expand((element) => element.dependencies)
-            .where((element) => !injector.checkKey(element))
-            .toList();
-        throw UnsatisfiedServiceDependenciesException(unsolvedDependencies);
-      }
-    }
+      if (element.type == ResolveEventType.failed) throw Exception();
+    });
     lifecycleState = SystemLifecycleState.started;
   }
 
@@ -168,6 +249,7 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
   Future<bool> startService(ServiceDescriptor descriptor) async {
     loggingMixin.logger
         .finer("Trying to start service ${descriptor.serviceType}...");
+    if (!serviceDescriptors.contains(descriptor)) serviceDescriptors.add(descriptor);
     var matchesConditions = await descriptor.conditions.match(this);
     if (!matchesConditions) {
       loggingMixin.logger.finer(
@@ -182,29 +264,43 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
     return true;
   }
 
+  Future<void> stopServices() async {
+    // Stop services in reversed order so children shut down before their parents do
+    for (var service in runningServices.reversed) {
+      var obj = service.obj;
+      var descriptor = service.descriptor;
+      await descriptor.stop(this, obj);
+    }
+    runningServices.clear();
+  }
+
   /// Returns all service descriptors which bind to [type].
-  List<ServiceDescriptor> findDescriptors(Type type) => serviceDescriptors
-      .where((element) => element.bindingType == type)
-      .toList();
+  List<ServiceDescriptor> findDescriptors(Type type) =>
+      serviceDescriptors
+          .where((element) => element.bindingType == type)
+          .toList();
 
   /// Returns all service descriptors which have the implementation class [type].
-  List<ServiceDescriptor> findDescriptorsExact(Type type) => serviceDescriptors
-      .where((element) => element.serviceType == type)
-      .toList();
+  List<ServiceDescriptor> findDescriptorsExact(Type type) =>
+      serviceDescriptors
+          .where((element) => element.serviceType == type)
+          .toList();
 
   /// Returns all running services which are bound to [type].
-  List<RunningService> findServices(Type type) => runningServices
-      .where((element) => element.descriptor.bindingType == type)
-      .toList();
+  List<RunningService> findServices(Type type) =>
+      runningServices
+          .where((element) => element.descriptor.bindingType == type)
+          .toList();
 
   /// Returns all running services which have the implementation class [type].
-  List<RunningService> findServicesExact(Type type) => runningServices
-      .where((element) => element.obj.runtimeType == type)
-      .toList();
+  List<RunningService> findServicesExact(Type type) =>
+      runningServices
+          .where((element) => element.obj.runtimeType == type)
+          .toList();
 
   /// Returns all running services which have the associated [descriptor].
   List<RunningService> findServicesWithDescriptor(
-          ServiceDescriptor descriptor) =>
+      ServiceDescriptor descriptor) =>
       runningServices
           .where((element) => element.descriptor == descriptor)
           .toList();

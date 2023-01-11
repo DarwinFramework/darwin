@@ -25,5 +25,6 @@ export 'src/exceptions.dart';
 export 'src/logging.dart';
 export 'src/plugin.dart';
 export 'src/profile.dart';
+export 'src/resolution.dart';
 export 'src/service.dart';
 export 'src/system.dart';
