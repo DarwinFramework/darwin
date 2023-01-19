@@ -16,8 +16,17 @@
 
 import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
+import 'package:darwin_test/darwin_test.dart';
 import 'package:logging/logging.dart';
 
+/// Creates an initialized but not fully started [DarwinSystem] that can be used
+/// for testing which involves manual startup logic. The [appModule] as well as
+/// [plugins] which will be used for by the [DarwinSystemUserArgs] can be
+/// optionally specified. The initial [DarwinSystemGeneratedArgs] which are
+/// passed to [DarwinSystem.prepare] will contain no service bindings.
+///
+/// Service bindings defined by the parameter [services] will be added manually
+/// to the backing list of the [DarwinSystemServiceMixin].
 DarwinSystem createInfantSystem(
     {Module? appModule,
     List<DarwinPlugin> plugins = const [],
@@ -26,12 +35,15 @@ DarwinSystem createInfantSystem(
   system.loggingMixin.handler = (log) => print(log);
   system.loggingMixin.level = Level.ALL;
   system.loggingMixin.enableLogging();
-  DefaultDarwinSystem.initSystem(system,
-      DarwinSystemUserArgs(appModule: appModule ?? Module(), plugins: plugins));
+  system.prepare(emptyGeneratedArgs, DarwinSystemUserArgs(appModule: appModule ?? Module(), plugins: plugins));
   if (services != null) system.serviceMixin.serviceDescriptors.addAll(services);
   return system;
 }
 
+/// Creates and start a general-use default [DarwinSystem] implementation.
+/// Must contain a list of [services] which will be used to create the
+/// [DarwinSystemGeneratedArgs]. The [appModule] as well as [plugins] used
+/// to construct the [DarwinSystemUserArgs] can be optionally specified.
 Future<DarwinSystem> startSystem(List<ServiceDescriptor> services,
     {Module? appModule, List<DarwinPlugin> plugins = const []}) async {
   var generated = DarwinSystemGeneratedArgs(services);

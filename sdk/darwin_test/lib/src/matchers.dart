@@ -18,11 +18,19 @@ import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:test/expect.dart';
 
+/// Asserts that a service that is injectable by [T] is running in a [DarwinSystem].
 Matcher isRunning<T>() => IsRunning(T);
+
+/// Asserts that a service that is injectable by [T] is not running in a [DarwinSystem].
 Matcher isNotRunning<T>() => IsNotRunning(T);
+
+/// Asserts that a [key] is bound in the given [DarwinSystem] or [Injector].
 Matcher isBound(InjectorKey key) => IsBound(key);
+
+/// Asserts that a [key] is not bound in the given [DarwinSystem] or [Injector].
 Matcher isUnbound(InjectorKey key) => IsUnbound(key);
 
+/// Matcher that checks if an [InjectorKey] is bound.
 class IsBound extends Matcher {
   InjectorKey key;
   IsBound(this.key);
@@ -43,6 +51,7 @@ class IsBound extends Matcher {
   }
 }
 
+/// Matcher that checks if an [InjectorKey] is not bound.
 class IsUnbound extends Matcher {
   InjectorKey key;
   IsUnbound(this.key);
@@ -63,6 +72,7 @@ class IsUnbound extends Matcher {
   }
 }
 
+/// Matcher that checks if a service is running.
 class IsRunning extends Matcher {
   Type type;
 
@@ -80,6 +90,7 @@ class IsRunning extends Matcher {
   }
 }
 
+/// Matcher that checks if a service is not running.
 class IsNotRunning extends Matcher {
   Type type;
 
