@@ -1,5 +1,6 @@
-Sample application to test local changes. Since almost everyone working on this sdk needs this
-folder, it is left in here. It will be updated include new features and will later be extracted
-into an "integration" folder for running an integration test based on a sample application.
+# Examples
+Files in this folder contain or refer to reference material for working with darwin.
 
-# [Full Example](https://github.com/DarwinFramework/darwin_example)
+## [Cat REST-API](https://github.com/DarwinFramework/darwin_example)
+A darwin application using the darwin system and the http module.
+Also uses our serialization api "dogs".
