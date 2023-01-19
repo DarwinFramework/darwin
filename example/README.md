@@ -1,5 +1,5 @@
 # Examples
-Files in this folder contain or refer to reference material for working with darwin.
+Files in this folder contains or refers to reference material for working with darwin.
 
 ## [Cat REST-API](https://github.com/DarwinFramework/darwin_example)
 A darwin application using the darwin system and the http module.
