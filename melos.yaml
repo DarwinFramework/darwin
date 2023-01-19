@@ -15,7 +15,11 @@ scripts:
       concurrency: 1
   format:
     name: format
-    description: 'Runs the dart fromatter'
+    description: 'Runs the dart formatter'
     run: dart format .
     exec:
       concurrency: 1
+  smoke:
+    name: smoke
+    description: 'Runs smoke tests'
+    run: cd smoke/ && bash smoke.sh && cd ../
