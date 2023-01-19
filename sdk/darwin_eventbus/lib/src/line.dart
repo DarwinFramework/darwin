@@ -132,7 +132,8 @@ class AsyncEventLine<T> {
   }
 
   Future _dispatchParallel(T event) async {
-    await Future.wait(subscriptions.toList().map((e) => _toFuture(e.consumer(event))));
+    await Future.wait(
+        subscriptions.toList().map((e) => _toFuture(e.consumer(event))));
   }
 
   Future _toFuture(FutureOr<void> futureOr) async => await futureOr;

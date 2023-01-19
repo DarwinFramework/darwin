@@ -35,7 +35,8 @@ DarwinSystem createInfantSystem(
   system.loggingMixin.handler = (log) => print(log);
   system.loggingMixin.level = Level.ALL;
   system.loggingMixin.enableLogging();
-  system.prepare(emptyGeneratedArgs, DarwinSystemUserArgs(appModule: appModule ?? Module(), plugins: plugins));
+  system.prepare(emptyGeneratedArgs,
+      DarwinSystemUserArgs(appModule: appModule ?? Module(), plugins: plugins));
   if (services != null) system.serviceMixin.serviceDescriptors.addAll(services);
   return system;
 }

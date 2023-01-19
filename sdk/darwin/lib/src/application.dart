@@ -78,7 +78,8 @@ class DarwinApplication {
     var userArgs = DarwinSystemUserArgs(appModule: module, plugins: plugins);
     await currentSystem.prepare(_generatedArgs!, userArgs);
     if (exitProcessOnStop) {
-      currentSystem.eventbus.getAsyncLine<KillEvent>()
+      currentSystem.eventbus
+          .getAsyncLine<KillEvent>()
           .subscribeNext(priority: EventPriority.highest)
           .then((value) => exit(0));
     }

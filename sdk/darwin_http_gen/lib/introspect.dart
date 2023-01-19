@@ -67,7 +67,8 @@ Future _tryInitialize(ServiceGenContext context) async {
   _isInitialized = true;
 }
 
-Future<DartType> getSerialType(DartType target, ServiceGenContext context) async {
+Future<DartType> getSerialType(
+    DartType target, ServiceGenContext context) async {
   await _tryInitialize(context);
   if (target.isVoid || target.isDynamic) return target;
   if (target.isDartCoreIterable) {

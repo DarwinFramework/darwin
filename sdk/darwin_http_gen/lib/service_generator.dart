@@ -16,7 +16,6 @@
 
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
 import 'package:darwin_gen/darwin_gen.dart';
@@ -63,10 +62,10 @@ class HttpServiceDescriptorGenerator {
         controllerMethods, requestMap, patchMappingChecker, HttpMethods.patch);
 
     print(requestMap);
-    var requestRegistrations = await Future
-        .wait(requestMap.entries.map((e) =>
-        createHttpRegistration(genContext, serviceClass, e.value, e.key)).toList());
-
+    var requestRegistrations = await Future.wait(requestMap.entries
+        .map((e) =>
+            createHttpRegistration(genContext, serviceClass, e.value, e.key))
+        .toList());
 
     var descriptorClass = Class((builder) {
       ServiceGen.implementConstructor(builder, descriptorName);
@@ -138,8 +137,11 @@ class HttpServiceDescriptorGenerator {
     });
   }
 
-  static Future<String> createHttpRegistration(ServiceGenContext context, ClassElement classElement,
-      RequestMapping mapping, MethodElement element) async {
+  static Future<String> createHttpRegistration(
+      ServiceGenContext context,
+      ClassElement classElement,
+      RequestMapping mapping,
+      MethodElement element) async {
     var matcherStr = mapping.path;
 
     var classRequestMapping =
