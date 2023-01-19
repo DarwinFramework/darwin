@@ -22,6 +22,9 @@ class ApiController {
     return "Hello $agent, you sent '$body'!";
   }
 
+  @GetMapping("list")
+  List<String> getList() => ["a","b","c"];
+
   @PostMapping("/hello/%name%")
   @Returns("application/json")
   @AlwaysCondition()

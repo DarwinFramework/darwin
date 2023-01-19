@@ -16,6 +16,7 @@
 
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
 import 'package:darwin_gen/darwin_gen.dart';
@@ -23,26 +24,13 @@ import 'package:darwin_http/darwin_http.dart';
 import 'package:darwin_http_gen/darwin_http_gen.dart';
 import 'package:source_gen/source_gen.dart';
 
+import 'introspect.dart';
+
 class HttpServiceDescriptorGenerator {
   static final String httpServerStrRef = "$genAlias.DarwinHttpServer";
   static final String pathUtilsStrRef = "$genAlias.PathUtils";
   static final String generatedRouteBaseStrRef =
       "$genAlias.DarwinGeneratedHttpRoute";
-
-  static final bodyChecker = TypeChecker.fromRuntime(Body);
-  static final queryParamChecker = TypeChecker.fromRuntime(QueryParameter);
-  static final pathParamChecker = TypeChecker.fromRuntime(PathParameter);
-  static final contextChecker = TypeChecker.fromRuntime(Context);
-  static final headerChecker = TypeChecker.fromRuntime(Header);
-  static final requestMappingChecker = TypeChecker.fromRuntime(RequestMapping);
-  static final acceptsChecker = TypeChecker.fromRuntime(Accepts);
-  static final returnsChecker = TypeChecker.fromRuntime(Returns);
-
-  static final getMappingChecker = TypeChecker.fromRuntime(GetMapping);
-  static final postMappingChecker = TypeChecker.fromRuntime(PostMapping);
-  static final putMappingChecker = TypeChecker.fromRuntime(PutMapping);
-  static final deleteMappingChecker = TypeChecker.fromRuntime(DeleteMapping);
-  static final patchMappingChecker = TypeChecker.fromRuntime(PatchMapping);
 
   static Future<void> generateTo(
       ServiceGenContext genContext, ServiceCodeContext codeContext) async {
@@ -74,6 +62,12 @@ class HttpServiceDescriptorGenerator {
     _addSpecificMapping(
         controllerMethods, requestMap, patchMappingChecker, HttpMethods.patch);
 
+    print(requestMap);
+    var requestRegistrations = await Future
+        .wait(requestMap.entries.map((e) =>
+        createHttpRegistration(genContext, serviceClass, e.value, e.key)).toList());
+
+
     var descriptorClass = Class((builder) {
       ServiceGen.implementConstructor(builder, descriptorName);
       ServiceGen.implementDependencies(builder, dependencies);
@@ -88,8 +82,9 @@ class HttpServiceDescriptorGenerator {
       var startMethodCodeBuilder = StringBuffer();
       startMethodCodeBuilder.writeln(
           "$httpServerStrRef httpServer = await system.injector.get($httpServerStrRef);");
-      requestMap.forEach((key, value) => startMethodCodeBuilder
-          .writeln(createHttpRegistration(serviceClass, value, key)));
+      for (var registration in requestRegistrations) {
+        startMethodCodeBuilder.writeln(registration);
+      }
 
       builder.methods.add(Method((builder) => builder
         ..returns = Reference("Future<void>")
@@ -143,8 +138,8 @@ class HttpServiceDescriptorGenerator {
     });
   }
 
-  static String createHttpRegistration(ClassElement classElement,
-      RequestMapping mapping, MethodElement element) {
+  static Future<String> createHttpRegistration(ServiceGenContext context, ClassElement classElement,
+      RequestMapping mapping, MethodElement element) async {
     var matcherStr = mapping.path;
 
     var classRequestMapping =
@@ -174,10 +169,8 @@ class HttpServiceDescriptorGenerator {
         .where((element) => element != null)
         .join(", ");
 
-    //TODO: Use real dart types
-    var responseMarshalType = trimAsyncType(
-        element.returnType.getDisplayString(withNullability: false));
-
+    var responseMarshalType = (await getSerialType(element.returnType, context))
+        .getDisplayString(withNullability: false);
     if (responseMarshalType == "void") responseMarshalType = "dynamic";
 
     var appendedConditions = "";
