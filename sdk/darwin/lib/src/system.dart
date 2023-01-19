@@ -29,6 +29,8 @@ abstract class DarwinSystem {
   late Injector injector;
   late EventBus eventbus;
 
+  Future<void> prepare(
+      DarwinSystemGeneratedArgs generated, DarwinSystemUserArgs user);
   Future<void> start(
       DarwinSystemGeneratedArgs generated, DarwinSystemUserArgs user);
 
@@ -55,6 +57,12 @@ abstract class DefaultDarwinSystem extends DarwinSystem
         DarwinSystemBeanMixin,
         DarwinSystemLoggingMixin,
         DarwinSystemProfileMixin {
+
+  @override
+  Future<void> prepare(DarwinSystemGeneratedArgs generated, DarwinSystemUserArgs user) async {
+    initSystem(this, user);
+  }
+
   @override
   Future<void> start(
       DarwinSystemGeneratedArgs generated, DarwinSystemUserArgs user) async {
@@ -62,7 +70,6 @@ abstract class DefaultDarwinSystem extends DarwinSystem
     loggingMixin.logger.info("Starting darwin application...");
     var stopwatch = Stopwatch();
     stopwatch.start();
-    await initSystem(this, user);
     await prepareAndStartServices(this, generated, user);
     await runLateStartup(this);
     stopwatch.stop();
@@ -110,6 +117,9 @@ abstract class DefaultDarwinSystem extends DarwinSystem
     await stopServices();
     loggingMixin.logger.info(
         "Stopped darwin application in ${stopwatch.elapsedMilliseconds}ms. Goodbye!");
+
+    await eventbus.getAsyncLine<KillEvent>()
+        .dispatch(KillEvent(this));
   }
 }
 
