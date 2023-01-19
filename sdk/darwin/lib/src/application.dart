@@ -17,6 +17,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:darwin_eventbus/darwin_eventbus.dart';
 import 'package:darwin_injector/darwin_injector.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
@@ -75,6 +76,12 @@ class DarwinApplication {
     plugins.sort((a, b) =>
         a.loadOrder.compareTo(b.loadOrder)); // Sort plugins by priority
     var userArgs = DarwinSystemUserArgs(appModule: module, plugins: plugins);
+    await currentSystem.prepare(_generatedArgs!, userArgs);
+    if (exitProcessOnStop) {
+      currentSystem.eventbus.getAsyncLine<KillEvent>()
+          .subscribeNext(priority: EventPriority.highest)
+          .then((value) => exit(0));
+    }
     await currentSystem.start(_generatedArgs!, userArgs);
     _hookDaemons();
     if (watchProcessSignals) _watchSignals();
@@ -86,7 +93,6 @@ class DarwinApplication {
     if (isShuttingDown) return;
     _isShuttingDown = true;
     await _system!.stop();
-    if (exitProcessOnStop) exit(0);
   }
 
   void _hookDaemons() async {

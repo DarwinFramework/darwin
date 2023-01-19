@@ -24,3 +24,9 @@ class LateStartupEvent extends AsyncEvent {
 
   const LateStartupEvent(this.system);
 }
+
+/// Event that gets triggered after the darwin system is shut down.
+class KillEvent extends AsyncEvent {
+  final DarwinSystem system;
+  const KillEvent(this.system);
+}

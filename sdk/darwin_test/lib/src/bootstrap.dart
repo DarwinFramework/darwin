@@ -40,6 +40,7 @@ Future<DarwinSystem> startSystem(List<ServiceDescriptor> services,
   var system = DefaultDarwinSystemImpl();
   system.loggingMixin.handler = (log) => print(log);
   system.loggingMixin.level = Level.ALL;
+  await system.prepare(generated, userArgs);
   await system.start(generated, userArgs);
   return system;
 }
