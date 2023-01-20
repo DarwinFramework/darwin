@@ -71,7 +71,7 @@ Future<DartType> getSerialType(
     DartType target, ServiceGenContext context) async {
   await _tryInitialize(context);
   if (target.isVoid || target.isDynamic) return target;
-  if (target.isDartCoreIterable) {
+  if (target.isDartCoreIterable || target.isDartCoreList || target.isDartCoreSet) {
     return target.asInstanceOf(iterableType)!.typeArguments.first;
   }
   if (target.isDartAsyncStream) {
