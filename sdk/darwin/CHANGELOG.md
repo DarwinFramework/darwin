@@ -1,3 +1,8 @@
+## 1.1.0-alpha.6
+
+ - **REFACTOR**: reformat and cleanup code.
+ - **FIX**: improved stop signal handling and final kill signal to exit the process.
+
 ## 1.1.0-alpha.5
 
  - **REFACTOR**: format code and some small fixes.

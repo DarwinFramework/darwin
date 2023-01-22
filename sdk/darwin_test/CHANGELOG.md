@@ -1,3 +1,10 @@
+## 1.1.0-alpha.6
+
+ - **REFACTOR**: reformat and cleanup code.
+ - **REFACTOR**: improve darwin test package and add more docs.
+ - **FIX**: improved stop signal handling and final kill signal to exit the process.
+ - **FEAT**: add charles cli and the darwin_starter library.
+
 ## 1.1.0-alpha.5
 
  - **REFACTOR**: format code and some small fixes.

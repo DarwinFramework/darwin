@@ -1,3 +1,9 @@
+## 1.1.0-alpha.10
+
+ - **REFACTOR**: reformat and cleanup code.
+ - **REFACTOR**: switch to dart types for introspection.
+ - **FIX**: add core iterable implementations.
+
 ## 1.1.0-alpha.9
 
  - Update a dependency to the latest release.

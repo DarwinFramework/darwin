@@ -1,3 +1,7 @@
+## 1.1.0-alpha.6
+
+ - Update a dependency to the latest release.
+
 ## 1.1.0-alpha.5
 
  - **REFACTOR**: format code and some small fixes.

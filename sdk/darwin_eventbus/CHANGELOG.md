@@ -1,3 +1,8 @@
+## 1.1.0-alpha.2
+
+ - **REFACTOR**: reformat and cleanup code.
+ - **FIX**: prevent concurrent modification exceptions in async line.
+
 ## 1.1.0-alpha.1
 
  - **DOCS**: darwin_sdk extended documentation.
