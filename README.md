@@ -51,6 +51,15 @@ class CatController {
 }
 ```
 
+## Getting Started
+To create a new project, you can use our cli tool **charles**
+(install with `dart pub global activate charles`) or our
+[Web Project Generator](https://darwin-starter.web.app/#/).
+
+Have a look at [our example project](https://github.com/DarwinFramework/darwin_example)
+for sample code or our [Getting Started Guide](https://helightdev.gitbook.io/darwin/core/getting-started) 
+at our [Gitbook Wiki](https://helightdev.gitbook.io/darwin/).
+
 ## Silent Code Generation
 A neat point about darwins **non-intrusive** code generation is, that it
 has almost **zero boilerplate** and generally **doesn't require importing
