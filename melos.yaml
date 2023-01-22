@@ -2,6 +2,7 @@ name: darwin_project
 repository: https://github.com/DarwinFramework/darwin
 packages:
   - sdk/**
+  - tools/**
 scripts:
   copy-readme:
     name: copy-readme

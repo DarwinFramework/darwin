@@ -1,0 +1,1 @@
+A project generator for darwin framework applications

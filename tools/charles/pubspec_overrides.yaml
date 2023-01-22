@@ -1,0 +1,4 @@
+# melos_managed_dependency_overrides: darwin_eventbus
+dependency_overrides:
+  darwin_starter:
+    path: ../darwin_starter

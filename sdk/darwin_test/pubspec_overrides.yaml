@@ -1,5 +1,8 @@
+# melos_managed_dependency_overrides: darwin_eventbus
 dependency_overrides:
   darwin_sdk:
     path: ../darwin
   darwin_injector:
     path: ../darwin_injector
+  darwin_eventbus:
+    path: ../darwin_eventbus
