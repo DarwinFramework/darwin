@@ -1,4 +1,4 @@
-import 'package:darwin_http/src/path.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:test/test.dart';
 
 void main() {

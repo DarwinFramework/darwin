@@ -29,4 +29,5 @@ export 'src/models/event_subscription.dart';
 export 'src/models/service_binding.dart';
 
 export 'src/code_utils.dart';
+export 'src/handlers.dart';
 export 'src/service_generator.dart';

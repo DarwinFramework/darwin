@@ -37,6 +37,13 @@ class Profile extends Condition {
   }
 }
 
+class DefaultProfiles {
+  DefaultProfiles._();
+
+  static const String debug = "debug";
+  static const String release = "release";
+}
+
 mixin DarwinSystemProfileMixin on DarwinSystem {
   /// The execution profile of the application.
   String? profile;

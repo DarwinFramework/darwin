@@ -18,8 +18,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:conduit_open_api/v3.dart';
 import 'package:darwin_eventbus/darwin_eventbus.dart';
 import 'package:darwin_http/darwin_http.dart';
+import 'package:darwin_http/src/swagger.dart';
 import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_marshal/darwin_marshal.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
@@ -47,10 +49,17 @@ class DarwinHttpServer extends ServiceBase {
 
   List<Module> requestModules = [DefaultHttpRequestModule()];
   List<DarwinHttpRoute> routes = [];
+  APIDocument apiDocument = APIDocument();
 
   void registerRoute(DarwinHttpRoute route) {
     routes.add(route);
     routes.sort((a, b) => a.sortIndex.compareTo(b.sortIndex));
+    apiDocument.paths ??= {};
+    route.outputs.forEach((key, value) {
+      var path = apiDocument.paths![key] ?? APIPath();
+      path.operations[value.key.name] = value.value;
+      apiDocument.paths![key] = path;
+    });
     logger.finer("Registered http route: $route");
   }
 
@@ -70,6 +79,15 @@ class DarwinHttpServer extends ServiceBase {
     server = await shelf_io.serve(handler, plugin.address, plugin.port,
         securityContext: plugin.securityContext,
         poweredByHeader: "darwin/shelf");
+
+    // Init Openapi configuration
+    apiDocument.version = "3.0.0";
+    apiDocument.info = APIInfo("Darwin Application", "1.0.0");
+    apiDocument.paths = {};
+    apiDocument.components = APIComponents();
+    registerRoute(SwaggerJsonRoute());
+    registerRoute(SwaggerRoute());
+
     var completer = Completer();
     /*
     // Never complete until I find a way to link it to the isolate

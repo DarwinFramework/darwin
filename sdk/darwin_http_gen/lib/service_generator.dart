@@ -21,6 +21,7 @@ import 'package:collection/collection.dart';
 import 'package:darwin_gen/darwin_gen.dart';
 import 'package:darwin_http/darwin_http.dart';
 import 'package:darwin_http_gen/darwin_http_gen.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'introspect.dart';
@@ -62,58 +63,59 @@ class HttpServiceDescriptorGenerator {
         controllerMethods, requestMap, patchMappingChecker, HttpMethods.patch);
 
     print(requestMap);
+
+    var builder = ClassBuilder();
     var requestRegistrations = await Future.wait(requestMap.entries
         .map((e) =>
-            createHttpRegistration(genContext, serviceClass, e.value, e.key))
+        createHttpRegistration(genContext, codeContext, builder, serviceClass, e.value, e.key))
         .toList());
 
-    var descriptorClass = Class((builder) {
-      ServiceGen.implementConstructor(builder, descriptorName);
-      ServiceGen.implementDependencies(builder, dependencies);
-      ServiceGen.implementPublications(builder,
-          [CompiledInjectorKey.fromString(serviceClass.displayName, null)]);
-      ServiceGen.implementConditions(builder, serviceClass);
-      ServiceGen.implementBindings(
-          builder, serviceClass, serviceClass.displayName);
-      ServiceGen.implementInstantiate(builder, serviceClass, srcDependencies);
+    ServiceGen.implementConstructor(builder, descriptorName);
+    ServiceGen.implementDependencies(builder, dependencies);
+    ServiceGen.implementPublications(builder,
+        [CompiledInjectorKey.fromString(serviceClass.displayName, null)]);
+    ServiceGen.implementConditions(builder, serviceClass);
+    ServiceGen.implementBindings(
+        builder, serviceClass, serviceClass.displayName);
+    ServiceGen.implementInstantiate(builder, serviceClass, srcDependencies);
 
-      //region Link Start Methods
-      var startMethodCodeBuilder = StringBuffer();
-      startMethodCodeBuilder.writeln(
-          "$httpServerStrRef httpServer = await system.injector.get($httpServerStrRef);");
-      for (var registration in requestRegistrations) {
-        startMethodCodeBuilder.writeln(registration);
-      }
+    //region Link Start Methods
+    var startMethodCodeBuilder = StringBuffer();
+    startMethodCodeBuilder.writeln(
+        "$httpServerStrRef httpServer = await system.injector.get($httpServerStrRef);");
+    for (var registration in requestRegistrations) {
+      startMethodCodeBuilder.writeln(registration);
+    }
 
-      builder.methods.add(Method((builder) => builder
-        ..returns = Reference("Future<void>")
-        ..modifier = MethodModifier.async
-        ..name = "start"
-        ..requiredParameters.add(Parameter((builder) => builder
-          ..name = "system"
-          ..type = ServiceGen.darwinSystemRef))
-        ..requiredParameters.add(Parameter((builder) => builder
-          ..name = "obj"
-          ..type = Reference("dynamic")))
-        ..annotations.add(CodeExpression(Code("override")))
-        ..body = Code(startMethodCodeBuilder.toString())));
-      //endregion
-      //region Link Stop Methods
-      var stopMethodCodeBuilder = StringBuffer();
-      builder.methods.add(Method((builder) => builder
-        ..returns = Reference("Future<void>")
-        ..modifier = MethodModifier.async
-        ..name = "stop"
-        ..requiredParameters.add(Parameter((builder) => builder
-          ..name = "system"
-          ..type = ServiceGen.darwinSystemRef))
-        ..requiredParameters.add(Parameter((builder) => builder
-          ..name = "obj"
-          ..type = Reference("dynamic")))
-        ..annotations.add(CodeExpression(Code("override")))
-        ..body = Code(stopMethodCodeBuilder.toString())));
-      //endregion
-    });
+    builder.methods.add(Method((builder) => builder
+      ..returns = Reference("Future<void>")
+      ..modifier = MethodModifier.async
+      ..name = "start"
+      ..requiredParameters.add(Parameter((builder) => builder
+        ..name = "system"
+        ..type = ServiceGen.darwinSystemRef))
+      ..requiredParameters.add(Parameter((builder) => builder
+        ..name = "obj"
+        ..type = Reference("dynamic")))
+      ..annotations.add(CodeExpression(Code("override")))
+      ..body = Code(startMethodCodeBuilder.toString())));
+    //endregion
+    //region Link Stop Methods
+    var stopMethodCodeBuilder = StringBuffer();
+    builder.methods.add(Method((builder) => builder
+      ..returns = Reference("Future<void>")
+      ..modifier = MethodModifier.async
+      ..name = "stop"
+      ..requiredParameters.add(Parameter((builder) => builder
+        ..name = "system"
+        ..type = ServiceGen.darwinSystemRef))
+      ..requiredParameters.add(Parameter((builder) => builder
+        ..name = "obj"
+        ..type = Reference("dynamic")))
+      ..annotations.add(CodeExpression(Code("override")))
+      ..body = Code(stopMethodCodeBuilder.toString())));
+
+    var descriptorClass = builder.build();
     codeContext.additionalImports.addAll([
       AliasImport.gen("package:darwin_sdk/darwin_sdk.dart"),
       AliasImport.gen("package:darwin_http/darwin_http.dart"),
@@ -139,9 +141,15 @@ class HttpServiceDescriptorGenerator {
 
   static Future<String> createHttpRegistration(
       ServiceGenContext context,
+      ServiceCodeContext codeContext,
+      ClassBuilder builder,
       ClassElement classElement,
       RequestMapping mapping,
       MethodElement element) async {
+
+    var handler = AnnotatedHandlers.generateAndGet(classElement, element, builder, context, codeContext);
+
+
     var matcherStr = mapping.path;
 
     var classRequestMapping =
@@ -183,7 +191,10 @@ class HttpServiceDescriptorGenerator {
 
     var classLevelInterceptors = getInterceptorSourceArray(classElement);
 
-    return """$appendedConditions
+    return """
+    $handler;
+    
+    $appendedConditions
 httpServer.registerRoute($generatedRouteBaseStrRef(
   $pathUtilsStrRef.parseMatcher("$matcherStr"),
   $genAlias.${mapping.method},

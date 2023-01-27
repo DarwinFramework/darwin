@@ -19,12 +19,17 @@
 /// More dartdocs go here.
 library darwin_http;
 
+import 'package:conduit_open_api/v3.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
+
+import 'darwin_http.dart';
+
 export 'src/context.dart';
 export 'src/events.dart';
 export 'src/exceptions.dart';
 export 'src/handler.dart';
 export 'src/http_server.dart';
-export 'src/path.dart';
+export 'src/parameters.dart';
 export 'src/plugin.dart';
 export 'src/route.dart';
 
@@ -32,69 +37,61 @@ class RestController {
   const RestController();
 }
 
-class GetMapping {
+abstract class RequestMethodSpecifier {
+  const RequestMethodSpecifier();
+  HttpMethods? get method;
+}
+
+abstract class HttpParameterFactory {
+  const HttpParameterFactory();
+  dynamic createParameter(HandlerRegistration registration, HandlerParameter parameter, RequestContext context);
+}
+
+abstract class APIOperationVisitor {
+  void visitOperation(HandlerRegistration registration, HandlerParameter parameter, APIOperation operation);
+}
+
+class GetMapping extends HandlerAnnotation implements RequestMethodSpecifier {
   final String? path;
   const GetMapping([this.path]);
+  @override
+  HttpMethods? get method => HttpMethods.get;
 }
 
-class PostMapping {
+class PostMapping extends HandlerAnnotation implements RequestMethodSpecifier {
   final String? path;
   const PostMapping([this.path]);
+  @override
+  HttpMethods? get method => HttpMethods.post;
 }
 
-class PutMapping {
+class PutMapping extends HandlerAnnotation implements RequestMethodSpecifier {
   final String? path;
   const PutMapping([this.path]);
+  @override
+  HttpMethods? get method => HttpMethods.put;
 }
 
-class PatchMapping {
+class PatchMapping extends HandlerAnnotation implements RequestMethodSpecifier {
   final String? path;
   const PatchMapping([this.path]);
+  @override
+  HttpMethods? get method => HttpMethods.patch;
 }
 
-class DeleteMapping {
+class DeleteMapping extends HandlerAnnotation implements RequestMethodSpecifier {
   final String? path;
   const DeleteMapping([this.path]);
+
+  @override
+  HttpMethods? get method => HttpMethods.delete;
 }
 
-class RequestMapping {
+class RequestMapping extends HandlerAnnotation implements RequestMethodSpecifier {
+  @override
   final HttpMethods? method;
   final String path;
   const RequestMapping(this.path, [this.method]);
-}
-
-class Body {
-  const Body();
-}
-
-class Header {
-  final String? name;
-  const Header([this.name]);
-}
-
-class Context {
-  final String? key;
-  const Context([this.key]);
-}
-
-class PathParameter {
-  final String? name;
-  const PathParameter([this.name]);
-}
-
-class QueryParameter {
-  final String? name;
-  const QueryParameter([this.name]);
-}
-
-class Accepts {
-  final String contentType;
-  const Accepts(this.contentType);
-}
-
-class Returns {
-  final String contentType;
-  const Returns(this.contentType);
 }
 
 enum HttpMethods {

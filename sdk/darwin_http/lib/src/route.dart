@@ -17,12 +17,15 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:conduit_open_api/v3.dart';
 import 'package:darwin_http/darwin_http.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:shelf/shelf.dart';
 
 abstract class DarwinHttpRoute implements DarwinHttpRequestHandler {
   int get sortIndex => 0;
   Future<bool> checkRequest(RequestContext context);
+  Map<String, MapEntry<HttpMethods, APIOperation>> get outputs => {};
 }
 
 class DarwinGeneratedHttpRoute extends DarwinHttpRoute {
@@ -71,6 +74,22 @@ class DarwinGeneratedHttpRoute extends DarwinHttpRoute {
     var response = await context.httpServer
         .serializeResponse(methodOutput, resultType, returnContentType);
     return response;
+  }
+
+
+  @override
+  Map<String, MapEntry<HttpMethods, APIOperation>> get outputs {
+    var operation = APIOperation("${method.name}-${path.sourcePath.replaceAll("/", "-")}", {
+
+    });
+    operation.parameters = [];
+    path.fragments.whereType<VariablePathMatcherFragment>().forEach((element) {
+      operation.parameters!.add(APIParameter.path(element.variableName));
+    });
+
+    return {
+    "/${path.sourcePath}": MapEntry(method, operation)
+  };
   }
 
   @override
