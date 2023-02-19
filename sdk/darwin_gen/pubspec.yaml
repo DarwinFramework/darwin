@@ -19,7 +19,7 @@ dependencies:
   dart_style: '>=2.2.4 <3.0.0'
 
   lyell: ^0.0.2
-  lyell_gen: ^0.0.2
+  lyell_gen: ^0.1.0
 
   darwin_sdk: ^1.1.0-alpha.6
   darwin_injector: ^1.1.0-alpha.1

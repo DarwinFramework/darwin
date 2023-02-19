@@ -349,10 +349,10 @@ packages:
     dependency: transitive
     description:
       name: lyell_gen
-      sha256: be785e7c9bbd098238a5e9ac0debed3547caa5dfa72393d2f37dcd9f6b46d25c
+      sha256: "9c9d449b58d9873f548a986fa45d8157f39da09727f06058dd01dfe459eaa5cf"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.2"
+    version: "0.1.0"
   matcher:
     dependency: transitive
     description:

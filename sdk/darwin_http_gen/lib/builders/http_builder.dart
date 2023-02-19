@@ -31,9 +31,9 @@ class HttpBuilder extends ServiceAdapter<RestController> {
   }
 
   @override
-  FutureOr<SubjectDescriptor> generateBinding(SubjectGenContext<Element> context) async {
+  FutureOr<SubjectDescriptor> generateDescriptor(SubjectGenContext<ClassElement> context) async {
     var binding = ServiceBinding(name: "${context.matches.first.displayName}Descriptor");
-    var descriptor = context.defaultBinding();
+    var descriptor = context.defaultDescriptor();
     binding.store(descriptor);
     return descriptor;
   }

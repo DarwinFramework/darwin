@@ -25,14 +25,14 @@ class BaseServiceBuilder extends ServiceAdapter<Service> {
   BaseServiceBuilder() : super(archetype: "base");
 
   @override
-  FutureOr<void> generateSubject(SubjectGenContext genContext, SubjectCodeContext codeContext) async {
+  FutureOr<void> generateSubject(SubjectGenContext<ClassElement> genContext, SubjectCodeContext codeContext) async {
     await ServiceGen.generateTo(genContext, codeContext);
   }
 
   @override
-  FutureOr<SubjectDescriptor> generateBinding(SubjectGenContext<Element> context) {
+  FutureOr<SubjectDescriptor> generateDescriptor(SubjectGenContext<ClassElement> context) {
     var binding = ServiceBinding(name: "${context.matches.first.displayName}Descriptor");
-    var descriptor = context.defaultBinding();
+    var descriptor = context.defaultDescriptor();
     binding.store(descriptor);
     return descriptor;
   }
