@@ -39,62 +39,104 @@ class RestController {
 
 abstract class RequestMethodSpecifier {
   const RequestMethodSpecifier();
-  HttpMethods? get method;
+
+  Method? get method;
 }
 
-abstract class HttpParameterFactory {
+abstract class RequestPathSpecifier {
+  const RequestPathSpecifier();
+
+  String? get path;
+}
+
+class HttpHandlerVisitorArgs {
+  final DarwinHttpHandlerRoute route;
+  final HandlerRegistration registration;
+  final HandlerParameter? parameter;
+
+  HttpHandlerVisitorArgs(this.route, this.registration, this.parameter);
+}
+
+abstract class HttpParameterFactory<T> {
   const HttpParameterFactory();
-  dynamic createParameter(HandlerRegistration registration, HandlerParameter parameter, RequestContext context);
+
+  T createCacheEntry(HttpHandlerVisitorArgs args);
+
+  dynamic createParameter(T cached, RequestContext context);
 }
 
 abstract class APIOperationVisitor {
-  void visitOperation(HandlerRegistration registration, HandlerParameter parameter, APIOperation operation);
+  void visitOperation(
+      HttpHandlerVisitorArgs args,
+      APIOperation operation);
 }
 
-class GetMapping extends HandlerAnnotation implements RequestMethodSpecifier {
+class GET extends HandlerAnnotation
+    implements RequestMethodSpecifier, RequestPathSpecifier {
+  @override
   final String? path;
-  const GetMapping([this.path]);
+
+  const GET([this.path]);
+
   @override
-  HttpMethods? get method => HttpMethods.get;
+  Method? get method => Method.get;
 }
 
-class PostMapping extends HandlerAnnotation implements RequestMethodSpecifier {
+class POST extends HandlerAnnotation
+    implements RequestMethodSpecifier, RequestPathSpecifier {
+  @override
   final String? path;
-  const PostMapping([this.path]);
+
+  const POST([this.path]);
+
   @override
-  HttpMethods? get method => HttpMethods.post;
+  Method? get method => Method.post;
 }
 
-class PutMapping extends HandlerAnnotation implements RequestMethodSpecifier {
+class PUT extends HandlerAnnotation
+    implements RequestMethodSpecifier, RequestPathSpecifier {
+  @override
   final String? path;
-  const PutMapping([this.path]);
+
+  const PUT([this.path]);
+
   @override
-  HttpMethods? get method => HttpMethods.put;
+  Method? get method => Method.put;
 }
 
-class PatchMapping extends HandlerAnnotation implements RequestMethodSpecifier {
+class PATCH extends HandlerAnnotation
+    implements RequestMethodSpecifier, RequestPathSpecifier {
+  @override
   final String? path;
-  const PatchMapping([this.path]);
+
+  const PATCH([this.path]);
+
   @override
-  HttpMethods? get method => HttpMethods.patch;
+  Method? get method => Method.patch;
 }
 
-class DeleteMapping extends HandlerAnnotation implements RequestMethodSpecifier {
+class DELETE extends HandlerAnnotation
+    implements RequestMethodSpecifier, RequestPathSpecifier {
+  @override
   final String? path;
-  const DeleteMapping([this.path]);
+
+  const DELETE([this.path]);
 
   @override
-  HttpMethods? get method => HttpMethods.delete;
+  Method? get method => Method.delete;
 }
 
-class RequestMapping extends HandlerAnnotation implements RequestMethodSpecifier {
+class Path extends HandlerAnnotation
+    implements RequestMethodSpecifier, RequestPathSpecifier {
   @override
-  final HttpMethods? method;
+  final Method? method;
+  @override
   final String path;
-  const RequestMapping(this.path, [this.method]);
+
+  const Path(this.path, [this.method]);
 }
 
-enum HttpMethods {
+enum Method {
   post("POST"),
   get("GET"),
   put("PUT"),
@@ -102,8 +144,9 @@ enum HttpMethods {
   patch("PATCH");
 
   final String str;
-  const HttpMethods(this.str);
 
-  static HttpMethods parse(String src) =>
-      HttpMethods.values.firstWhere((element) => element.str == src);
+  const Method(this.str);
+
+  static Method parse(String src) =>
+      Method.values.firstWhere((element) => element.str == src);
 }

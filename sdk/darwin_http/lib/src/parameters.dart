@@ -14,63 +14,16 @@
  *    limitations under the License.
  */
 
-import 'package:conduit_open_api/src/v3/operation.dart';
+import 'package:conduit_open_api/v3.dart';
 import 'package:darwin_http/darwin_http.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
 
-class Body extends HandlerAnnotation implements HttpParameterFactory, APIOperationVisitor {
-  const Body();
-
-  @override
-  createParameter(HandlerRegistration registration, HandlerParameter parameter, RequestContext context) {
-    return context.httpServer.deserializeBody(context, parameter.typeArgument);
-  }
-
-  @override
-  void visitOperation(HandlerRegistration registration, HandlerParameter parameter, APIOperation operation) {
-    DarwinSystem.internalInstance.injector.get(DarwinHttpServer)
-    // TODO: implement visitOperation
-  }
-  
-}
-
-class Header extends HandlerAnnotation implements HttpParameterFactory {
-  final String? name;
-  const Header([this.name]);
-
-  @override
-  createParameter(HandlerRegistration registration, HandlerParameter parameter, RequestContext context) {
-    var finalName = name ?? parameter.name;
-    return context.request.headers[finalName];
-  }
-}
-
-class Context extends HandlerAnnotation implements HttpParameterFactory {
-  final String? key;
-  const Context([this.key]);
-
-  @override
-  createParameter(HandlerRegistration registration, HandlerParameter parameter, RequestContext context) {
-    var finalKey = key ?? parameter.name;
-    return context[finalKey];
-  }
-}
-
-class PathParameter extends HandlerAnnotation implements HttpParameterFactory {
-  final String? name;
-  const PathParameter([this.name]);
-
-  @override
-  createParameter(HandlerRegistration registration, HandlerParameter parameter, RequestContext context) {
-    var finalName = name ?? parameter.name;
-    return context.pathData[finalName];
-  }
-}
-
-class QueryParameter extends HandlerAnnotation {
-  final String? name;
-  const QueryParameter([this.name]);
-}
+part 'parameters/body.dart';
+part 'parameters/context.dart';
+part 'parameters/di.dart';
+part 'parameters/header.dart';
+part 'parameters/path_parameter.dart';
+part 'parameters/query_parameter.dart';
 
 class Accepts extends HandlerAnnotation {
   final String contentType;

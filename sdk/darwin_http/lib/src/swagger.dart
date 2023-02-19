@@ -27,7 +27,7 @@ class SwaggerRoute extends DarwinHttpRoute {
 
   @override
   Future<bool> checkRequest(RequestContext context) async {
-    return path.match(context.request.url).result && context.method == HttpMethods.get;
+    return path.match(context.request.url).result && context.method == Method.get;
   }
 
   @override
@@ -75,7 +75,7 @@ class SwaggerJsonRoute extends DarwinHttpRoute {
 
   @override
   Future<bool> checkRequest(RequestContext context) async {
-    return path.match(context.request.url).result && context.method == HttpMethods.get;
+    return path.match(context.request.url).result && context.method == Method.get;
   }
 
   @override

@@ -18,6 +18,7 @@ import 'dart:async';
 
 import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
+import 'package:lyell/lyell.dart';
 
 /// Class-Annotation for defining services.
 ///
@@ -47,7 +48,7 @@ import 'package:darwin_sdk/darwin_sdk.dart';
 /// service to be marked eligible for registration. Conditions can be specified
 /// by annotating the implementing type with a const class implementing
 /// condition. One example for this is the [Profile] annotation.
-class Service {
+class Service extends RetainedAnnotation {
   final Type? type;
 
   const Service([this.type]);
@@ -56,19 +57,19 @@ class Service {
 /// Marks a service implementation as optional.
 /// Optional services don't crash the dependency resolution if their dependencies
 /// are not met and instead just get skipped.
-class Optional {
+class Optional extends RetainedAnnotation {
   const Optional();
 }
 
 /// Method annotation for declaring start methods for [Service]s.
 /// Implementations must have no arguments and a return type of void or [Future].
-class Start {
+class Start extends RetainedAnnotation {
   const Start();
 }
 
 /// Method annotation for declaring stop methods for [Service]s.
 /// Implementations must have no arguments and a return type of void or [Future].
-class Stop {
+class Stop extends RetainedAnnotation {
   const Stop();
 }
 

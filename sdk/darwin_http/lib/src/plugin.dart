@@ -25,6 +25,8 @@ class HttpPlugin extends DarwinPlugin {
   SecurityContext? securityContext;
   Object address = "localhost";
   int port = 8080;
+  bool generateOpenApiModel = true;
+  bool runUnbound = false;
 
   @override
   int get loadOrder => -10;

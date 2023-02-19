@@ -14,20 +14,27 @@
  *    limitations under the License.
  */
 
+import 'dart:async';
+
+import 'package:analyzer/dart/element/element.dart';
 import 'package:darwin_gen/darwin_gen.dart';
 import 'package:darwin_http/darwin_http.dart';
 import 'package:darwin_http_gen/service_generator.dart';
+import 'package:lyell_gen/lyell_gen.dart';
 
-class HttpBuilder extends ServiceAdapter {
-  HttpBuilder() : super(archetype: "http", annotation: RestController);
-
-  @override
-  Future<ServiceBinding> generateBinding(ServiceGenContext context) async =>
-      context.defaultBinding(this);
+class HttpBuilder extends ServiceAdapter<RestController> {
+  HttpBuilder() : super(archetype: "http");
 
   @override
-  Future<void> generateService(
-      ServiceGenContext genContext, ServiceCodeContext codeContext) async {
+  FutureOr<void> generateSubject(SubjectGenContext genContext, SubjectCodeContext codeContext) async {
     await HttpServiceDescriptorGenerator.generateTo(genContext, codeContext);
+  }
+
+  @override
+  FutureOr<SubjectDescriptor> generateBinding(SubjectGenContext<Element> context) async {
+    var binding = ServiceBinding(name: "${context.matches.first.displayName}Descriptor");
+    var descriptor = context.defaultBinding();
+    binding.store(descriptor);
+    return descriptor;
   }
 }

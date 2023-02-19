@@ -18,9 +18,10 @@ import 'dart:async';
 
 import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
+import 'package:lyell/lyell.dart';
 
 /// Annotation base to specify binding conditions for services or beans.
-abstract class Condition {
+abstract class Condition extends RetainedAnnotation {
   const Condition();
 
   /// Additional service dependencies which are required to perform this

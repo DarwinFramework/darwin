@@ -15,11 +15,13 @@
  */
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
 import 'package:darwin_eventbus/darwin_eventbus.dart';
 import 'package:darwin_gen/darwin_gen.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
+import 'package:lyell_gen/lyell_gen.dart';
 import 'package:source_gen/source_gen.dart';
 
 class BaseServiceResults {
@@ -53,25 +55,23 @@ class ServiceGen {
   static final asyncEventChecker = TypeChecker.fromRuntime(AsyncEvent);
 
   static Future<BaseServiceResults> generateTo(
-      ServiceGenContext genContext, ServiceCodeContext codeContext) async {
+      SubjectGenContext genContext, SubjectCodeContext codeContext) async {
     var emitter = DartEmitter();
-    var serviceClass = genContext.element;
+    AliasCounter aliasCounter = AliasCounter();
+    CachedAliasCounter counter = CachedAliasCounter(aliasCounter);
+
+    var serviceClass = genContext.matches.first as ClassElement;
     var descriptorName = "${serviceClass.name}Descriptor";
-    var dependencies =
-        getDependencies(serviceClass.unnamedConstructor?.parameters);
+    var dependencies = getDependencies(serviceClass.unnamedConstructor?.parameters, counter);
 
-    List<GeneratedBeanDefinition> beans = getBeanDefinitions(genContext);
-    List<EventSubscriptionDefinition> eventSubscriptions =
-        getEventSubscriptions(genContext);
-
+    List<GeneratedBeanDefinition> beans = getBeanDefinitions(serviceClass, counter);
+    List<EventSubscriptionDefinition> eventSubscriptions = getEventSubscriptions(serviceClass, counter);
     var serviceAnnotation = serviceChecker.firstAnnotationOf(serviceClass);
     var boundType = serviceAnnotation
             ?.getField("type")
-            ?.toTypeValue()
-            ?.getDisplayString(withNullability: false) ??
-        serviceClass.name;
+            ?.toTypeValue() ?? serviceClass.thisType;
     var published = <CompiledInjectorKey>[
-      CompiledInjectorKey.fromString(boundType, null),
+      CompiledInjectorKey(boundType, null),
       ...beans.where((element) => element.conditionSourceArray == null).map(
           (e) => e.bean
               .getInjectorKey(e.accessor.sourceType, e.accessor.sourceName))
@@ -79,15 +79,16 @@ class ServiceGen {
 
     var descriptorClass = Class((builder) {
       implementConstructor(builder, descriptorName);
-      implementPublications(builder, published);
-      implementDependencies(builder, dependencies);
-      implementConditions(builder, serviceClass);
-      implementBindings(builder, serviceClass, boundType);
+      implementPublications(builder, published, counter);
+      implementDependencies(builder, dependencies, counter);
+      implementConditions(builder, serviceClass, counter);
+      implementBindings(builder, serviceClass, boundType, counter);
       implementOptional(builder, serviceClass);
-      implementInstantiate(builder, serviceClass, dependencies);
-      implementStartMethod(serviceClass, beans, eventSubscriptions, builder);
+      implementInstantiate(builder, serviceClass, dependencies, counter);
+      implementStartMethod(serviceClass, beans, eventSubscriptions, builder, counter);
       implementStopMethod(serviceClass, builder);
     });
+    codeContext.additionalImports.addAll(counter.imports);
     codeContext.additionalImports.addAll([
       AliasImport.gen("package:darwin_sdk/darwin_sdk.dart"),
       AliasImport.gen("package:darwin_injector/darwin_injector.dart"),
@@ -109,37 +110,36 @@ class ServiceGen {
       ..body = Code(optionalChecker.hasAnnotationOf(serviceClass).toString())));
   }
 
-  static List<GeneratedBeanDefinition> getBeanDefinitions(
-      ServiceGenContext genContext) {
+  static List<GeneratedBeanDefinition> getBeanDefinitions(ClassElement clazz, CachedAliasCounter counter) {
     var beans = <GeneratedBeanDefinition>[];
-    genContext.element.methods
+    clazz.methods
         .where((element) => beanChecker.hasAnnotationOf(element))
         .forEach((element) {
       var accessor = BeanGenAccessor(
           element.displayName,
-          element.returnType.getDisplayString(withNullability: false),
+          element.returnType,
           "obj.${element.name}");
       var bean = parseBean(beanChecker.firstAnnotationOf(element)!);
-      var conditions = getConditionsSourceArray(element);
+      var conditions = getConditionsSourceArray(element, counter);
       beans.add(GeneratedBeanDefinition(accessor, bean, conditions));
     });
-    genContext.element.fields
+    clazz.fields
         .where((element) => beanChecker.hasAnnotationOf(element))
         .forEach((element) {
       var accessor = BeanGenAccessor(
           element.displayName,
-          element.type.getDisplayString(withNullability: false),
+          element.type,
           "() => obj.${element.name}");
       var bean = parseBean(beanChecker.firstAnnotationOf(element)!);
-      var conditions = getConditionsSourceArray(element);
+      var conditions = getConditionsSourceArray(element, counter);
       beans.add(GeneratedBeanDefinition(accessor, bean, conditions));
     });
     return beans;
   }
 
   static List<EventSubscriptionDefinition> getEventSubscriptions(
-      ServiceGenContext genContext) {
-    var eventSubscriptions = genContext.element.methods
+      ClassElement clazz, CachedAliasCounter counter) {
+    var eventSubscriptions = clazz.methods
         .where((element) => subscriptionChecker.hasAnnotationOf(element))
         .map((element) {
       if (element.parameters.isEmpty) {
@@ -149,9 +149,9 @@ class ServiceGen {
       return EventSubscriptionDefinition(
           syncEventChecker.isSuperTypeOf(type),
           asyncEventChecker.isSuperTypeOf(type),
-          type.getDisplayString(withNullability: false),
+          type,
           "(evt) async => await (obj.${element.name}(evt) as FutureOr<dynamic>)",
-          getConditionsSourceArray(element));
+          getConditionsSourceArray(element, counter));
     }).toList();
     return eventSubscriptions;
   }
@@ -165,7 +165,7 @@ class ServiceGen {
   }
 
   static void implementInstantiate(ClassBuilder builder,
-      ClassElement serviceClass, List<CompiledInjectorKey> dependencies) {
+      ClassElement serviceClass, List<CompiledInjectorKey> dependencies, CachedAliasCounter counter) {
     builder.methods.add(Method((builder) => builder
       ..name = "instantiate"
       ..returns = Reference("Future<dynamic>")
@@ -175,29 +175,29 @@ class ServiceGen {
         ..type = injectorRef
         ..name = "injector"))
       ..body = Code(
-          "return ${serviceClass.name}(${dependencies.map((e) => "await injector.getKey(${e.genInjectorKey})").join(", ")});")));
+          "return ${counter.get(serviceClass.thisType)}(${dependencies.map((e) => "await injector.getKey(${e.getAliasedKey(counter)})").join(", ")});")));
   }
 
   static void implementBindings(
-      ClassBuilder builder, ClassElement serviceClass, String boundType) {
+      ClassBuilder builder, ClassElement serviceClass, DartType boundType, CachedAliasCounter counter) {
     builder.methods.add(Method((builder) => builder
       ..name = "serviceType"
       ..type = MethodType.getter
       ..returns = Reference("Type")
       ..annotations.add(CodeExpression(Code("override")))
       ..lambda = true
-      ..body = Code(serviceClass.name)));
+      ..body = Code(counter.get(serviceClass.thisType))));
     builder.methods.add(Method((builder) => builder
       ..name = "bindingType"
       ..type = MethodType.getter
       ..returns = Reference("Type")
       ..annotations.add(CodeExpression(Code("override")))
       ..lambda = true
-      ..body = Code(boundType)));
+      ..body = Code(counter.get(boundType))));
   }
 
   static void implementDependencies(
-      ClassBuilder builder, List<CompiledInjectorKey> dependencies) {
+      ClassBuilder builder, List<CompiledInjectorKey> dependencies, CachedAliasCounter counter) {
     builder.methods.add(Method((builder) => builder
       ..name = "dependencies"
       ..type = MethodType.getter
@@ -205,11 +205,11 @@ class ServiceGen {
       ..annotations.add(CodeExpression(Code("override")))
       ..lambda = true
       ..body = Code(
-          "const [${dependencies.map((e) => e.genInjectorKey).join(",")}]")));
+          "const [${dependencies.map((e) => e.getAliasedKey(counter)).join(",")}]")));
   }
 
   static void implementPublications(
-      ClassBuilder builder, List<CompiledInjectorKey> publications) {
+      ClassBuilder builder, List<CompiledInjectorKey> publications, CachedAliasCounter counter) {
     builder.methods.add(Method((builder) => builder
       ..name = "publications"
       ..type = MethodType.getter
@@ -217,11 +217,11 @@ class ServiceGen {
       ..annotations.add(CodeExpression(Code("override")))
       ..lambda = true
       ..body = Code(
-          "const [${publications.map((e) => e.genInjectorKey).join(",")}]")));
+          "const [${publications.map((e) => e.getAliasedKey(counter)).join(",")}]")));
   }
 
-  static void implementConditions(ClassBuilder builder, Element element) {
-    var source = getConditionsSourceArray(element) ?? "[]";
+  static void implementConditions(ClassBuilder builder, Element element, CachedAliasCounter counter) {
+    var source = getConditionsSourceArray(element, counter) ?? "[]";
     builder.methods.add(Method((builder) => builder
       ..name = "conditions"
       ..type = MethodType.getter
@@ -235,24 +235,24 @@ class ServiceGen {
       ClassElement serviceClass,
       List<GeneratedBeanDefinition> beans,
       List<EventSubscriptionDefinition> subscriptions,
-      ClassBuilder builder) {
+      ClassBuilder builder, CachedAliasCounter counter) {
     var startMethod = serviceClass.methods
         .firstWhereOrNull((element) => startChecker.hasAnnotationOf(element));
     var startMethodCodeBuilder = StringBuffer();
     if (startMethod != null) {
       startMethodCodeBuilder.writeln(
-          "if (obj is $serviceBaseStrRef) await (obj as $serviceBaseStrRef).start(system);await ((obj as ${serviceClass.name}).${startMethod.name}() as FutureOr<void>);");
+          "if (obj is $serviceBaseStrRef) await (obj as $serviceBaseStrRef).start(system);await ((obj as ${counter.get(serviceClass.thisType)}).${startMethod.name}() as FutureOr<void>);");
     } else {
       startMethodCodeBuilder.writeln(
           "if (obj is $serviceBaseStrRef) await (obj as $serviceBaseStrRef).start(system);");
     }
 
     for (var element in beans) {
-      startMethodCodeBuilder.writeln(element.getCode());
+      startMethodCodeBuilder.writeln(element.getCode(counter));
     }
 
     for (var element in subscriptions) {
-      startMethodCodeBuilder.writeln(element.getCode());
+      startMethodCodeBuilder.writeln(element.getCode(counter));
     }
 
     builder.methods.add(Method((builder) => builder

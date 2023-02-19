@@ -18,7 +18,7 @@ import 'package:build/build.dart';
 import 'package:darwin_gen/darwin_gen.dart';
 
 Builder darwinServiceBindings(BuilderOptions options) =>
-    BaseServiceBuilder().bindingBuilder;
+    BaseServiceBuilder().descriptorBuilder;
 Builder darwinServiceDescriptors(BuilderOptions options) =>
-    BaseServiceBuilder().serviceBuilder;
+    BaseServiceBuilder().subjectBuilder;
 Builder darwinReactor(BuilderOptions options) => ServiceReactorBuilder();

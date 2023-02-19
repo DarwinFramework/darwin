@@ -14,24 +14,27 @@
  *    limitations under the License.
  */
 
+import 'package:analyzer/dart/element/type.dart';
+import 'package:lyell_gen/lyell_gen.dart';
+
 class EventSubscriptionDefinition {
   bool isSync;
   bool isAsync;
-  String type;
+  DartType type;
   String accessor;
   String? conditionSourceArray;
 
   EventSubscriptionDefinition(this.isSync, this.isAsync, this.type,
       this.accessor, this.conditionSourceArray);
 
-  String getCode() {
+  String getCode(CachedAliasCounter counter) {
     String registerStatement;
     if (isSync) {
       registerStatement =
-          "system.eventbus.getLine<$type>().subscribe($accessor);";
+          "system.eventbus.getLine<${counter.get(type)}>().subscribe($accessor);";
     } else if (isAsync) {
       registerStatement =
-          "system.eventbus.getAsyncLine<$type>().subscribe($accessor);";
+          "system.eventbus.getAsyncLine<${counter.get(type)}>().subscribe($accessor);";
     } else {
       throw Exception("Can't determine event type");
     }

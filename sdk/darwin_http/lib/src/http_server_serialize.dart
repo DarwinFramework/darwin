@@ -17,19 +17,25 @@
 part of 'http_server.dart';
 
 extension HttpServerSerialize on DarwinHttpServer {
-  Future<dynamic> deserializeBody(RequestContext context, Type type) async {
+  Future<dynamic> deserializeBody(RequestContext context, Type type, [String? contentType]) async {
+    // Read request fully
     var data = <int>[];
     await context.request.read().listen((event) {
       data.addAll(event);
     }).asFuture();
     context[DarwinHttpServer.requestDrainedKey] = true;
 
+    var requestContentType = context.request.mimeType;
+    if (contentType != null && requestContentType != contentType) {
+      throw RequestException.badRequest();
+    }
+
+    // Handle primitive body types
     if (type == List<int>) return data;
     if (type == String) return utf8.decode(data);
 
-    var contentType = context.request.headers["Content-Type"] ?? "text/plain";
-    var deserializationContext =
-        DeserializationContext(contentType, type, {}, marshal);
+    var decoderContentType = requestContentType ?? "application/json";
+    var deserializationContext = DeserializationContext(decoderContentType, type, {}, marshal);
     var mapper = marshal.findDeserializer(deserializationContext);
     if (mapper == null) throw Exception("No mapper found");
     var value = mapper.deserialize(data, deserializationContext);
@@ -46,6 +52,8 @@ extension HttpServerSerialize on DarwinHttpServer {
       return Response.ok(value);
     }
     if (value is Stream) value = await value.toList();
+    if (type == dynamic) type = value.runtimeType;
+
     var isPrimitive =
         (type == String || type == int || type == double || type == bool);
     var contentType = explicitContentType ??

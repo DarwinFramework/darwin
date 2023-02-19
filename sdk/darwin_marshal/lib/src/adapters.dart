@@ -87,3 +87,15 @@ class JsonMapAdapter<T> extends DarwinMapper<dynamic> {
     return data;
   }
 }
+
+abstract class SimpleTypeMapperAdapter<T> extends DarwinMapper<T> {
+  @override
+  bool checkDeserialize(DeserializationContext context) {
+    return context.target == T;
+  }
+
+  @override
+  bool checkSerialize(SerializationContext context) {
+    return context.type == T;
+  }
+}

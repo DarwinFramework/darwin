@@ -21,6 +21,7 @@ import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
 
 export 'src/bootstrap.dart';
+export 'src/http.dart';
 export 'src/matchers.dart';
 
 DarwinSystemUserArgs emptyUserArgs =

@@ -18,6 +18,7 @@ import 'dart:async';
 
 import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
+import 'package:lyell/lyell.dart';
 
 /// Field and method annotation for defining service beans.
 ///
@@ -25,7 +26,7 @@ import 'package:darwin_sdk/darwin_sdk.dart';
 /// are published by services. Instance methods of services can be  annotated
 /// with this annotation to create a bean. Static methods and methods with
 /// arguments can't be registered as beans.
-class Bean {
+class Bean extends RetainedAnnotation {
   /// Defines the name of the bean. This value will be ignored when [isUnnamed]
   /// is true.
   final String? name;

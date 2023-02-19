@@ -14,10 +14,12 @@
  *    limitations under the License.
  */
 
+import 'package:conduit_open_api/v3.dart';
+import 'package:darwin_eventbus/darwin_eventbus.dart';
 import 'package:darwin_http/darwin_http.dart';
 import 'package:shelf/shelf.dart';
 
-class IncomingHttpRequestEvent {
+class IncomingHttpRequestEvent extends AsyncEvent {
   final RequestContext context;
   bool _isCancelled = false;
   Response? _response;
@@ -38,10 +40,39 @@ class IncomingHttpRequestEvent {
   IncomingHttpRequestEvent(this.context, this._isCancelled);
 }
 
-class HttpRequestRespondEvent {
+class HttpRequestRespondEvent extends AsyncEvent {
   final RequestContext context;
   final bool hasBeenHandled;
   Response response;
 
   HttpRequestRespondEvent(this.context, this.response, this.hasBeenHandled);
+}
+
+class ApiDocsResolveParameterTypeEvent extends SyncEvent {
+  final HttpHandlerVisitorArgs args;
+
+  APISchemaObject? resolved;
+
+  void update(APISchemaObject object) {
+    resolved = object;
+  }
+
+  ApiDocsResolveParameterTypeEvent(this.args);
+}
+
+class ApiDocsResolveReturnTypeEvent extends SyncEvent {
+  final HttpHandlerVisitorArgs args;
+
+  APISchemaObject? resolved;
+
+  void update(APISchemaObject object) {
+    resolved = object;
+  }
+
+  ApiDocsResolveReturnTypeEvent(this.args);
+}
+
+class ApiDocsPopulateEvent extends SyncEvent {
+  final APIDocument document;
+  ApiDocsPopulateEvent(this.document);
 }

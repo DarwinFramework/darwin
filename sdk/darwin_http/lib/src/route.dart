@@ -24,43 +24,63 @@ import 'package:shelf/shelf.dart';
 
 abstract class DarwinHttpRoute implements DarwinHttpRequestHandler {
   int get sortIndex => 0;
+
   Future<bool> checkRequest(RequestContext context);
-  Map<String, MapEntry<HttpMethods, APIOperation>> get outputs => {};
+
+  Map<String, MapEntry<Method, APIOperation>> get outputs => {};
 }
 
-class DarwinGeneratedHttpRoute extends DarwinHttpRoute {
-  final PathMatcher path;
-  final HttpMethods method;
-  final FutureOr<dynamic> Function(RequestContext context) proxyFunc;
-  final Type resultType;
-  final String? acceptContentType;
-  final String? returnContentType;
-  final List<HttpRequestInterceptor> interceptors;
+class DarwinHttpHandlerRoute implements DarwinHttpRoute {
+  final DarwinSystem system;
+  final HandlerRegistration registration;
+  final dynamic obj;
+  late PathMatcher path;
+  late Method method;
+  late List<HttpRequestInterceptor> interceptors;
+  late String? inputContentType;
+  late String? outputContentType;
+  late HttpHandlerVisitorArgs handlerArgs;
+  late List<dynamic Function(RequestContext)> cachedParameterFactories;
 
-  @override
-  int get sortIndex => path.sortIndex;
-
-  DarwinGeneratedHttpRoute(
-      this.path,
-      this.method,
-      this.proxyFunc,
-      this.resultType,
-      this.acceptContentType,
-      this.returnContentType,
-      this.interceptors);
-
-  @override
-  Future<bool> checkRequest(RequestContext context) async {
-    if (context.method != method) return false;
-    if (!path.match(context.request.url).result) return false;
-    if (acceptContentType != null) {
-      var headerValue = context.request.headers["Content-Type"];
-      if (headerValue == null) return false;
-      var argType = ContentType.parse(headerValue);
-      var srcType = ContentType.parse(acceptContentType!);
-      if (argType.mimeType != srcType.mimeType) return false;
+  DarwinHttpHandlerRoute(this.system, this.obj, this.registration) {
+    // Determine the final route path definition
+    var parentPath = registration.enclosingClass
+        .firstAnnotationOf<RequestPathSpecifier>()
+        ?.path;
+    var ownPath = registration.firstAnnotationOf<RequestPathSpecifier>()?.path;
+    var uri = (ownPath ?? parentPath)!;
+    if (parentPath != null && ownPath != null) {
+      uri = PathUtils.combinePath(parentPath, ownPath);
     }
-    return true;
+    uri = PathUtils.sanitizePath(uri);
+    path = PathUtils.parseMatcher(uri);
+    method = registration.firstAnnotationOf<RequestMethodSpecifier>()!.method!;
+
+    // Collect all request interceptors
+    interceptors = [
+      ...(registration.enclosingClass.annotationsOf<HttpRequestInterceptor>()),
+      ...(registration.annotationsOf<HttpRequestInterceptor>())
+    ];
+
+    // Determine content types
+    inputContentType = registration.firstAnnotationOf<Accepts>()?.contentType ??
+        registration.enclosingClass.firstAnnotationOf<Accepts>()?.contentType;
+
+    outputContentType = registration
+            .firstAnnotationOf<Returns>()
+            ?.contentType ??
+        registration.enclosingClass.firstAnnotationOf<Returns>()?.contentType;
+
+    handlerArgs = HttpHandlerVisitorArgs(this, registration, null);
+
+    cachedParameterFactories = registration.parameters.map((parameter) {
+      var factory = parameter.firstAnnotationOf<HttpParameterFactory>() ??
+          DIParameterFactory();
+      var args = HttpHandlerVisitorArgs(this, registration, parameter);
+      var cacheEntry = factory.createCacheEntry(args);
+      return (RequestContext context) =>
+          factory.createParameter(cacheEntry, context);
+    }).toList();
   }
 
   @override
@@ -69,31 +89,42 @@ class DarwinGeneratedHttpRoute extends DarwinHttpRoute {
     context.pathData = match.data;
     var interceptedResponse = await interceptors.intercept(context);
     if (interceptedResponse != null) return interceptedResponse;
-    var methodOutput = await proxyFunc(context);
+    var data = cachedParameterFactories.map((e) => e(context)).toList();
+    var methodOutput =
+        await (registration.proxy.invoke(obj, data) as FutureOr<dynamic>);
     if (methodOutput == null) return Response(204);
-    var response = await context.httpServer
-        .serializeResponse(methodOutput, resultType, returnContentType);
+    var response = await context.httpServer.serializeResponse(
+        methodOutput, registration.returnType.typeArgument, outputContentType);
     return response;
   }
 
+  @override
+  Future<bool> checkRequest(RequestContext context) async {
+    return context.method == method && path.match(context.request.url).result;
+  }
 
   @override
-  Map<String, MapEntry<HttpMethods, APIOperation>> get outputs {
+  Map<String, MapEntry<Method, APIOperation>> get outputs {
+    var evt = ApiDocsResolveReturnTypeEvent(handlerArgs);
+    system.eventbus.getLine<ApiDocsResolveReturnTypeEvent>().dispatch(evt);
+    evt.resolved ??= APISchemaObject.empty();
     var operation = APIOperation("${method.name}-${path.sourcePath.replaceAll("/", "-")}", {
-
+      "200": APIResponse.schema("default response", evt.resolved!,
+          contentTypes: [outputContentType ?? "application/json"])
     });
     operation.parameters = [];
     path.fragments.whereType<VariablePathMatcherFragment>().forEach((element) {
       operation.parameters!.add(APIParameter.path(element.variableName));
     });
 
-    return {
-    "/${path.sourcePath}": MapEntry(method, operation)
-  };
+    return {"/${path.sourcePath}": MapEntry(method, operation)};
   }
 
   @override
+  int get sortIndex => path.sortIndex;
+
+  @override
   String toString() {
-    return 'generated route for ${method.str} $path';
+    return "${method.name}-${path.sourcePath.replaceAll("/", "-")}";
   }
 }

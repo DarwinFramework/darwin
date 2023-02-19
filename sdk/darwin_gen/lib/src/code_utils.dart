@@ -20,61 +20,25 @@ import 'package:build/build.dart';
 import 'package:darwin_gen/darwin_gen.dart';
 import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
+import 'package:lyell_gen/lyell_gen.dart';
 import 'package:source_gen/source_gen.dart';
-
-const String genAlias = "gen";
-
-class AliasImport {
-  final String import;
-  final String? alias;
-
-  const AliasImport(this.import, this.alias);
-
-  factory AliasImport.root(String import) => AliasImport(import, null);
-  factory AliasImport.gen(String import) => AliasImport(import, genAlias);
-
-  String get code => "import '$import'${alias == null ? "" : " as $alias"};";
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is AliasImport &&
-          runtimeType == other.runtimeType &&
-          import == other.import &&
-          alias == other.alias;
-
-  @override
-  int get hashCode => import.hashCode ^ alias.hashCode;
-}
-
-String getImportString(LibraryElement library, AssetId id,
-    [List<AliasImport> additional = const []]) {
-  Set<AliasImport> importValues = <AliasImport>{};
-  importValues.addAll(additional);
-  importValues.add(AliasImport.root(id.uri.toString()));
-  for (var element in library.libraryImports) {
-    importValues.add(AliasImport(element.importedLibrary!.identifier,
-        element.prefix?.element.displayName));
-  }
-  return importValues.map((e) => e.code).join("\n");
-}
 
 final namedChecker = TypeChecker.fromRuntime(Named);
 
-List<CompiledInjectorKey> getDependencies(List<ParameterElement>? parameters) =>
-    parameters?.map(dependencyFromParameter).toList() ?? [];
+List<CompiledInjectorKey> getDependencies(List<ParameterElement>? parameters, CachedAliasCounter counter) =>
+    parameters?.map((e) => dependencyFromParameter(e, counter)).toList() ?? [];
 
-String? getConditionsSourceArray(Element element) {
+String? getConditionsSourceArray(Element element, CachedAliasCounter counter) {
   var conditionChecker = TypeChecker.fromRuntime(Condition);
   var conditions = <String>[];
   for (var value in element.metadata.whereTypeChecker(conditionChecker)) {
-    conditions.add(value.toSource().substring(1));
+    conditions.add(counter.toSource(value.computeConstantValue()!));
   }
   if (conditions.isEmpty) return null;
   return "[${conditions.join(", ")}]";
 }
 
-CompiledInjectorKey dependencyFromParameter(ParameterElement element) =>
+CompiledInjectorKey dependencyFromParameter(ParameterElement element, CachedAliasCounter counter) =>
     CompiledInjectorKey(
         element.type,
         namedChecker
@@ -92,27 +56,4 @@ CompiledBean parseBean(DartObject object) {
     isUnnamed: object.getField("isUnnamed")?.toBoolValue() ?? false,
     bindingType: object.getField("bindingType")?.toTypeValue(),
   );
-}
-
-String trimAsyncType(String src) {
-  if (src.startsWith("Future<") || src.startsWith("Stream<")) {
-    return removeOutermostGenerics(src);
-  }
-  if (src == "Future" || src == "Stream") return "dynamic";
-  return src;
-}
-
-String removeOutermostGenerics(String src) {
-  var dls = src.split("<");
-  var drs = src.split(">");
-  if (dls.length == 1 || drs.length == 1) return src;
-  var left = dls.skip(1).join("<");
-  var right = drs.skip(1).take(drs.length - 1).join(">");
-  return left.substring(0, left.length - drs.length + 1) + right;
-}
-
-extension MetadataExtension on List<ElementAnnotation> {
-  List<ElementAnnotation> whereTypeChecker(TypeChecker checker) =>
-      where((element) => checker.isAssignableFrom(
-          element.computeConstantValue()!.type!.element2!)).toList();
 }

@@ -16,28 +16,24 @@
 
 import 'package:analyzer/dart/element/type.dart';
 import 'package:darwin_gen/darwin_gen.dart';
+import 'package:lyell_gen/lyell_gen.dart';
 
 class CompiledInjectorKey {
-  final String type;
+  final DartType type;
   final String? name;
-
   const CompiledInjectorKey._(this.type, this.name);
 
   factory CompiledInjectorKey(DartType type, String? name) {
-    return CompiledInjectorKey._(
-        type.getDisplayString(withNullability: false), name);
-  }
-
-  factory CompiledInjectorKey.fromString(String type, String? name) {
     return CompiledInjectorKey._(type, name);
   }
 
-  String get unnamedParameters {
+  String getAliasedParameters(CachedAliasCounter counter) {
     var nameArg = "null";
     if (name != null) nameArg = "'$name'";
-    return "$type, $nameArg, null";
+    return "${counter.get(type)}, $nameArg, null";
   }
 
-  String get injectorKey => "InjectorKey($unnamedParameters)";
-  String get genInjectorKey => "$genAlias.InjectorKey($unnamedParameters)";
+  String getAliasedKey(CachedAliasCounter counter) {
+    return "$genAlias.InjectorKey(${getAliasedParameters(counter)})";
+  }
 }

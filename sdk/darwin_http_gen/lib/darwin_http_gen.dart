@@ -17,13 +17,5 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:darwin_gen/darwin_gen.dart';
 import 'package:darwin_http/darwin_http.dart';
+import 'package:lyell_gen/lyell_gen.dart';
 import 'package:source_gen/source_gen.dart';
-
-String getInterceptorSourceArray(Element element) {
-  var conditionChecker = TypeChecker.fromRuntime(HttpRequestInterceptor);
-  var interceptors = <String>[];
-  for (var value in element.metadata.whereTypeChecker(conditionChecker)) {
-    interceptors.add(value.toSource().substring(1));
-  }
-  return "[${interceptors.join(", ")}]";
-}

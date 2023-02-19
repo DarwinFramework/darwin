@@ -14,11 +14,13 @@
  *    limitations under the License.
  */
 
+import 'package:analyzer/dart/element/type.dart';
 import 'package:darwin_gen/darwin_gen.dart';
+import 'package:lyell_gen/lyell_gen.dart';
 
 class BeanGenAccessor {
   String sourceName;
-  String sourceType;
+  DartType sourceType;
   String accessor; // The service object will always have the name 'obj'
 
   BeanGenAccessor(this.sourceName, this.sourceType, this.accessor);
@@ -31,9 +33,9 @@ class GeneratedBeanDefinition {
 
   GeneratedBeanDefinition(this.accessor, this.bean, this.conditionSourceArray);
 
-  String getCode() {
+  String getCode(CachedAliasCounter counter) {
     var manuallyRevivedBean =
-        bean.getCode(accessor.sourceName, accessor.sourceType);
+        bean.getCode(accessor.sourceName, accessor.sourceType, counter);
     var registerStatement =
         "system.beanMixin.registerBean($manuallyRevivedBean, ${accessor.accessor});";
     if (conditionSourceArray == null) {

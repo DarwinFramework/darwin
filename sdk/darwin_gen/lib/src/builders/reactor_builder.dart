@@ -21,6 +21,7 @@ import 'package:build/build.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:darwin_gen/src/models/service_binding.dart';
 import 'package:glob/glob.dart';
+import 'package:lyell_gen/lyell_gen.dart';
 
 class ServiceReactorBuilder extends Builder {
   @override
@@ -32,10 +33,11 @@ class ServiceReactorBuilder extends Builder {
     importValues.add("package:darwin_sdk/darwin_sdk.dart");
     for (var value in componentIds) {
       var bindingString = await buildStep.readAsString(value);
-      var binding = ServiceBinding.fromMap(jsonDecode(bindingString));
-      var sourcePath = binding.descriptorPackage;
+      var descriptor = SubjectDescriptor.fromMap(jsonDecode(bindingString));
+      var binding = ServiceBinding.load(descriptor);
+      var sourcePath = binding.package;
       if (!importValues.contains(sourcePath)) importValues.add(sourcePath);
-      descriptorNames.add(binding.descriptorName);
+      descriptorNames.add(binding.name);
     }
     buffer.writeln(importValues.map((e) => "import '$e';").join("\n"));
     buffer.writeln("""

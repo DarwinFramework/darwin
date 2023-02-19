@@ -14,19 +14,15 @@
  *    limitations under the License.
  */
 
+import 'package:lyell_gen/lyell_gen.dart';
+
 class ServiceBinding {
   String name;
   String package;
-  String descriptorName;
-  String descriptorPackage;
 
   String get key => "$package#$name";
 
-  ServiceBinding(
-      {required this.name,
-      required this.package,
-      required this.descriptorName,
-      required this.descriptorPackage});
+  ServiceBinding({required this.name, this.package = ""});
 
   @override
   bool operator ==(Object other) =>
@@ -34,20 +30,26 @@ class ServiceBinding {
       (other is ServiceBinding &&
           runtimeType == other.runtimeType &&
           name == other.name &&
-          package == other.package &&
-          descriptorName == other.descriptorName &&
-          descriptorPackage == other.descriptorPackage);
+          package == other.package);
 
   @override
   int get hashCode =>
       name.hashCode ^
-      package.hashCode ^
-      descriptorName.hashCode ^
-      descriptorPackage.hashCode;
+      package.hashCode;
 
   @override
   String toString() {
-    return 'ServiceBinding{name: $name, package: $package, descriptorName: $descriptorName, descriptorPackage: $descriptorPackage}';
+    return 'ServiceBinding{name: $name, package: $package}';
+  }
+
+  void store(SubjectDescriptor descriptor) {
+    descriptor.meta["name"] = name;
+  }
+
+  factory ServiceBinding.load(SubjectDescriptor descriptor) {
+    var name = descriptor.meta["name"];
+    var package = descriptor.uri.toString();
+    return ServiceBinding(name: name, package: package);
   }
 
   ServiceBinding copyWith({
@@ -58,27 +60,7 @@ class ServiceBinding {
   }) {
     return ServiceBinding(
       name: name ?? this.name,
-      package: package ?? this.package,
-      descriptorName: descriptorName ?? this.descriptorName,
-      descriptorPackage: descriptorPackage ?? this.descriptorPackage,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'package': package,
-      'descriptorName': descriptorName,
-      'descriptorPackage': descriptorPackage,
-    };
-  }
-
-  factory ServiceBinding.fromMap(Map<String, dynamic> map) {
-    return ServiceBinding(
-      name: map['name'] as String,
-      package: map['package'] as String,
-      descriptorName: map['descriptorName'] as String,
-      descriptorPackage: map['descriptorPackage'] as String,
+      package: package ?? this.package
     );
   }
 }

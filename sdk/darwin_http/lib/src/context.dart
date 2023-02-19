@@ -26,7 +26,7 @@ class RequestContext with MetadataMixin {
   final DarwinHttpServer httpServer;
   final Injector injector;
   final Request request;
-  final HttpMethods method;
+  final Method method;
   final HttpConnectionInfo connection;
   Map<String, String> pathData;
 

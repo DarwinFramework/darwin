@@ -14,75 +14,59 @@
  *    limitations under the License.
  */
 
-import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
+import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:collection/collection.dart';
 import 'package:darwin_gen/darwin_gen.dart';
-import 'package:darwin_http/darwin_http.dart';
-import 'package:darwin_http_gen/darwin_http_gen.dart';
-import 'package:darwin_sdk/darwin_sdk.dart';
+import 'package:darwin_http/darwin_http.dart' as dh;
+import 'package:lyell_gen/lyell_gen.dart';
 import 'package:source_gen/source_gen.dart';
-
-import 'introspect.dart';
 
 class HttpServiceDescriptorGenerator {
   static final String httpServerStrRef = "$genAlias.DarwinHttpServer";
   static final String pathUtilsStrRef = "$genAlias.PathUtils";
   static final String generatedRouteBaseStrRef =
-      "$genAlias.DarwinGeneratedHttpRoute";
+      "$genAlias.DarwinHttpHandlerRoute";
 
   static Future<void> generateTo(
-      ServiceGenContext genContext, ServiceCodeContext codeContext) async {
+      SubjectGenContext genContext, SubjectCodeContext codeContext) async {
     var emitter = DartEmitter();
-    var serviceClass = genContext.element;
+    AliasCounter aliasCounter = AliasCounter();
+    CachedAliasCounter counter = CachedAliasCounter(aliasCounter);
+    LibraryElement httpLibraryElement = await genContext.step.resolver
+        .libraryFor(
+            AssetId.resolve(Uri.parse("package:darwin_http/darwin_http.dart")));
+    LibraryReader httpLibrary = LibraryReader(httpLibraryElement);
+    DartType httpServer = httpLibrary.findType("DarwinHttpServer")!.thisType;
+
+    var serviceClass = genContext.matches.first as ClassElement;
     var descriptorName = "${serviceClass.name}Descriptor";
     var srcDependencies =
-        getDependencies(serviceClass.unnamedConstructor?.parameters);
+        getDependencies(serviceClass.unnamedConstructor?.parameters, counter);
     var dependencies = srcDependencies.toList()
-      ..add(CompiledInjectorKey.fromString(httpServerStrRef, null));
-
-    var controllerMethods = genContext.element.methods;
-    var requestMap = Map<MethodElement, RequestMapping>.fromEntries(
-        controllerMethods
-            .where((element) => requestMappingChecker.hasAnnotationOf(element))
-            .map((e) => MapEntry<MethodElement, RequestMapping>(
-                e,
-                parseRequestMapper(
-                    requestMappingChecker.firstAnnotationOf(e)!))));
-
-    _addSpecificMapping(
-        controllerMethods, requestMap, getMappingChecker, HttpMethods.get);
-    _addSpecificMapping(
-        controllerMethods, requestMap, postMappingChecker, HttpMethods.post);
-    _addSpecificMapping(
-        controllerMethods, requestMap, putMappingChecker, HttpMethods.put);
-    _addSpecificMapping(controllerMethods, requestMap, deleteMappingChecker,
-        HttpMethods.delete);
-    _addSpecificMapping(
-        controllerMethods, requestMap, patchMappingChecker, HttpMethods.patch);
-
-    print(requestMap);
-
+      ..add(CompiledInjectorKey(httpServer, null));
+    var controllerMethods = serviceClass.methods;
     var builder = ClassBuilder();
-    var requestRegistrations = await Future.wait(requestMap.entries
-        .map((e) =>
-        createHttpRegistration(genContext, codeContext, builder, serviceClass, e.value, e.key))
-        .toList());
-
+    //region Generate Service Implementation
     ServiceGen.implementConstructor(builder, descriptorName);
-    ServiceGen.implementDependencies(builder, dependencies);
-    ServiceGen.implementPublications(builder,
-        [CompiledInjectorKey.fromString(serviceClass.displayName, null)]);
-    ServiceGen.implementConditions(builder, serviceClass);
-    ServiceGen.implementBindings(
-        builder, serviceClass, serviceClass.displayName);
-    ServiceGen.implementInstantiate(builder, serviceClass, srcDependencies);
-
+    ServiceGen.implementDependencies(builder, dependencies, counter);
+    ServiceGen.implementPublications(builder, [CompiledInjectorKey(serviceClass.thisType, null)], counter);
+    ServiceGen.implementConditions(builder, serviceClass, counter);
+    ServiceGen.implementBindings(builder, serviceClass, serviceClass.thisType, counter);
+    ServiceGen.implementInstantiate(builder, serviceClass, srcDependencies, counter);
+    //endregion
     //region Link Start Methods
     var startMethodCodeBuilder = StringBuffer();
+    startMethodCodeBuilder.writeln(Handlers.enclosingClassVarDef(serviceClass, counter));
     startMethodCodeBuilder.writeln(
-        "$httpServerStrRef httpServer = await system.injector.get($httpServerStrRef);");
+        "${counter.get(httpServer)} httpServer = await system.injector.get(${counter.get(httpServer)});");
+    var pathSpecifierChecker = TypeChecker.fromRuntime(dh.RequestPathSpecifier);
+    var requestRegistrations = (await Future.wait(controllerMethods
+            .where((element) => pathSpecifierChecker.hasAnnotationOf(element))
+            .map((e) => createHttpRegistration(
+                genContext, codeContext, builder, serviceClass, e, counter))))
+        .toList();
     for (var registration in requestRegistrations) {
       startMethodCodeBuilder.writeln(registration);
     }
@@ -114,163 +98,40 @@ class HttpServiceDescriptorGenerator {
         ..type = Reference("dynamic")))
       ..annotations.add(CodeExpression(Code("override")))
       ..body = Code(stopMethodCodeBuilder.toString())));
-
+    //endregion
     var descriptorClass = builder.build();
+    codeContext.additionalImports.addAll(counter.imports);
     codeContext.additionalImports.addAll([
       AliasImport.gen("package:darwin_sdk/darwin_sdk.dart"),
       AliasImport.gen("package:darwin_http/darwin_http.dart"),
       AliasImport.gen("package:darwin_injector/darwin_injector.dart"),
+      AliasImport.gen("package:lyell/lyell.dart"),
       AliasImport.root("dart:async"),
       AliasImport.root("dart:core")
     ]);
+    codeContext.additionalImports.where((element) => element.import.startsWith("dart:_http")).toList().forEach((element) {
+      codeContext.additionalImports.remove(element);
+      codeContext.additionalImports.add(AliasImport("dart:io", element.alias));
+    });
     codeContext.codeBuffer.writeln(descriptorClass.accept(emitter));
   }
 
-  static void _addSpecificMapping(
-      List<MethodElement> controllerMethods,
-      Map<MethodElement, RequestMapping> requestMap,
-      TypeChecker checker,
-      HttpMethods method) {
-    controllerMethods
-        .where((element) => checker.hasAnnotationOf(element))
-        .forEach((element) {
-      requestMap[element] = RequestMapping(
-          parseMappingPath(checker.annotationsOf(element).first), method);
-    });
-  }
-
   static Future<String> createHttpRegistration(
-      ServiceGenContext context,
-      ServiceCodeContext codeContext,
+      SubjectGenContext context,
+      SubjectCodeContext code,
       ClassBuilder builder,
-      ClassElement classElement,
-      RequestMapping mapping,
-      MethodElement element) async {
-
-    var handler = AnnotatedHandlers.generateAndGet(classElement, element, builder, context, codeContext);
-
-
-    var matcherStr = mapping.path;
-
-    var classRequestMapping =
-        requestMappingChecker.firstAnnotationOf(classElement);
-    if (classRequestMapping != null) {
-      var classPath = parseRequestMapper(classRequestMapping).path;
-      matcherStr = PathUtils.combinePath(classPath, matcherStr);
-    }
-    matcherStr = PathUtils.sanitizePath(matcherStr);
-
-    var acceptContentType = acceptsChecker
-        .annotationsOf(element)
-        .firstOrNull
-        ?.getField("contentType")
-        ?.toStringValue();
-    var returnContentType = returnsChecker
-        .annotationsOf(element)
-        .firstOrNull
-        ?.getField("contentType")
-        ?.toStringValue();
-
-    if (acceptContentType != null) acceptContentType = "'$acceptContentType'";
-    if (returnContentType != null) returnContentType = "'$returnContentType'";
-
-    var paramFactories = element.parameters
-        .map(createParameterFactory)
-        .where((element) => element != null)
-        .join(", ");
-
-    var responseMarshalType = (await getSerialType(element.returnType, context))
-        .getDisplayString(withNullability: false);
-    if (responseMarshalType == "void") responseMarshalType = "dynamic";
+      ClassElement clazz,
+      MethodElement element,
+      CachedAliasCounter counter) async {
+    var handler =
+        Handlers.generate(clazz, element, builder, counter, useEnclosingVarDef: true);
 
     var appendedConditions = "";
-    var conditionSourceArray = getConditionsSourceArray(element);
+    var conditionSourceArray = getConditionsSourceArray(element, counter);
     if (conditionSourceArray != null) {
       appendedConditions = "if (await $conditionSourceArray.match(system))";
     }
 
-    var classLevelInterceptors = getInterceptorSourceArray(classElement);
-
-    return """
-    $handler;
-    
-    $appendedConditions
-httpServer.registerRoute($generatedRouteBaseStrRef(
-  $pathUtilsStrRef.parseMatcher("$matcherStr"),
-  $genAlias.${mapping.method},
-  (context) async => obj.${element.name}($paramFactories),
-   $responseMarshalType, $acceptContentType, $returnContentType,
-   const [...$classLevelInterceptors, ...${getInterceptorSourceArray(element)}]
-));
-""";
+    return "$appendedConditions httpServer.registerRoute($generatedRouteBaseStrRef(system, obj, $handler));";
   }
-
-  static String? createParameterFactory(ParameterElement element) {
-    if (bodyChecker.hasAnnotationOf(element)) {
-      var outType = element.type.getDisplayString(withNullability: false);
-      return "await httpServer.deserializeBody(context, $outType)";
-    }
-
-    if (queryParamChecker.hasAnnotationOf(element)) {
-      var queryParam =
-          parseQueryParameter(queryParamChecker.firstAnnotationOf(element)!);
-      var parameterName = queryParam.name ?? element.name;
-      return "context.request.url.queryParameters['$parameterName']";
-    }
-
-    if (pathParamChecker.hasAnnotationOf(element)) {
-      var pathParam =
-          parseQueryParameter(pathParamChecker.firstAnnotationOf(element)!);
-      var parameterName = pathParam.name ?? element.name;
-      return "context.pathData['$parameterName']";
-    }
-
-    if (contextChecker.hasAnnotationOf(element)) {
-      var context = parseContext(contextChecker.firstAnnotationOf(element)!);
-      var key = context.key ?? element.name;
-      return "context['$key']";
-    }
-
-    if (headerChecker.hasAnnotationOf(element)) {
-      var header = parseHeader(headerChecker.firstAnnotationOf(element)!);
-      var name = header.name ?? element.name;
-      return "context.request.headers['$name']";
-    }
-
-    return "await context.injector.getKey(const ${dependencyFromParameter(element).genInjectorKey})";
-  }
-}
-
-RequestMapping parseRequestMapper(DartObject object) {
-  var method = HttpMethods.values
-      .where((element) =>
-          element.name ==
-          object.getField("method")?.getField("_name")?.toStringValue())
-      .firstOrNull;
-  var path = object.getField("path")!.toStringValue()!;
-  return RequestMapping(path, method);
-}
-
-String parseMappingPath(DartObject object) {
-  return object.getField("path")?.toStringValue() ?? "";
-}
-
-PathParameter parsePathParameter(DartObject object) {
-  var name = object.getField("name")?.toStringValue();
-  return PathParameter(name);
-}
-
-QueryParameter parseQueryParameter(DartObject object) {
-  var name = object.getField("name")?.toStringValue();
-  return QueryParameter(name);
-}
-
-Header parseHeader(DartObject object) {
-  var name = object.getField("name")?.toStringValue();
-  return Header(name);
-}
-
-Context parseContext(DartObject object) {
-  var name = object.getField("key")?.toStringValue();
-  return Context(name);
 }

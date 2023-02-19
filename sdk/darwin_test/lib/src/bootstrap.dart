@@ -14,10 +14,14 @@
  *    limitations under the License.
  */
 
+import 'dart:async';
+
+import 'package:darwin_http/darwin_http.dart';
 import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:darwin_test/darwin_test.dart';
 import 'package:logging/logging.dart';
+import 'package:collection/collection.dart';
 
 /// Creates an initialized but not fully started [DarwinSystem] that can be used
 /// for testing which involves manual startup logic. The [appModule] as well as
@@ -56,4 +60,15 @@ Future<DarwinSystem> startSystem(List<ServiceDescriptor> services,
   await system.prepare(generated, userArgs);
   await system.start(generated, userArgs);
   return system;
+}
+
+Future<DarwinSystem> startApplication(FutureOr<DarwinApplication> Function() activator, [FutureOr<void> Function(DarwinApplication)? callback]) async {
+  var application = await activator();
+  if (callback != null) await callback.call(application);
+  application.plugins.whereType<HttpPlugin>().firstOrNull?.runUnbound = true;
+  application.system.prepare(application.generatedArgs, application.userArgs);
+  var lateStartup = application.system.eventbus.getAsyncLine<LateStartupEvent>().subscribeNext(priority: 1024);
+  application.system.start(application.generatedArgs, application.userArgs);
+  await lateStartup;
+  return application.system;
 }

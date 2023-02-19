@@ -21,21 +21,53 @@ import '../darwin_marshal.dart';
 class DarwinMarshalSimple {
   static void register(DarwinMarshal marshal, {bool strictMime = false}) {
     marshal.registerTypeMapper(String, SimpleStringMapper());
+    marshal.registerTypeMapper(int, SimpleIntMapper());
+    marshal.registerTypeMapper(double, SimpleDoubleMapper());
+    marshal.registerTypeMapper(bool, SimpleBoolMapper());
     marshal.registerTypeMapper(List<int>, SimpleDataMapper());
   }
 }
 
-class SimpleStringMapper extends DarwinMapper<String> {
+class SimpleBoolMapper extends SimpleTypeMapperAdapter<bool> {
   @override
-  bool checkDeserialize(DeserializationContext context) {
-    return context.target == String;
+  bool? deserialize(List<int> data, DeserializationContext context) {
+    return utf8.decode(data) == "true";
   }
 
   @override
-  bool checkSerialize(SerializationContext context) {
-    return context.type == String;
+  List<int> serialize(bool? obj, SerializationContext context) {
+    if (obj == null) return [];
+    return utf8.encode("$obj");
+  }
+}
+
+class SimpleDoubleMapper extends SimpleTypeMapperAdapter<double> {
+  @override
+  double? deserialize(List<int> data, DeserializationContext context) {
+    return double.parse(utf8.decode(data));
   }
 
+  @override
+  List<int> serialize(double? obj, SerializationContext context) {
+    if (obj == null) return [];
+    return utf8.encode("$obj");
+  }
+}
+
+class SimpleIntMapper extends SimpleTypeMapperAdapter<int> {
+  @override
+  int? deserialize(List<int> data, DeserializationContext context) {
+    return int.parse(utf8.decode(data));
+  }
+
+  @override
+  List<int> serialize(int? obj, SerializationContext context) {
+    if (obj == null) return [];
+    return utf8.encode("$obj");
+  }
+}
+
+class SimpleStringMapper extends SimpleTypeMapperAdapter<String> {
   @override
   String? deserialize(List<int> data, DeserializationContext context) {
     return utf8.decode(data);

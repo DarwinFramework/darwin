@@ -18,13 +18,14 @@ import 'dart:async';
 
 import 'package:darwin_http/darwin_http.dart';
 import 'package:darwin_http/src/context.dart';
+import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:shelf/shelf.dart';
 
 abstract class DarwinHttpRequestHandler {
   Future<Response?> handle(RequestContext context);
 }
 
-abstract class HttpRequestInterceptor {
+abstract class HttpRequestInterceptor extends HandlerAnnotation {
   const HttpRequestInterceptor();
 
   Future<Response?> intercept(RequestContext context);

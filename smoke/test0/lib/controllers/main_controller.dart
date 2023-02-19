@@ -6,15 +6,15 @@ import 'package:darwin_marshal/darwin_marshal.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
 
 @RestController()
-@RequestMapping("/api")
+@Path("/api")
 class ApiController {
 
   @Profile("debug")
-  @GetMapping("/debug")
+  @GET("/debug")
   @HeaderEqualsInterceptor("X-Debug", "true")
   String getDebugMessage() => "This is an debug only message!";
 
-  @PostMapping("/hello/world")
+  @POST("/hello/world")
   Future<String> helloWorld(
       @Body() String body,
       @Named("helloBean") String bean,
@@ -22,13 +22,13 @@ class ApiController {
     return "Hello $agent, you sent '$body'!";
   }
 
-  @GetMapping("list")
+  @GET("list")
   List<String> getList() => ["a","b","c"];
 
-  @PostMapping("/hello/%name%")
+  @POST("/hello/%name%")
   @Returns("application/json")
   @AlwaysCondition()
-  Future<Map> helloName(@PathParameter() String name, @QueryParameter() String age, HttpConnectionInfo info) async {
+  Future<Map> helloName(@PathParam() String name, @QueryParam() String age, HttpConnectionInfo info) async {
     return {
       "name": name,
       "age": age,
@@ -36,7 +36,7 @@ class ApiController {
     };
   }
 
-  @PostMapping("/call")
+  @POST("/call")
   void call() {
     throw RequestException.gone();
   }

@@ -14,19 +14,26 @@
  *    limitations under the License.
  */
 
+import 'dart:async';
+
+import 'package:analyzer/dart/element/element.dart';
 import 'package:darwin_gen/darwin_gen.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
+import 'package:lyell_gen/src/subject.dart';
 
-class BaseServiceBuilder extends ServiceAdapter {
-  BaseServiceBuilder() : super(archetype: "base", annotation: Service);
-
-  @override
-  Future<ServiceBinding> generateBinding(ServiceGenContext context) async =>
-      context.defaultBinding(this);
+class BaseServiceBuilder extends ServiceAdapter<Service> {
+  BaseServiceBuilder() : super(archetype: "base");
 
   @override
-  Future<void> generateService(
-      ServiceGenContext genContext, ServiceCodeContext codeContext) async {
+  FutureOr<void> generateSubject(SubjectGenContext genContext, SubjectCodeContext codeContext) async {
     await ServiceGen.generateTo(genContext, codeContext);
+  }
+
+  @override
+  FutureOr<SubjectDescriptor> generateBinding(SubjectGenContext<Element> context) {
+    var binding = ServiceBinding(name: "${context.matches.first.displayName}Descriptor");
+    var descriptor = context.defaultBinding();
+    binding.store(descriptor);
+    return descriptor;
   }
 }

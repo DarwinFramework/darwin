@@ -18,6 +18,9 @@ dependencies:
   code_builder: '>=4.3.0 <5.0.0'
   dart_style: '>=2.2.4 <3.0.0'
 
+  lyell: ^0.0.2
+  lyell_gen: ^0.0.2
+
   darwin_sdk: ^1.1.0-alpha.6
   darwin_injector: ^1.1.0-alpha.1
   darwin_eventbus: ^1.1.0-alpha.2

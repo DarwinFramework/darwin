@@ -18,6 +18,6 @@ import 'package:build/build.dart';
 import 'package:darwin_http_gen/builders/http_builder.dart';
 
 Builder darwinHttpServiceCreator(BuilderOptions options) =>
-    HttpBuilder().serviceBuilder;
+    HttpBuilder().subjectBuilder;
 Builder darwinHttpServiceBindings(BuilderOptions options) =>
-    HttpBuilder().bindingBuilder;
+    HttpBuilder().descriptorBuilder;

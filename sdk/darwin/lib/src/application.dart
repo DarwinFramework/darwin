@@ -36,7 +36,10 @@ class DarwinApplication {
   DarwinSystem? _system;
   set generatedArgs(DarwinSystemGeneratedArgs args) => _generatedArgs = args;
   set system(DarwinSystem system) => _system = system;
+
   DarwinSystem get system => _system!;
+  DarwinSystemGeneratedArgs get generatedArgs => _generatedArgs!;
+  DarwinSystemUserArgs get userArgs => DarwinSystemUserArgs(appModule: module, plugins: plugins);
 
   /// Forces the process to exit when the application is stopped.
   bool exitProcessOnStop = false;

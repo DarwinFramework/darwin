@@ -15,38 +15,46 @@
  */
 
 import 'package:darwin_sdk/darwin_sdk.dart';
+import 'package:collection/collection.dart';
+import 'package:lyell/lyell.dart';
 
 /// Base class for handler annotations. Handler annotations will be retained
 /// at runtime and are store in [HandlerRegistration] and [HandlerParameter].
-class HandlerAnnotation {
+class HandlerAnnotation extends RetainedAnnotation{
   const HandlerAnnotation();
 }
 
-abstract class HandlerAnnotationHolder {
-  const HandlerAnnotationHolder();
-
-  List<HandlerAnnotation> get annotations;
-
-  Iterable<T> annotationsOf<T>() => annotations.whereType<T>();
-
-  Iterable<T> annotationsOfExact<T>() => annotations
-      .where((element) => element.runtimeType == T)
-      .map((e) => e as T);
-}
-
 /// A singular handler registration.
-class HandlerRegistration extends HandlerAnnotationHolder {
+class HandlerRegistration extends RetainedAnnotationHolder {
   final String name;
-  final HandlerReturnType returnType;
+  final TypeCapture returnType;
   final HandlerProxy proxy;
   @override
   final List<HandlerAnnotation> annotations;
   final List<HandlerParameter> parameters;
-
+  final HandlerEnclosingClass enclosingClass;
   const HandlerRegistration(this.name, this.parameters, this.annotations,
-      this.returnType, this.proxy);
+      this.returnType, this.proxy, this.enclosingClass);
+
+  String get fullName => "${enclosingClass.name}.$name";
+
+  Iterable<T> expandedAnnotationsOf<T>() => [
+    ...enclosingClass.annotationsOf<T>(),
+    ...annotationsOf<T>()
+  ];
+
 }
 
+class HandlerEnclosingClass<T> extends RetainedAnnotationHolder {
+  final String name;
+  @override
+  final List<HandlerAnnotation> annotations;
+  const HandlerEnclosingClass(this.name, this.annotations);
+
+  Type get typeArgument => T;
+}
+
+/// Method proxy for handler methods.
 abstract class HandlerProxy {
   const HandlerProxy();
 
@@ -67,19 +75,16 @@ class GeneratedHandlerProxy extends HandlerProxy {
   }
 }
 
-class HandlerReturnType<T> {
-  const HandlerReturnType();
-
-  Type get typeArgument => T;
-}
-
-class HandlerParameter<T> extends HandlerAnnotationHolder {
+/// Descriptor for parameters of handler methods.
+class HandlerParameter<T> extends RetainedAnnotationHolder {
   final String name;
 
+  final bool nullable;
   @override
   final List<HandlerAnnotation> annotations;
 
-  const HandlerParameter(this.name, this.annotations);
+  const HandlerParameter(this.name, this.nullable, this.annotations);
 
   Type get typeArgument => T;
+  bool get isRequired => !nullable;
 }

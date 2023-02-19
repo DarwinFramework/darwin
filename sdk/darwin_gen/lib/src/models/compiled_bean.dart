@@ -17,6 +17,7 @@
 import 'package:analyzer/dart/element/type.dart';
 import 'package:darwin_gen/darwin_gen.dart';
 import 'package:darwin_injector/darwin_injector.dart';
+import 'package:lyell_gen/lyell_gen.dart';
 
 class CompiledBean {
   final String? name;
@@ -31,16 +32,15 @@ class CompiledBean {
     required this.bindingType,
   });
 
-  String getCode(String methodName, String returnType, {bool aliased = true}) {
+  String getCode(String methodName, DartType returnType, CachedAliasCounter counter) {
     var nameArg = name ?? methodName;
-    var typeArg =
-        bindingType?.getDisplayString(withNullability: false) ?? returnType;
-    return "${aliased ? "$genAlias." : ""}Bean(name: '$nameArg', strategy: ${aliased ? "$genAlias." : ""}$strategy, isUnnamed: $isUnnamed, bindingType: $typeArg)";
+    var typeArg = bindingType ?? returnType;
+    return "$genAlias.Bean(name: '$nameArg', strategy: $genAlias.$strategy, isUnnamed: $isUnnamed, bindingType: ${counter.get(typeArg)})";
   }
 
-  CompiledInjectorKey getInjectorKey(String returnType, String methodName) {
-    return CompiledInjectorKey.fromString(
-        bindingType?.getDisplayString(withNullability: false) ?? returnType,
+  CompiledInjectorKey getInjectorKey(DartType returnType, String methodName) {
+    return CompiledInjectorKey(
+        bindingType ?? returnType,
         isUnnamed ? null : (name ?? methodName));
   }
 }

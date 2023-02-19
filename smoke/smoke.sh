@@ -20,3 +20,8 @@
 # valid and compilable.
 cd test0; bash smoke.sh; cd ../
 
+# ======== Smoke Test 1 ========
+# More advanced http test that
+# uses the darwin_test package
+# to simulate http calls
+cd test1; bash smoke.sh; cd ../

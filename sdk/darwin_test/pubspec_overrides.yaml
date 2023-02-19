@@ -6,3 +6,5 @@ dependency_overrides:
     path: ../darwin_injector
   darwin_eventbus:
     path: ../darwin_eventbus
+  darwin_http:
+    path: ../darwin_http

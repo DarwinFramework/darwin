@@ -36,7 +36,7 @@ extension HttpServerHandler on DarwinHttpServer {
   }
 
   Future<Response> _handleRequestInternal(Request request) async {
-    var method = HttpMethods.parse(request.method);
+    var method = Method.parse(request.method);
     var childInjector = system.injector.createChildInjector();
     var connectionInfo =
         request.context["shelf.io.connection_info"] as HttpConnectionInfo;

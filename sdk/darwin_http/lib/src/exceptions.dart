@@ -23,8 +23,8 @@ class RequestException implements Exception {
 
   factory RequestException.notFound([Object? body]) =>
       RequestException(Response.notFound(body));
-  factory RequestException.badRequest() =>
-      RequestException(Response.badRequest());
+  factory RequestException.badRequest([Object? body]) =>
+      RequestException(Response.badRequest(body: body));
   factory RequestException.forbidden([Object? body]) =>
       RequestException(Response.forbidden(body));
   factory RequestException.unauthorized([Object? body]) =>
