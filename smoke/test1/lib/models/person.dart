@@ -37,7 +37,7 @@ class Person {
 
   @override
   String toString() {
-    return 'Person{' + ' name: $name,' + ' age: $age,' + '}';
+    return 'Person{name: $name, age: $age}';
   }
 
   Person copyWith({
@@ -52,8 +52,8 @@ class Person {
 
   Map<String, dynamic> toMap() {
     return {
-      'name': this.name,
-      'age': this.age,
+      'name': name,
+      'age': age,
     };
   }
 
