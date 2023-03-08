@@ -24,9 +24,9 @@ class Header extends HandlerAnnotation implements HttpParameterFactory<_HeaderEn
 
   @override
   createParameter(_HeaderEntry cached, RequestContext context) {
-    var value = context.request.url.queryParameters[cached.name];
+    var value = context.request.headers[cached.name];
     if (value == null && !cached.nullable) throw RequestException.badRequest();
-    return context.request.headers[cached.name];
+    return value;
   }
 
   @override
