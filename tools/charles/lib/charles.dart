@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:charles/src/commands/catalog.dart';
 import 'package:charles/src/commands/create.dart';
 import 'package:charles/src/commands/run.dart';
 
@@ -11,6 +12,7 @@ class CharlesCommandRunner extends CommandRunner<void> {
       'A command cline utility for working with the darwin framework',
       usageLineLength: terminalWidth
   ) {
+    addCommand(CatalogCommand());
     addCommand(CreateCommand());
     addCommand(RunCommand());
   }
