@@ -14,10 +14,13 @@
  *    limitations under the License.
  */
 
+import 'dart:async';
+
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
+import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:collection/collection.dart';
-import 'package:darwin_gen/darwin_gen.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:lyell_gen/lyell_gen.dart';
 import 'package:source_gen/source_gen.dart';
@@ -38,11 +41,22 @@ class Handlers {
     return "const \$enclosingClass = $enclosingClass;";
   }
 
+  static Completer? _initCompleter;
+  
+  static Future initGenerator(BuildStep step) async {
+    if (_initCompleter != null) {
+      await _initCompleter!.future;
+      return;
+    }
+    _initCompleter = Completer();
+    await tryInitialize(step);
+    _initCompleter?.complete(null);
+  }
+
   /// Generates the source code of a handler registration. Can optionally
   /// [useEnclosingVarDef] to reference the variable $enclosingClass instead
   /// of inserting the enclosing class definition.
-  static String generate(
-      ClassElement classElement, MethodElement element, ClassBuilder builder, CachedAliasCounter counter,
+  static String generate(ClassElement classElement, MethodElement element, ClassBuilder builder, CachedAliasCounter counter,
       {bool useEnclosingVarDef = false}) {
     var proxyFuncName = "_\$${element.name}";
     builder.methods.add(Method((builder) => builder
@@ -60,14 +74,23 @@ class Handlers {
     var proxy = "$genAlias.GeneratedHandlerProxy($proxyFuncName)";
     var parameters = "[${element.parameters.map((e) {
       var annotations = getHandlerAnnotationsSourceArray(e, counter);
-      return "$genAlias.HandlerParameter<${counter.get(e.type)}>('${e.name}', ${e.isOptional}, $annotations)";
+      return "$genAlias.HandlerParameter<${counter.get(e.type)}>('${e.name}', ${e.type.nullabilitySuffix != NullabilitySuffix.none}, $annotations)";
     }).join(", ")}]";
     var annotations = getHandlerAnnotationsSourceArray(element, counter);
     String returnType;
     try {
-      returnType = "$genAlias.TypeToken<${counter.get(element.returnType)}>()";
-    } catch(_) {
-      returnType =  "$genAlias.TypeToken<${element.returnType.getDisplayString(withNullability: false)}>()";
+      var runtimeType = element.returnType;
+      if (element.returnType.isDartAsyncFuture) {
+        runtimeType = element.returnType.asInstanceOf(futureInterface)!.typeArguments.first;
+      } else if (element.returnType.isDartAsyncFutureOr) {
+        runtimeType = element.returnType.asInstanceOf(futureOrInterface)!.typeArguments.first;
+      } else if (element.returnType.isDartAsyncStream) {
+        var innerType = element.returnType.asInstanceOf(streamInterface)!.typeArguments.first;
+        runtimeType = innerType.element2!.library!.typeProvider.iterableType(innerType);
+      }
+      returnType = "$genAlias.TypeToken<${counter.get(runtimeType)}>()";
+    } catch(e) {
+      rethrow;
     }
     var classAnnotations = getHandlerAnnotationsSourceArray(classElement, counter);
     var enclosingClass =

@@ -35,7 +35,7 @@ class MarshalPlugin extends DarwinPlugin {
 
   @override
   Future configure() async {
-    DarwinMarshalJson.register(marshal);
+    // DarwinMarshalJson.register(marshal);
     DarwinMarshalSimple.register(marshal);
 
     module = Module();

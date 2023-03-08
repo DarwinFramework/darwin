@@ -14,8 +14,6 @@
  *    limitations under the License.
  */
 
-import 'package:darwin_sdk/darwin_sdk.dart';
-import 'package:collection/collection.dart';
 import 'package:lyell/lyell.dart';
 
 /// Base class for handler annotations. Handler annotations will be retained
@@ -76,7 +74,7 @@ class GeneratedHandlerProxy extends HandlerProxy {
 }
 
 /// Descriptor for parameters of handler methods.
-class HandlerParameter<T> extends RetainedAnnotationHolder {
+class HandlerParameter<T> extends RetainedAnnotationHolder with TypeCaptureMixin<T> {
   final String name;
 
   final bool nullable;
@@ -85,6 +83,5 @@ class HandlerParameter<T> extends RetainedAnnotationHolder {
 
   const HandlerParameter(this.name, this.nullable, this.annotations);
 
-  Type get typeArgument => T;
   bool get isRequired => !nullable;
 }

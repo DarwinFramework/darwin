@@ -19,6 +19,8 @@
 /// More dartdocs go here.
 library darwin_http;
 
+import 'dart:async';
+
 import 'package:conduit_open_api/v3.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
 
@@ -62,7 +64,7 @@ abstract class HttpParameterFactory<T> {
 
   T createCacheEntry(HttpHandlerVisitorArgs args);
 
-  dynamic createParameter(T cached, RequestContext context);
+  FutureOr<dynamic> createParameter(T cached, RequestContext context);
 }
 
 abstract class APIOperationVisitor {

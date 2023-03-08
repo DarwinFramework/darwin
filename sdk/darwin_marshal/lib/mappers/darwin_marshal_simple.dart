@@ -16,80 +16,154 @@
 
 import 'dart:convert';
 
+import 'package:lyell/lyell.dart';
+
 import '../darwin_marshal.dart';
 
 class DarwinMarshalSimple {
   static void register(DarwinMarshal marshal, {bool strictMime = false}) {
-    marshal.registerTypeMapper(String, SimpleStringMapper());
-    marshal.registerTypeMapper(int, SimpleIntMapper());
-    marshal.registerTypeMapper(double, SimpleDoubleMapper());
-    marshal.registerTypeMapper(bool, SimpleBoolMapper());
-    marshal.registerTypeMapper(List<int>, SimpleDataMapper());
+    marshal.registerMultiple(SimpleStringMultiMapper());
+    marshal.registerMultiple(SimpleIntMultiMapper());
+    marshal.registerMultiple(SimpleDoubleMultiMapper());
+    marshal.registerMultiple(SimpleBoolMultiMapper());
+    marshal.register(SimpleDataMapper());
   }
 }
 
-class SimpleBoolMapper extends SimpleTypeMapperAdapter<bool> {
+class SimpleBoolMultiMapper extends SimpleSerialMultiAdapter {
+
+  SimpleBoolMultiMapper() : super(mime: "text/plain");
+
   @override
-  bool? deserialize(List<int> data, DeserializationContext context) {
+  Iterable? deserializeMultiple(List<int> data, DeserializationContext context) {
+    if (data.isEmpty) return [];
+    var str = utf8.decode(data);
+    return str.split(RegExp(", |,")).map((e) => e == "true");
+  }
+
+  @override
+  deserializeSingle(List<int> data, DeserializationContext context) {
     return utf8.decode(data) == "true";
   }
 
   @override
-  List<int> serialize(bool? obj, SerializationContext context) {
+  List<int> serializeMultiple(Iterable? obj, SerializationContext context) {
     if (obj == null) return [];
-    return utf8.encode("$obj");
+    return utf8.encode(obj.map((e) => e.toString()).join(", "));
   }
+
+  @override
+  List<int> serializeSingle(obj, SerializationContext context) {
+    if (obj == null) return [];
+    return utf8.encode(obj.toString());
+  }
+
+  @override
+  TypeCapture<bool> get typeCapture => TypeToken<bool>();
 }
 
-class SimpleDoubleMapper extends SimpleTypeMapperAdapter<double> {
+class SimpleDoubleMultiMapper extends SimpleSerialMultiAdapter {
+
+  SimpleDoubleMultiMapper() : super(mime: "text/plain");
+
   @override
-  double? deserialize(List<int> data, DeserializationContext context) {
+  Iterable? deserializeMultiple(List<int> data, DeserializationContext context) {
+    if (data.isEmpty) return [];
+    var str = utf8.decode(data);
+    return str.split(RegExp(", |,")).map((e) => double.parse(e));
+  }
+
+  @override
+  deserializeSingle(List<int> data, DeserializationContext context) {
     return double.parse(utf8.decode(data));
   }
 
   @override
-  List<int> serialize(double? obj, SerializationContext context) {
+  List<int> serializeMultiple(Iterable? obj, SerializationContext context) {
     if (obj == null) return [];
-    return utf8.encode("$obj");
+    return utf8.encode(obj.map((e) => e.toString()).join(", "));
   }
+
+  @override
+  List<int> serializeSingle(obj, SerializationContext context) {
+    if (obj == null) return [];
+    return utf8.encode(obj.toString());
+  }
+
+  @override
+  TypeCapture<double> get typeCapture => TypeToken<double>();
 }
 
-class SimpleIntMapper extends SimpleTypeMapperAdapter<int> {
+class SimpleIntMultiMapper extends SimpleSerialMultiAdapter {
+
+  SimpleIntMultiMapper() : super(mime: "text/plain");
+
   @override
-  int? deserialize(List<int> data, DeserializationContext context) {
+  Iterable? deserializeMultiple(List<int> data, DeserializationContext context) {
+    if (data.isEmpty) return [];
+    var str = utf8.decode(data);
+    return str.split(RegExp(", |,")).map((e) => int.parse(e));
+  }
+
+  @override
+  deserializeSingle(List<int> data, DeserializationContext context) {
     return int.parse(utf8.decode(data));
   }
 
   @override
-  List<int> serialize(int? obj, SerializationContext context) {
+  List<int> serializeMultiple(Iterable? obj, SerializationContext context) {
+    context.mime ??= "text/plain";
+    if (obj == null) return [];
+    return utf8.encode(obj.map((e) => e.toString()).join(", "));
+  }
+
+  @override
+  List<int> serializeSingle(obj, SerializationContext context) {
+    context.mime ??= "text/plain";
     if (obj == null) return [];
     return utf8.encode("$obj");
   }
+  @override
+  TypeCapture<int> get typeCapture => TypeToken<int>();
 }
 
-class SimpleStringMapper extends SimpleTypeMapperAdapter<String> {
+class SimpleStringMultiMapper extends SimpleSerialMultiAdapter {
+
+  SimpleStringMultiMapper() : super(mime: "text/plain");
+
   @override
-  String? deserialize(List<int> data, DeserializationContext context) {
+  Iterable? deserializeMultiple(List<int> data, DeserializationContext context) {
+    if (data.isEmpty) return [];
+    var str = utf8.decode(data);
+    return str.split(RegExp(", |,"));
+  }
+
+  @override
+  deserializeSingle(List<int> data, DeserializationContext context) {
+    if (data.isEmpty) return "";
     return utf8.decode(data);
   }
 
   @override
-  List<int> serialize(String? obj, SerializationContext context) {
+  List<int> serializeMultiple(Iterable? obj, SerializationContext context) {
+    context.mime ??= "text/plain";
+    if (obj == null) return [];
+    return utf8.encode(obj.map((e) => e.toString()).join(", "));
+  }
+
+  @override
+  List<int> serializeSingle(obj, SerializationContext context) {
+    context.mime ??= "text/plain";
     if (obj == null) return [];
     return utf8.encode(obj);
   }
+  @override
+  TypeCapture<String> get typeCapture => TypeToken<String>();
 }
 
-class SimpleDataMapper extends DarwinMapper<List<int>> {
-  @override
-  bool checkDeserialize(DeserializationContext context) {
-    return context.target == List<int>;
-  }
+class SimpleDataMapper extends SimpleTypeMapperAdapter {
 
-  @override
-  bool checkSerialize(SerializationContext context) {
-    return context.type == List<int>;
-  }
+  SimpleDataMapper() : super(List<int>, priority: 100);
 
   @override
   List<int>? deserialize(List<int> data, DeserializationContext context) {
@@ -97,8 +171,11 @@ class SimpleDataMapper extends DarwinMapper<List<int>> {
   }
 
   @override
-  List<int> serialize(List<int>? obj, SerializationContext context) {
+  List<int> serialize(dynamic obj, SerializationContext context) {
     if (obj == null) return [];
     return obj;
   }
+
+  @override
+  String get outputMime => "application/octet-stream";
 }

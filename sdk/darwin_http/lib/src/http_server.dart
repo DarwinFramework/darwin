@@ -26,6 +26,7 @@ import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_marshal/darwin_marshal.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:logging/logging.dart';
+import 'package:lyell/lyell.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
@@ -48,6 +49,7 @@ class DarwinHttpServer extends ServiceBase {
   late AsyncEventLine<HttpRequestRespondEvent> onHttpRequestRespond;
   late AsyncEventLine<IncomingHttpRequestEvent> onIncomingHttpRequest;
   late SyncEventLine<ApiDocsPopulateEvent> onApiDocsPopulate;
+  late SyncEventLine<HttpExceptionResolveEvent> onExceptionResolve;
   
   List<Module> requestModules = [DefaultHttpRequestModule()];
   List<DarwinHttpRoute> routes = [];
@@ -77,6 +79,7 @@ class DarwinHttpServer extends ServiceBase {
     onHttpRequestRespond =
         system.eventbus.getAsyncLine<HttpRequestRespondEvent>();
     onApiDocsPopulate = system.eventbus.getLine<ApiDocsPopulateEvent>();
+    onExceptionResolve = system.eventbus.getLine<HttpExceptionResolveEvent>();
     var pipeline = Pipeline();
     for (var middleware in plugin.shelfMiddlewares) {
       pipeline = pipeline.addMiddleware(middleware);

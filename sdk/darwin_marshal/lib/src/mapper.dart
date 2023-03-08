@@ -16,12 +16,18 @@
 
 import 'context.dart';
 
-abstract class DarwinMapper<MappedType> {
-  int get priority => 0;
+abstract class DarwinMapper {
+
+  final int priority;
+  Type? associatedType;
+  DarwinMapper({this.associatedType, this.priority = 0});
 
   bool checkSerialize(SerializationContext context);
   bool checkDeserialize(DeserializationContext context);
 
-  List<int> serialize(MappedType? obj, SerializationContext context);
-  MappedType? deserialize(List<int> data, DeserializationContext context);
+  List<int> serialize(dynamic obj, SerializationContext context);
+  dynamic deserialize(List<int> data, DeserializationContext context);
+
+  String? get outputMime => null;
+
 }

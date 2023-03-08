@@ -18,6 +18,9 @@ import 'dart:convert';
 
 import 'package:darwin_http/darwin_http.dart';
 import 'package:shelf/shelf.dart';
+import 'package:smoke_test_1/services/exception_handler.dart';
+
+import '../models/person.dart';
 
 @RestController()
 @Path("first")
@@ -38,7 +41,6 @@ class FirstController {
     return Response.ok("Value");
   }
 
-
   @GET("method3")
   dynamic method3() {
     return "Value";
@@ -48,10 +50,40 @@ class FirstController {
   void method4() {}
 
   @GET("method5")
-  Future method5() async {}
+  Future<void> method5() async {}
 
+  @GET("method6")
   Stream<String> method6() async* {
-    yield "Value";
+    yield "A";
+    yield "B";
+    yield "C";
+  }
+
+  @GET("method7")
+  Iterable<String> method7() sync* {
+    yield "A";
+    yield "B";
+    yield "C";
+  }
+
+  @GET("method8")
+  Future<List<String>> method8() async {
+    return ["A", "B", "C"];
+  }
+
+  @GET("method9")
+  void method9() {
+    throw TestException();
+  }
+
+  @GET("method10")
+  List<int> method10() {
+    return utf8.encode("Value");
+  }
+
+  @GET("method11")
+  Person method11() {
+    return Person(name: "Alex", age: 18);
   }
 
 }

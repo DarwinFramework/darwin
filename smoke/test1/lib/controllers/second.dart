@@ -14,24 +14,35 @@
  *    limitations under the License.
  */
 
-import 'package:conduit_open_api/v3.dart';
 import 'package:darwin_http/darwin_http.dart';
-import 'package:darwin_sdk/darwin_sdk.dart';
-import 'package:lyell/lyell.dart';
 
-part 'parameters/body.dart';
-part 'parameters/context.dart';
-part 'parameters/di.dart';
-part 'parameters/header.dart';
-part 'parameters/path_parameter.dart';
-part 'parameters/query_parameter.dart';
+@RestController()
+@Path("second")
+class SecondController {
 
-class Accepts extends HandlerAnnotation {
-  final String contentType;
-  const Accepts(this.contentType);
-}
+  @GET("method0")
+  void method0(RequestContext context) {
+    context.injector; // Try access, should throw error if wrong
+  }
 
-class Returns extends HandlerAnnotation {
-  final String contentType;
-  const Returns(this.contentType);
+  @GET("method1")
+  String method1(@Header("User-Agent") String agent) {
+    return agent;
+  }
+
+  @GET("method2")
+  bool method2(@Header("Test") String? test) {
+    return test != null;
+  }
+
+  @GET("method3/{test}")
+  String method3(@PathParam() String test) {
+    return test;
+  }
+
+  @GET("method4")
+  String method4(@QueryParam() String test) {
+    return test;
+  }
+
 }

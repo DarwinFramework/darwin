@@ -35,3 +35,5 @@ typedef AsyncEventConsumer<T> = FutureOr<void> Function(T);
 class Subscribe {
   const Subscribe();
 }
+
+const Subscribe subscribe = Subscribe();

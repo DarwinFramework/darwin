@@ -27,6 +27,7 @@ class HttpBuilder extends ServiceAdapter<RestController> {
 
   @override
   FutureOr<void> generateSubject(SubjectGenContext genContext, SubjectCodeContext codeContext) async {
+    await Handlers.initGenerator(genContext.step);
     await HttpServiceDescriptorGenerator.generateTo(genContext, codeContext);
   }
 

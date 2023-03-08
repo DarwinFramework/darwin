@@ -67,10 +67,18 @@ extension HttpServerHandler on DarwinHttpServer {
         handledResponse = await entry.handle(context);
         handledResponse =
             handledResponse?.change(context: {"darwin.original": true});
-      } on RequestException catch (exception, _) {
+      } on RequestException catch (exception, _) { // Handle expected exceptions.
         logger.log(Level.FINE,
             "Request handler '$entry' threw a request exception", exception);
         handledResponse = exception.response;
+      } catch(exception, stacktrace) { // Handle unexpected exceptions.
+        var defaultResponse = Response.internalServerError();
+        var event = HttpExceptionResolveEvent(exception, stacktrace);
+        onExceptionResolve.dispatch(event);
+        if (event.response == null) {
+          logger.log(Level.SEVERE, "Request handler '$entry' threw an unexpected exception", exception, stacktrace);
+        }
+        handledResponse = event.response ?? defaultResponse;
       }
       if (context[DarwinHttpServer.requestDrainedKey] != true) {
         await context.request.read().drain(); // Drain body

@@ -48,6 +48,14 @@ class HttpRequestRespondEvent extends AsyncEvent {
   HttpRequestRespondEvent(this.context, this.response, this.hasBeenHandled);
 }
 
+class HttpExceptionResolveEvent extends SyncEvent {
+  final dynamic exception;
+  final StackTrace stackTrace;
+  Response? response;
+
+  HttpExceptionResolveEvent(this.exception, this.stackTrace);
+}
+
 class ApiDocsResolveParameterTypeEvent extends SyncEvent {
   final HttpHandlerVisitorArgs args;
 

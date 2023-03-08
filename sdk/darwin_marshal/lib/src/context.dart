@@ -14,20 +14,34 @@
  *    limitations under the License.
  */
 
+import 'package:lyell/lyell.dart';
+
 import '../darwin_marshal.dart';
 
+/// Describes the target type of the marshalled target.
+class MarshalTarget {
+
+  /// Type capture of the defined type.
+  final TypeCapture type;
+
+  // Type capture of the extracted serial type.
+  // final TypeCapture serial;
+
+  const MarshalTarget(this.type);
+}
+
 class SerializationContext {
-  Type type;
+  MarshalTarget target;
   String? mime;
   Map<dynamic, dynamic> meta;
   DarwinMarshal marshal;
 
-  SerializationContext(this.type, this.mime, this.meta, this.marshal);
+  SerializationContext(this.target, this.mime, this.meta, this.marshal);
 }
 
 class DeserializationContext {
+  MarshalTarget target;
   String? mime;
-  Type target;
   Map<dynamic, dynamic> meta;
   DarwinMarshal marshal;
 

@@ -14,24 +14,9 @@
  *    limitations under the License.
  */
 
-import 'package:conduit_open_api/v3.dart';
-import 'package:darwin_http/darwin_http.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
-import 'package:lyell/lyell.dart';
 
-part 'parameters/body.dart';
-part 'parameters/context.dart';
-part 'parameters/di.dart';
-part 'parameters/header.dart';
-part 'parameters/path_parameter.dart';
-part 'parameters/query_parameter.dart';
+@Service()
+class InjectedService {
 
-class Accepts extends HandlerAnnotation {
-  final String contentType;
-  const Accepts(this.contentType);
-}
-
-class Returns extends HandlerAnnotation {
-  final String contentType;
-  const Returns(this.contentType);
 }

@@ -14,88 +14,177 @@
  *    limitations under the License.
  */
 
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:darwin_marshal/darwin_marshal.dart';
+import 'package:lyell/lyell.dart';
 
 typedef ToMap<T> = Map<String, dynamic> Function(T);
 typedef FromMap<T> = T Function(Map<String, dynamic>);
 
-class JsonMapAdapter<T> extends DarwinMapper<dynamic> {
+class JsonMapAdapter<T> extends SimpleSerialMultiAdapter {
   final ToMap<T> toMap;
   final FromMap<T> fromMap;
-
-  @override
-  final int priority;
 
   final Type iterableType = Iterable<T>;
   final Type listType = List<T>;
   final Type setType = Set<T>;
 
-  JsonMapAdapter(
-      {required this.toMap, required this.fromMap, this.priority = 100});
+  JsonMapAdapter({required this.toMap, required this.fromMap, super.priority = 100}) : super(mime: "application/json");
 
   @override
-  bool checkDeserialize(DeserializationContext context) {
-    var target = context.target;
-    return target == T ||
-        target == iterableType ||
-        target == listType ||
-        target == setType;
+  Iterable? deserializeMultiple(List<int> data, DeserializationContext context) {
+    if (data.isEmpty) return null;
+    var string = utf8.decode(data);
+    var decoded = jsonDecode(string) as Iterable;
+    return decoded.map((e) => fromMap(e as Map<String,dynamic>)).toList();
   }
 
   @override
-  bool checkSerialize(SerializationContext context) {
-    var type = context.type;
-    return type == T ||
-        type == iterableType ||
-        type == listType ||
-        type == setType;
-  }
-
-  @override
-  dynamic deserialize(List<int> data, DeserializationContext context) {
+  deserializeSingle(List<int> data, DeserializationContext context) {
     if (data.isEmpty) return null;
     var string = utf8.decode(data);
     var decoded = jsonDecode(string);
-    if (context.target == listType || context.target == iterableType) {
-      if (decoded is! List) throw Exception("Can't decode json list");
-      return decoded.map((e) => fromMap(e)).toList();
-    }
-
-    if (context.target == setType) {
-      if (decoded is! List) throw Exception("Can't decode json list");
-      return decoded.map((e) => fromMap(e)).toSet();
-    }
-
-    if (decoded is! StringKeyedMap) throw Exception("Can't decode json map");
     return fromMap(decoded);
   }
 
   @override
-  List<int> serialize(dynamic obj, SerializationContext context) {
+  List<int> serializeMultiple(Iterable? obj, SerializationContext context) {
     if (obj == null) return [];
-    if (obj is Iterable<T>) {
-      var list = obj.map((e) => toMap(e)).toList();
-      var encoded = jsonEncode(list);
-      var data = utf8.encode(encoded);
-      return data;
-    }
+    var list = obj.map((e) => toMap(e)).toList();
+    var encoded = jsonEncode(list);
+    var data = utf8.encode(encoded);
+    return data;
+  }
 
+  @override
+  List<int> serializeSingle(obj, SerializationContext context) {
+    if (obj == null) return [];
     var encoded = jsonEncode(toMap(obj));
     var data = utf8.encode(encoded);
     return data;
   }
+
+  @override
+  TypeCapture<T> get typeCapture => TypeToken<T>();
 }
 
-abstract class SimpleTypeMapperAdapter<T> extends DarwinMapper<T> {
+abstract class SimpleTypeMapperAdapter extends DarwinMapper {
+
+  SimpleTypeMapperAdapter(Type type, {super.priority}): super(associatedType: type);
+
   @override
   bool checkDeserialize(DeserializationContext context) {
-    return context.target == T;
+    return context.target.type.typeArgument == associatedType!;
   }
 
   @override
   bool checkSerialize(SerializationContext context) {
-    return context.type == T;
+    return context.target.type.typeArgument == associatedType!;
   }
+}
+
+abstract class SimpleSerialMultiAdapter with IterableMixin<DarwinMapper> {
+
+  int priority = 0;
+  String? mime;
+  SimpleSerialMultiAdapter({this.priority = 0, this.mime});
+
+  TypeCapture get typeCapture;
+
+  List<DarwinMapper> get mappers {
+    return [
+    _SerialSingleMapper(this),
+    _SerialListMapper(this),
+    _SerialSetMapper(this),
+    _SerialIterableMapper(this)
+  ];
+  }
+
+  @override
+  Iterator<DarwinMapper> get iterator => mappers.iterator;
+  
+  deserializeSingle(List<int> data, DeserializationContext context);
+  List<int> serializeSingle(dynamic obj, SerializationContext context);
+
+  Iterable? deserializeMultiple(List<int> data, DeserializationContext context);
+  List<int> serializeMultiple(Iterable? obj, SerializationContext context);
+}
+
+class _SerialSingleMapper extends SimpleTypeMapperAdapter {
+  final SimpleSerialMultiAdapter adapter;
+
+  _SerialSingleMapper(this.adapter) : super(adapter.typeCapture.typeArgument);
+
+  @override
+  deserialize(List<int> data, DeserializationContext context) {
+    return adapter.deserializeSingle(data, context);
+  }
+
+  @override
+  List<int> serialize(obj, SerializationContext context) {
+    return adapter.serializeSingle(obj, context);
+  }
+
+  @override
+  String? get outputMime => adapter.mime;
+}
+
+class _SerialIterableMapper extends SimpleTypeMapperAdapter {
+  
+  final SimpleSerialMultiAdapter adapter;
+  
+  _SerialIterableMapper(this.adapter) : super(adapter.typeCapture.deriveIterable);
+
+  @override
+  deserialize(List<int> data, DeserializationContext context) {
+    return adapter.deserializeMultiple(data, context);
+  }
+
+  @override
+  List<int> serialize(obj, SerializationContext context) {
+    return adapter.serializeMultiple(obj, context);
+  }
+
+  @override
+  String? get outputMime => adapter.mime;
+}
+
+class _SerialListMapper extends SimpleTypeMapperAdapter {
+  final SimpleSerialMultiAdapter adapter;
+  
+  _SerialListMapper(this.adapter) : super(adapter.typeCapture.deriveList);
+
+  @override
+  deserialize(List<int> data, DeserializationContext context) {
+    return adapter.deserializeMultiple(data, context)?.toList();
+  }
+
+  @override
+  List<int> serialize(obj, SerializationContext context) {
+    return adapter.serializeMultiple(obj, context);
+  }
+
+  @override
+  String? get outputMime => adapter.mime;
+}
+
+class _SerialSetMapper extends SimpleTypeMapperAdapter {
+  final SimpleSerialMultiAdapter adapter;
+
+  _SerialSetMapper(this.adapter) : super(adapter.typeCapture.deriveSet);
+
+  @override
+  deserialize(List<int> data, DeserializationContext context) {
+    return adapter.deserializeMultiple(data, context)?.toSet();
+  }
+
+  @override
+  List<int> serialize(obj, SerializationContext context) {
+    return adapter.serializeMultiple(obj, context);
+  }
+
+  @override
+  String? get outputMime => adapter.mime;
 }

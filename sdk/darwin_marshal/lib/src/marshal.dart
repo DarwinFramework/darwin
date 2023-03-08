@@ -18,30 +18,38 @@ import 'context.dart';
 import 'mapper.dart';
 
 class DarwinMarshal {
-  Map<Type, List<DarwinMapper<dynamic>>> typeMappers = {};
-  List<DarwinMapper<dynamic>> universalMappers = [];
+  Map<Type, List<DarwinMapper>> associatedMappers = {};
+  List<DarwinMapper> universalMappers = [];
 
-  void registerTypeMapper(Type objType, DarwinMapper<dynamic> mapper) {
-    var objectMappers = typeMappers[objType] ?? <DarwinMapper<dynamic>>[];
+  void register(DarwinMapper mapper) {
+    if (mapper.associatedType != null) {
+      registerTypeMapper(mapper);
+    } else {
+      registerUniversalMapper(mapper);
+    }
+  }
+
+  void registerMultiple(Iterable<DarwinMapper> mappers) {
+    for (var value in mappers) {
+      register(value);
+    }
+  }
+
+  void registerTypeMapper(DarwinMapper mapper) {
+    var type = mapper.associatedType!;
+    var objectMappers = associatedMappers[type] ?? <DarwinMapper>[];
     objectMappers.add(mapper);
     objectMappers.sort((a, b) => b.priority.compareTo(a.priority));
-    typeMappers[objType] = objectMappers;
+    associatedMappers[type] = objectMappers;
   }
 
-  void registerTypeMapperWithCollections<T>(DarwinMapper<dynamic> mapper) {
-    registerTypeMapper(T, mapper);
-    registerTypeMapper(Iterable<T>, mapper);
-    registerTypeMapper(List<T>, mapper);
-    registerTypeMapper(Set<T>, mapper);
-  }
-
-  void registerUniversalMapper(DarwinMapper<dynamic> mapper) {
+  void registerUniversalMapper(DarwinMapper mapper) {
     universalMappers.add(mapper);
     universalMappers.sort((a, b) => b.priority.compareTo(a.priority));
   }
 
-  DarwinMapper<dynamic>? findSerializer(SerializationContext context) {
-    var foundTypeMappers = typeMappers[context.type]
+  DarwinMapper? findSerializer(SerializationContext context) {
+    var foundTypeMappers = associatedMappers[context.target.type.typeArgument]
             ?.where((element) => element.checkSerialize(context))
             .toList() ??
         [];
@@ -53,8 +61,8 @@ class DarwinMarshal {
     return null;
   }
 
-  DarwinMapper<dynamic>? findDeserializer(DeserializationContext context) {
-    var foundTypeMappers = typeMappers[context.target]
+  DarwinMapper? findDeserializer(DeserializationContext context) {
+    var foundTypeMappers = associatedMappers[context.target.type.typeArgument]
             ?.where((element) => element.checkDeserialize(context))
             .toList() ??
         [];

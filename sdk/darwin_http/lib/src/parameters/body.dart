@@ -26,7 +26,7 @@ class Body extends HandlerAnnotation implements HttpParameterFactory<_BodyEntry>
 
   @override
   createCacheEntry(HttpHandlerVisitorArgs args) {
-    return _BodyEntry(args.parameter!.typeArgument, args.route.inputContentType);
+    return _BodyEntry(args.parameter!, args.route.inputContentType);
   }
 
   @override
@@ -58,7 +58,7 @@ class Body extends HandlerAnnotation implements HttpParameterFactory<_BodyEntry>
 }
 
 class _BodyEntry {
-  final Type type;
+  final TypeCapture type;
   final String? mime;
 
   _BodyEntry(this.type, this.mime);

@@ -23,7 +23,6 @@ import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:shelf/shelf.dart';
 import 'package:collection/collection.dart';
 import 'package:test/expect.dart';
-import 'package:test/scaffolding.dart';
 
 void expectResponse(DarwinSystem system, Matcher matcher, {
   required String path,
@@ -49,8 +48,14 @@ void expectResponse(DarwinSystem system, Matcher matcher, {
   expect(response, completion(matcher));
 }
 
+@Deprecated("use hasStatus()")
 Matcher isStatus(int code) => ResponseStatusMatcher(code);
+@Deprecated("use hasBody()")
 Matcher isBody(String body) => ResponseBodyStringMatcher(body);
+
+Matcher hasStatus(int code) => ResponseStatusMatcher(code);
+Matcher hasBody(String body) => ResponseBodyStringMatcher(body);
+Matcher hasHeader(String key, String? value) => ResponseHeaderStringMatcher(key, value);
 
 class DummyHttpConnectionInfo extends HttpConnectionInfo {
 
@@ -101,6 +106,26 @@ class ResponseBodyStringMatcher extends Matcher {
   }
 }
 
+class ResponseHeaderStringMatcher extends Matcher {
+
+  String key;
+  String? value;
+
+  ResponseHeaderStringMatcher(this.key, this.value);
+
+  @override
+  Description describe(Description description) {
+    return description.add("has a header $key with value $value");
+  }
+
+  @override
+  bool matches(item, Map matchState) {
+    if (item is! ReadResponse) throw ArgumentError("Must be a ReadResponse");
+    item.showHeader = true;
+    return item.response.headers[key] == value;
+  }
+}
+
 class ResponseStatusMatcher extends Matcher {
   int code;
 
@@ -124,8 +149,11 @@ class ReadResponse {
 
   ReadResponse(this.response, this.body);
 
+  bool showHeader = false;
+
   @override
   String toString() {
-    return '${response.statusCode}: ${utf8.decode(body)}';
+    return "${response.statusCode}: ${utf8.decode(body)}"
+        "${showHeader == false ? "" : response.headers}";
   }
 }

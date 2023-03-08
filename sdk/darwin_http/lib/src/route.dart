@@ -15,7 +15,6 @@
  */
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:conduit_open_api/v3.dart';
 import 'package:darwin_http/darwin_http.dart';
@@ -89,12 +88,15 @@ class DarwinHttpHandlerRoute implements DarwinHttpRoute {
     context.pathData = match.data;
     var interceptedResponse = await interceptors.intercept(context);
     if (interceptedResponse != null) return interceptedResponse;
-    var data = cachedParameterFactories.map((e) => e(context)).toList();
+    var data = [];
+    for (var value in cachedParameterFactories) {
+      data.add(await value.call(context));
+    }
     var methodOutput =
         await (registration.proxy.invoke(obj, data) as FutureOr<dynamic>);
     if (methodOutput == null) return Response(204);
     var response = await context.httpServer.serializeResponse(
-        methodOutput, registration.returnType.typeArgument, outputContentType);
+        methodOutput, registration.returnType, outputContentType);
     return response;
   }
 
