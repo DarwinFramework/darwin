@@ -67,6 +67,14 @@ class SdkVersion {
   String toString() {
     return 'SdkVersion{name: $name, description: $description, versionRange: $versionRange}';
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'description': description,
+      'versionRange': versionRange,
+    };
+  }
 }
 
 class Dependable {
@@ -83,5 +91,16 @@ class Dependable {
   @override
   String toString() {
     return 'Dependable{name: $name, description: $description, category: $category, depends: $depends, dependencies: $dependencies, devDependencies: $devDependencies}';
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'description': description,
+      'category': category,
+      'depends': depends,
+      'dependencies': dependencies,
+      'devDependencies': devDependencies,
+    };
   }
 }
