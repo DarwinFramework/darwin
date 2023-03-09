@@ -19,6 +19,7 @@ library darwin_starter;
 
 import 'package:archive/archive.dart';
 import 'package:darwin_starter/src/archiver.dart';
+import 'package:darwin_starter/src/docker.dart';
 import 'package:darwin_starter/src/main.dart';
 import 'package:darwin_starter/src/pubspec.dart';
 import 'package:darwin_starter/templates/dummy_generated.dart';
@@ -42,15 +43,18 @@ class DarwinStarter {
     String pubspecContent = PubspecFactory.getPubspec(type, packageVersions,
         dependencies, dependables, name, description);
     String mainContent = MainFactory.getMain(type, name);
+    String dockerfile = DockerFactory.getDockerfile(name);
 
     return package({
       ".gitignore": MiscFiles.gitignore,
+      ".dockerignore": MiscFiles.dockerignore,
+      "pubspec.yaml": pubspecContent,
       "analysis_options.yaml": MiscFiles.analysisOptions,
       "CHANGELOG.md": MiscFiles.changelog,
-      "pubspec.yaml": pubspecContent,
       "README.md": MiscFiles.readme,
       "bin/$name.dart": mainContent,
-      "lib/darwin.g.dart": DummyGeneratedTemplates.darwin
+      "lib/darwin.g.dart": DummyGeneratedTemplates.darwin,
+      "Dockerfile": dockerfile,
     });
   }
 }

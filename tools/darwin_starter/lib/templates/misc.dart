@@ -46,6 +46,17 @@ in `lib/`, and example unit test in `test/`.
 build/
 """.trim();
 
+  static final String dockerignore = """.dockerignore
+Dockerfile
+build/
+.dart_tool/
+.git/
+.github/
+.gitignore
+.idea/
+.packages
+""";
+
   static final String analysisOptions = """include: package:lints/recommended.yaml""";
 
 }
