@@ -26,7 +26,7 @@ RUN dart pub get
 
 # Copy app source code (except anything in .dockerignore) and AOT compile app.
 COPY . .
-RUN dart run build_runner build
+RUN dart run build_runner build --delete-conflicting-outputs
 RUN dart compile exe bin/{{name}}.dart -o bin/{{name}}
 
 # Build minimal serving image from AOT-compiled `/server`

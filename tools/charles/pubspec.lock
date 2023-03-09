@@ -92,10 +92,11 @@ packages:
   darwin_starter:
     dependency: "direct main"
     description:
-      path: "../darwin_starter"
-      relative: true
-    source: path
-    version: "0.0.1-alpha.3"
+      name: darwin_starter
+      sha256: d1b5099354ed98955eb7713fd85a3fa00b62e47bcc1192f85c989a5090388563
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1-alpha.4"
   dio:
     dependency: "direct main"
     description:
