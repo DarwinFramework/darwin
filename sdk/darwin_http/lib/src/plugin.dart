@@ -23,7 +23,7 @@ import 'package:shelf/shelf.dart';
 class HttpPlugin extends DarwinPlugin {
   List<Middleware> shelfMiddlewares = [];
   SecurityContext? securityContext;
-  Object address = "localhost";
+  Object address = InternetAddress.anyIPv4;
   int port = 8080;
   bool generateOpenApiModel = true;
   bool runUnbound = false;
