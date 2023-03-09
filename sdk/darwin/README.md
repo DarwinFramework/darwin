@@ -31,21 +31,21 @@ Many extension points and configurations.
 ## Have a look for yourself!
 ```dart
 @RestController()
-@RequestMapping("/api/cats")
+@Path("/api/cats")
 class CatController {
 
   CatService service;
   CatController(this.service);
 
-  @GetMapping("%name%")
-  Cat retrieveCat(@PathParameter() String name) {
+  @GET("{name}")
+  Cat retrieveCat(@PathParam() String name) {
     return service.getNamedCat(name);
   }
 
-  @PostMapping()
+  @POST()
   Cat saveCat(@Body() cat) => service.addCat(cat);
 
-  @GetMapping()
+  @GET()
   List<Cat> retrieveAll() => service.getAllCats();
 
 }
