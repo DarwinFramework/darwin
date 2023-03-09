@@ -1,3 +1,7 @@
+## 0.0.1-alpha.3
+
+ - **FIX**: fix catalog format.
+
 ## 0.0.1-alpha.2
 
  - **REFACTOR**: update to lyell 0.1.0.

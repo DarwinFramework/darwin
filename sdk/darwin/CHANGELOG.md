@@ -1,3 +1,7 @@
+## 1.1.0-alpha.8
+
+ - **FIX**: disable core tests.
+
 ## 1.1.0-alpha.7
 
 > Note: This release has breaking changes.

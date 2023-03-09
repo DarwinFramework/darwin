@@ -1,3 +1,7 @@
+## 1.1.0-alpha.11
+
+ - Update a dependency to the latest release.
+
 ## 1.1.0-alpha.10
 
 > Note: This release has breaking changes.

@@ -1,3 +1,7 @@
+## 0.0.1-alpha.4
+
+ - **FIX**: fix catalog format.
+
 ## 0.0.1-alpha.3
 
  - **FEAT**: add dockerfile generation.
