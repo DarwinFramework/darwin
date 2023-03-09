@@ -1,3 +1,8 @@
+## 0.0.1-alpha.2
+
+ - **REFACTOR**: update to lyell 0.1.0.
+ - **FEAT**: add catalog utility.
+
 ## 0.0.1-alpha.1
 
  - **FEAT**: add charles cli and the darwin_starter library.

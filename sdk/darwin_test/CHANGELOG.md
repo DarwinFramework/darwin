@@ -1,3 +1,10 @@
+## 1.1.0-alpha.7
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **FEAT**: Rework darwin_marshal and fix common handler errors.
+ - **BREAKING** **FEAT**: Add openapi generation, switch to lyell generator utilities.
+
 ## 1.1.0-alpha.6
 
  - **REFACTOR**: reformat and cleanup code.

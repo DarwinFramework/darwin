@@ -1,6 +1,6 @@
 name: charles
 description: Commandline utility for the darwin framework.
-version: 0.0.1-alpha.1
+version: 0.0.1-alpha.2
 repository: https://github.com/DarwinFramework/darwin
 
 environment:
@@ -22,7 +22,7 @@ dependencies:
   pub_api_client: ^2.4.0
   toml: ^0.13.1
 
-  darwin_starter: ^0.0.1-alpha.2
+  darwin_starter: ^0.0.1-alpha.3
 dev_dependencies:
   lints: ^2.0.0
   test: ^1.16.0

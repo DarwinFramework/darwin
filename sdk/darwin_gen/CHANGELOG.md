@@ -1,3 +1,12 @@
+## 1.1.0-alpha.7
+
+> Note: This release has breaking changes.
+
+ - **REFACTOR**: update to lyell 0.1.0.
+ - **FEAT**: add handler mechanism.
+ - **BREAKING** **FEAT**: Rework darwin_marshal and fix common handler errors.
+ - **BREAKING** **FEAT**: Add openapi generation, switch to lyell generator utilities.
+
 ## 1.1.0-alpha.6
 
  - Update a dependency to the latest release.

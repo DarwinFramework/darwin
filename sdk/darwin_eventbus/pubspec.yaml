@@ -1,6 +1,6 @@
 name: darwin_eventbus
 description: Synchronous and asynchronous eventbus implementations used by the drawin framework
-version: 1.1.0-alpha.2
+version: 1.1.0-alpha.3
 repository: https://github.com/DarwinFramework/darwin
 
 environment:

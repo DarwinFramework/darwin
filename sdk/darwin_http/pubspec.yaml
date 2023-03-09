@@ -1,6 +1,6 @@
 name: darwin_http
 description: Http server and rest api functionality for the darwin framework
-version: 1.1.0-alpha.9
+version: 1.1.0-alpha.10
 repository: https://github.com/DarwinFramework/darwin
 
 environment:
@@ -10,10 +10,10 @@ dependencies:
   shelf: ^1.4.0
   logging: ^1.1.0
   meta: ^1.8.0
-  darwin_sdk: ^1.1.0-alpha.6
+  darwin_sdk: ^1.1.0-alpha.7
   darwin_injector: ^1.1.0-alpha.1
-  darwin_eventbus: ^1.1.0-alpha.2
-  darwin_marshal: ^1.1.0-alpha.7
+  darwin_eventbus: ^1.1.0-alpha.3
+  darwin_marshal: ^1.1.0-alpha.8
   conduit_open_api: ^4.1.8
 
   lyell: ^0.0.2

@@ -1,3 +1,9 @@
+## 1.1.0-alpha.3
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **FEAT**: Rework darwin_marshal and fix common handler errors.
+
 ## 1.1.0-alpha.2
 
  - **REFACTOR**: reformat and cleanup code.
