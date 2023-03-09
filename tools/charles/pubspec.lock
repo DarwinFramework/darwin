@@ -95,7 +95,7 @@ packages:
       path: "../darwin_starter"
       relative: true
     source: path
-    version: "0.0.1-alpha.2"
+    version: "0.0.1-alpha.3"
   dio:
     dependency: "direct main"
     description:

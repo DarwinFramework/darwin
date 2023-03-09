@@ -18,6 +18,10 @@ import 'package:darwin_starter/darwin_starter.dart';
 import 'package:dio/dio.dart';
 import 'package:toml/toml.dart';
 
+void main() {
+  StarterCatalog.getDependables();
+}
+
 class StarterCatalog {
   static final String _catalogUrl =
       "https://raw.githubusercontent.com/DarwinFramework/starter_catalog/main";
@@ -51,7 +55,7 @@ class StarterCatalog {
           e["category"],
           (e["depends"] as List).cast<String>(),
           (e["dependencies"] as Map).cast<String, String>(),
-          (e["dev_dependencies"] as Map).cast<String, String>()));
+          (e["devDependencies"] as Map).cast<String, String>()));
     });
   }
 }
