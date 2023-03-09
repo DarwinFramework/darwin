@@ -1,3 +1,7 @@
+## 1.1.0-alpha.9
+
+ - Update a dependency to the latest release.
+
 ## 1.1.0-alpha.8
 
  - **FIX**: fix catalog format.

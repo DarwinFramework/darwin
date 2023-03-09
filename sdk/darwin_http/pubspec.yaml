@@ -1,6 +1,6 @@
 name: darwin_http
 description: Http server and rest api functionality for the darwin framework
-version: 1.1.0-alpha.11
+version: 1.1.0-alpha.12
 repository: https://github.com/DarwinFramework/darwin
 
 environment:

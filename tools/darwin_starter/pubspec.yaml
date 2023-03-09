@@ -1,6 +1,6 @@
 name: darwin_starter
 description: A project generator for darwin framework applications
-version: 0.0.1-alpha.4
+version: 0.0.1-alpha.5
 repository: https://github.com/DarwinFramework/darwin
 
 environment:

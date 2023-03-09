@@ -1,3 +1,7 @@
+## 0.0.1-alpha.4
+
+ - **FIX**: add --delete-conflicting-outputs to generated docker file.
+
 ## 0.0.1-alpha.3
 
  - **FIX**: fix catalog format.

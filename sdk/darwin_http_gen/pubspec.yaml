@@ -1,6 +1,6 @@
 name: darwin_http_gen
 description: Code generator for the http package of the darwin framework
-version: 1.1.0-alpha.12
+version: 1.1.0-alpha.13
 repository: https://github.com/DarwinFramework/darwin
 
 environment:
@@ -26,7 +26,7 @@ dependencies:
   darwin_eventbus: ^1.1.0-alpha.3
   darwin_marshal: ^1.1.0-alpha.9
   darwin_gen: ^1.1.0-alpha.8
-  darwin_http: ^1.1.0-alpha.11
+  darwin_http: ^1.1.0-alpha.12
 dev_dependencies:
   lints: ^2.0.0
   test: ^1.16.0

@@ -1,3 +1,7 @@
+## 1.1.0-alpha.12
+
+ - **FIX**: bind to all ipv4 adapters by default.
+
 ## 1.1.0-alpha.11
 
  - Update a dependency to the latest release.
