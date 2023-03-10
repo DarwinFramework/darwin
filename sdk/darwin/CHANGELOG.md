@@ -1,3 +1,7 @@
+## 1.1.0-alpha.9
+
+ - **FIX**: fix single/no fragments paths.
+
 ## 1.1.0-alpha.8
 
  - **FIX**: disable core tests.
