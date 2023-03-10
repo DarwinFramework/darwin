@@ -94,7 +94,7 @@ class PathMatcher {
   List<PathMatcherFragment> fragments;
 
   int get depth => fragments.length;
-  int get sortIndex => fragments.last is VariablePathMatcherFragment ? 1 : -1;
+  int get sortIndex => fragments.isEmpty ? 1 : (fragments.last is VariablePathMatcherFragment ? 1 : -1);
 
   PathMatcher(this.sourcePath, this.fragments);
 
