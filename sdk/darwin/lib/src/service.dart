@@ -61,6 +61,11 @@ class Optional extends RetainedAnnotation {
   const Optional();
 }
 
+/// Marks a service implementation as optional.
+/// Optional services don't crash the dependency resolution if their dependencies
+/// are not met and instead just get skipped.
+const Optional optional = Optional();
+
 /// Method annotation for declaring start methods for [Service]s.
 /// Implementations must have no arguments and a return type of void or [Future].
 class Start extends RetainedAnnotation {
