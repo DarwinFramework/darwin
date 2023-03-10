@@ -93,10 +93,10 @@ packages:
     dependency: "direct main"
     description:
       name: darwin_starter
-      sha256: d1b5099354ed98955eb7713fd85a3fa00b62e47bcc1192f85c989a5090388563
+      sha256: "9578b6bd1f2df70f2e28639895f7c3dd0353665f071a6832b2660ae51be3acf8"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.1-alpha.4"
+    version: "0.0.1-alpha.5"
   dio:
     dependency: "direct main"
     description:
