@@ -21,7 +21,7 @@ import 'package:logging/logging.dart';
 
 typedef LogHandler = Function(LogRecord);
 
-mixin DarwinSystemLoggingMixin on DarwinSystem {
+mixin DarwinSystemLoggingMixin on DarwinSystemBase {
   Logger logger = Logger.detached("Darwin");
   LogHandler handler = DarwinDefaultLogger.log;
   Level level = Level.CONFIG;

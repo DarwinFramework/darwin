@@ -52,15 +52,15 @@ class DarwinApplication {
   bool _isShuttingDown = false;
 
   /// Manually overrides [DarwinSystemLoggingMixin.level].
-  void setLogLevel(Level level) => system.loggingMixin.level = level;
+  void setLogLevel(Level level) => system.level = level;
 
   /// Manually overrides [DarwinSystemLoggingMixin.handler].
   void setLogHandler(LogHandler handler) =>
-      system.loggingMixin.handler = handler;
+      system.handler = handler;
 
   /// Sets the [DarwinSystemProfileMixin.profile] for this application.
   /// Can be used to define logical execute environments.
-  void setProfile(String profile) => system.profileMixin.profile = profile;
+  void setProfile(String profile) => system.profile = profile;
 
   /// Installs a [DarwinPlugin] onto this application.
   ///

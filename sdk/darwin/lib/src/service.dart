@@ -210,7 +210,7 @@ class RunningService {
   RunningService(this.obj, this.descriptor);
 }
 
-mixin DarwinSystemServiceMixin on DarwinSystem {
+mixin DarwinSystemServiceMixin on DarwinSystemBase {
   List<RunningService> runningServices = [];
   final List<ServiceDescriptor> serviceDescriptors = [];
 
@@ -228,11 +228,12 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
   /// the service graph is considered broken and an [UnsatisfiedServiceDependenciesException]
   /// will be thrown.
   Future<void> startServices() async {
+    var logging = (this as DarwinSystemLoggingMixin);
     lifecycleState = SystemLifecycleState.starting;
     var resolver = ServiceMixinResolver(this);
     await resolver.solve(serviceDescriptors).forEach((element) {
-      if (loggingMixin.level.value <= element.type.level.value) {
-        loggingMixin.handler(element.type.createLog(element));
+      if (logging.level.value <= element.type.level.value) {
+        logging.handler(element.type.createLog(element));
       }
       if (element.type == ResolveEventType.failed) throw Exception();
     });
@@ -246,22 +247,23 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
   /// calling manually, make sure to check [ServiceDescriptor.isSatisfied]
   /// before invoking this method.
   Future<bool> startService(ServiceDescriptor descriptor) async {
-    loggingMixin.logger
+    var logger = (this as DarwinSystemLoggingMixin).logger;
+    logger
         .finer("Trying to start service ${descriptor.serviceType}...");
     if (!serviceDescriptors.contains(descriptor)) {
       serviceDescriptors.add(descriptor);
     }
-    var matchesConditions = await descriptor.conditions.match(this);
+    var matchesConditions = await descriptor.conditions.match(this as DarwinSystem);
     if (!matchesConditions) {
-      loggingMixin.logger.finer(
+      logger.finer(
           "Service conditions aren't met, skipping service registration");
       return false;
     }
     var obj = await descriptor.instantiate(injector);
-    await descriptor.start(this, obj);
+    await descriptor.start(this as DarwinSystem, obj);
     darwinSystemModule.bind(descriptor.bindingType).toConstant(obj);
     runningServices.add(RunningService(obj, descriptor));
-    loggingMixin.logger.fine("Started service ${descriptor.serviceType}");
+    logger.fine("Started service ${descriptor.serviceType}");
     return true;
   }
 
@@ -270,7 +272,7 @@ mixin DarwinSystemServiceMixin on DarwinSystem {
     for (var service in runningServices.reversed) {
       var obj = service.obj;
       var descriptor = service.descriptor;
-      await descriptor.stop(this, obj);
+      await descriptor.stop(this as DarwinSystem, obj);
     }
     runningServices.clear();
   }

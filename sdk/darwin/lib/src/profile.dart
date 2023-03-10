@@ -30,9 +30,9 @@ class Profile extends Condition {
   @override
   FutureOr<bool> match(DarwinSystem system) {
     if (inverse) {
-      return system.profileMixin.profile != profile;
+      return system.profile != profile;
     } else {
-      return system.profileMixin.profile == profile;
+      return system.profile == profile;
     }
   }
 }
@@ -44,7 +44,7 @@ class DefaultProfiles {
   static const String release = "release";
 }
 
-mixin DarwinSystemProfileMixin on DarwinSystem {
+mixin DarwinSystemProfileMixin on DarwinSystemBase {
   /// The execution profile of the application.
   String? profile;
 }

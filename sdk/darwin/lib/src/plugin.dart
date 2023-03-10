@@ -49,7 +49,7 @@ abstract class DarwinPlugin {
   Stream<ServiceDescriptor> collectServices() async* {}
 }
 
-mixin DarwinSystemPluginMixin on DarwinSystem {
+mixin DarwinSystemPluginMixin on DarwinSystemBase {
   final List<DarwinPlugin> plugins = [];
 
   Stream<ServiceDescriptor> configurePlugins() async* {

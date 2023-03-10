@@ -18,10 +18,12 @@ import 'dart:async';
 
 import 'package:darwin_eventbus/darwin_eventbus.dart';
 import 'package:darwin_injector/darwin_injector.dart';
+import 'package:meta/meta.dart';
 
 import '../darwin_sdk.dart';
 
-abstract class DarwinSystem {
+@sealed
+abstract class DarwinSystemBase {
   static late DarwinSystem internalInstance;
 
   List<Future> daemons = [];
@@ -37,26 +39,33 @@ abstract class DarwinSystem {
   Future<void> stop();
 }
 
-extension DarwinSystemExtensions on DarwinSystem {
+extension DarwinSystemExtensions on DarwinSystemBase {
+  @Deprecated("Use mixin methods directly")
   DarwinSystemBeanMixin get beanMixin => this as DarwinSystemBeanMixin;
-
+  @Deprecated("Use mixin methods directly")
   DarwinSystemPluginMixin get pluginMixin => this as DarwinSystemPluginMixin;
-
+  @Deprecated("Use mixin methods directly")
   DarwinSystemServiceMixin get serviceMixin => this as DarwinSystemServiceMixin;
-
+  @Deprecated("Use mixin methods directly")
   DarwinSystemLoggingMixin get loggingMixin => this as DarwinSystemLoggingMixin;
-
+  @Deprecated("Use mixin methods directly")
   DarwinSystemProfileMixin get profileMixin => this as DarwinSystemProfileMixin;
 }
 
 /// Default [DarwinSystem] base class containing all common mixins.
-abstract class DefaultDarwinSystem extends DarwinSystem
+@reopen
+abstract class DarwinSystem extends DarwinSystemBase
     with
         DarwinSystemServiceMixin,
         DarwinSystemPluginMixin,
         DarwinSystemBeanMixin,
         DarwinSystemLoggingMixin,
         DarwinSystemProfileMixin {
+
+
+  static DarwinSystem get internalInstance => DarwinSystemBase.internalInstance;
+  static set internalInstance(DarwinSystem system) => DarwinSystemBase.internalInstance = system;
+
   @override
   Future<void> prepare(
       DarwinSystemGeneratedArgs generated, DarwinSystemUserArgs user) async {
@@ -67,13 +76,13 @@ abstract class DefaultDarwinSystem extends DarwinSystem
   Future<void> start(
       DarwinSystemGeneratedArgs generated, DarwinSystemUserArgs user) async {
     enableLogging();
-    loggingMixin.logger.info("Starting darwin application...");
+    logger.info("Starting darwin application...");
     var stopwatch = Stopwatch();
     stopwatch.start();
     await prepareAndStartServices(this, generated, user);
     await runLateStartup(this);
     stopwatch.stop();
-    loggingMixin.logger.info(
+    logger.info(
         "Started darwin application in ${stopwatch.elapsedMilliseconds}ms!");
   }
 
@@ -88,14 +97,11 @@ abstract class DefaultDarwinSystem extends DarwinSystem
   /// [DarwinSystemServiceMixin.startServices].
   static Future<void> prepareAndStartServices(DarwinSystem system,
       DarwinSystemGeneratedArgs generated, DarwinSystemUserArgs user) async {
-    if (system is! DarwinSystemServiceMixin) throw Exception();
     var services = generated.services.toList();
-    if (system is DarwinSystemPluginMixin) {
-      system.pluginMixin.plugins.addAll(user.plugins);
-      await system.pluginMixin.configurePlugins().forEach((element) {
-        services.add(element);
-      });
-    }
+    system.plugins.addAll(user.plugins);
+    await system.configurePlugins().forEach((element) {
+      services.add(element);
+    });
     system.serviceDescriptors.addAll(services);
     await system.startServices();
   }
@@ -112,14 +118,18 @@ abstract class DefaultDarwinSystem extends DarwinSystem
 
   @override
   Future<void> stop() async {
-    loggingMixin.logger.info("Stopping darwin application...");
+    logger.info("Stopping darwin application...");
     var stopwatch = Stopwatch();
     await stopServices();
-    loggingMixin.logger.info(
+    logger.info(
         "Stopped darwin application in ${stopwatch.elapsedMilliseconds}ms. Goodbye!");
 
     await eventbus.getAsyncLine<KillEvent>().dispatch(KillEvent(this));
   }
 }
 
-class DefaultDarwinSystemImpl extends DefaultDarwinSystem {}
+@Deprecated("Extend DarwinSystem instead")
+class DefaultDarwinSystem extends DarwinSystem {}
+
+
+class DefaultDarwinSystemImpl extends DarwinSystem {}

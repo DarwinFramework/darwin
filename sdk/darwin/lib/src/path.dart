@@ -16,7 +16,7 @@
 
 
 class PathUtils {
-  static RegExp variableRegex = RegExp("\{([A-z0-9_-]*)\}");
+  static RegExp variableRegex = RegExp("{([A-z0-9_-]*)}");
 
   /// Combines the two paths [a] and [b] by adding a / between them.
   static String combinePath(String a, String b) {

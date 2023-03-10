@@ -67,7 +67,7 @@ class Bean extends RetainedAnnotation {
       bindingType.hashCode;
 }
 
-mixin DarwinSystemBeanMixin on DarwinSystem {
+mixin DarwinSystemBeanMixin on DarwinSystemBase {
   /// Registers a [bean] at runtime with its supplier function [func].
   void registerBean(Bean bean, FutureOr<dynamic> Function() func) {
     darwinSystemModule

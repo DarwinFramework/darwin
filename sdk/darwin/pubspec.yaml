@@ -10,7 +10,7 @@ dependencies:
   path: '>=1.8.0 <1.9.0'
   logging: '>=1.1.0 <1.2.0'
   ansi_styles: '>=0.3.1 <0.4.0'
-  meta: ^1.8.0
+  meta: ^1.9.0
   collection: ^1.17.1
   lyell: ^0.0.2
 
