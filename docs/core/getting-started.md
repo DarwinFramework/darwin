@@ -35,7 +35,7 @@ In your main method, you can now configure and execute your darwin application a
 {% code title="main.dart" %}
 ```dart
 Future main(List<String> arguments) async {
-  await initialiseDarwin();bas
+  await initialiseDarwin();
   application.watchProcessSignals = true; // Watch process signals
   application.install(HttpPlugin()); // Install http plugin
   application.install(MarshalPlugin((marshal) { // Install marshal plugin
