@@ -1,3 +1,8 @@
+## 1.1.0-alpha.11
+
+ - **FEAT**: add configuration system.
+ - **FEAT**: add const accessor annotation for Optional.
+
 ## 1.1.0-alpha.10
 
 > Note: This release has breaking changes.

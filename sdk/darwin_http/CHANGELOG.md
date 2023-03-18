@@ -1,3 +1,7 @@
+## 1.1.0-alpha.15
+
+ - **FEAT**: add configuration system.
+
 ## 1.1.0-alpha.14
 
  - Update a dependency to the latest release.
