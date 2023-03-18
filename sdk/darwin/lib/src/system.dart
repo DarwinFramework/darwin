@@ -18,9 +18,11 @@ import 'dart:async';
 
 import 'package:darwin_eventbus/darwin_eventbus.dart';
 import 'package:darwin_injector/darwin_injector.dart';
+import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
 import '../darwin_sdk.dart';
+import 'configuration.dart';
 
 @sealed
 abstract class DarwinSystemBase {
@@ -60,7 +62,8 @@ abstract class DarwinSystem extends DarwinSystemBase
         DarwinSystemPluginMixin,
         DarwinSystemBeanMixin,
         DarwinSystemLoggingMixin,
-        DarwinSystemProfileMixin {
+        DarwinSystemProfileMixin,
+        DarwinSystemConfigurationMixin {
 
 
   static DarwinSystem get internalInstance => DarwinSystemBase.internalInstance;
@@ -114,6 +117,13 @@ abstract class DarwinSystem extends DarwinSystemBase
     system.injector.registerModule(user.appModule);
     system.injector.registerModule(system.darwinSystemModule);
     system.darwinSystemModule.bind(DarwinSystem).toConstant(system);
+    system.darwinSystemModule.bind(Logger).toContextFunction((injector) {
+      return system.createLogger("Application");
+    });
+    var baseConfiguration = await DarwinBaseConfiguration.load(system);
+    system.profile = baseConfiguration.profile;
+    system.level = baseConfiguration.level;
+    system.checkDebug(); // Check and potentially enable debug mode
   }
 
   @override

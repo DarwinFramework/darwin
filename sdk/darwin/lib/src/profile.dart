@@ -47,4 +47,18 @@ class DefaultProfiles {
 mixin DarwinSystemProfileMixin on DarwinSystemBase {
   /// The execution profile of the application.
   String? profile;
+
+  bool isDebug = false;
+
+  void checkDebug() {
+    // Set to debug if profile == debug
+    if (profile == DefaultProfiles.debug) {
+      isDebug = true;
+    }
+    // Set to debug if dart is in debug mode
+    assert((){
+      isDebug = true;
+      return true;
+    }());
+  }
 }

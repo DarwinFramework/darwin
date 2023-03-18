@@ -20,6 +20,7 @@ export 'src/application.dart';
 export 'src/args.dart';
 export 'src/beans.dart';
 export 'src/condition.dart';
+export 'src/configuration.dart' hide DarwinBaseConfiguration;
 export 'src/events.dart';
 export 'src/exceptions.dart';
 export 'src/handlers.dart';

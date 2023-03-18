@@ -19,7 +19,7 @@ import 'dart:async';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:darwin_gen/darwin_gen.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
-import 'package:lyell_gen/src/subject.dart';
+import 'package:lyell_gen/lyell_gen.dart';
 
 class BaseServiceBuilder extends ServiceAdapter<Service> {
   BaseServiceBuilder() : super(archetype: "base");

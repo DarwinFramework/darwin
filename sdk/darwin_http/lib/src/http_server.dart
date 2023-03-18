@@ -21,6 +21,7 @@ import 'dart:io';
 import 'package:conduit_open_api/v3.dart';
 import 'package:darwin_eventbus/darwin_eventbus.dart';
 import 'package:darwin_http/darwin_http.dart';
+import 'package:darwin_http/src/configuration.dart';
 import 'package:darwin_http/src/swagger.dart';
 import 'package:darwin_injector/darwin_injector.dart';
 import 'package:darwin_marshal/darwin_marshal.dart';
@@ -31,7 +32,9 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
 part 'http_server_descriptor.dart';
+
 part 'http_server_handler.dart';
+
 part 'http_server_serialize.dart';
 
 class DarwinHttpServer extends ServiceBase {
@@ -45,12 +48,12 @@ class DarwinHttpServer extends ServiceBase {
   late Logger logger;
   late HttpServer server;
   late DarwinSystem system;
-  
+
   late AsyncEventLine<HttpRequestRespondEvent> onHttpRequestRespond;
   late AsyncEventLine<IncomingHttpRequestEvent> onIncomingHttpRequest;
   late SyncEventLine<ApiDocsPopulateEvent> onApiDocsPopulate;
   late SyncEventLine<HttpExceptionResolveEvent> onExceptionResolve;
-  
+
   List<Module> requestModules = [DefaultHttpRequestModule()];
   List<DarwinHttpRoute> routes = [];
   APIDocument apiDocument = APIDocument();
@@ -59,7 +62,7 @@ class DarwinHttpServer extends ServiceBase {
   void registerRoute(DarwinHttpRoute route) {
     routes.add(route);
     routes.sort((a, b) => a.sortIndex.compareTo(b.sortIndex));
-    if (plugin.generateOpenApiModel) {
+    if (plugin.configuration.openapi) {
       apiDocument.paths ??= {};
       route.outputs.forEach((key, value) {
         var path = apiDocument.paths![key] ?? APIPath();
@@ -73,7 +76,8 @@ class DarwinHttpServer extends ServiceBase {
   @override
   FutureOr<void> start(DarwinSystem system) async {
     this.system = system;
-    logger = system.loggingMixin.createLogger("Darwin Http");
+    logger = system.createLogger("Darwin Http");
+    plugin.configuration = await HttpConfiguration.load(system);
     onIncomingHttpRequest =
         system.eventbus.getAsyncLine<IncomingHttpRequestEvent>();
     onHttpRequestRespond =
@@ -86,13 +90,14 @@ class DarwinHttpServer extends ServiceBase {
     }
     var handler = pipeline.addHandler(handleRequest);
     if (!plugin.runUnbound) {
-      server = await shelf_io.serve(handler, plugin.address, plugin.port,
+      server = await shelf_io.serve(
+          handler, plugin.configuration.address, plugin.configuration.port,
           securityContext: plugin.securityContext,
           poweredByHeader: "darwin/shelf");
     }
 
     // Init Openapi configuration
-    if (plugin.generateOpenApiModel) {
+    if (plugin.configuration.openapi) {
       apiDocument.version = "3.0.0";
       apiDocument.info = APIInfo("Darwin Application", "1.0.0");
       apiDocument.paths = {};
@@ -101,8 +106,9 @@ class DarwinHttpServer extends ServiceBase {
       registerRoute(SwaggerRoute());
     }
 
-    system.eventbus.getAsyncLine<LateStartupEvent>()
-      .subscribe(doLateStartup, priority: EventPriority.highest);
+    system.eventbus
+        .getAsyncLine<LateStartupEvent>()
+        .subscribe(doLateStartup, priority: EventPriority.highest);
 
     var completer = Completer();
     /*
@@ -115,7 +121,7 @@ class DarwinHttpServer extends ServiceBase {
   }
 
   Future doLateStartup(LateStartupEvent event) async {
-    if (plugin.generateOpenApiModel) {
+    if (plugin.configuration.openapi) {
       var populateEvent = ApiDocsPopulateEvent(apiDocument);
       onApiDocsPopulate.dispatch(populateEvent);
     }
@@ -123,7 +129,7 @@ class DarwinHttpServer extends ServiceBase {
 
   @override
   FutureOr<void> stop(DarwinSystem system) async {
-    if (!plugin.runUnbound)  {
+    if (!plugin.runUnbound) {
       await server.close();
       logger.fine("Shelf server closed");
     }

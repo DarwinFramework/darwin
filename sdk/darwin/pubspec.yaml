@@ -13,6 +13,7 @@ dependencies:
   meta: ^1.9.0
   collection: ^1.17.1
   lyell: ^0.0.2
+  yaml: ^3.1.1
 
   darwin_injector: ^1.1.0-alpha.1
   darwin_eventbus: ^1.1.0-alpha.3

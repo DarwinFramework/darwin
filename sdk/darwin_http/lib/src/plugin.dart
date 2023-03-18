@@ -16,6 +16,7 @@
 
 import 'dart:io';
 
+import 'package:darwin_http/src/configuration.dart';
 import 'package:darwin_http/src/http_server.dart';
 import 'package:darwin_sdk/darwin_sdk.dart';
 import 'package:shelf/shelf.dart';
@@ -23,16 +24,23 @@ import 'package:shelf/shelf.dart';
 class HttpPlugin extends DarwinPlugin {
   List<Middleware> shelfMiddlewares = [];
   SecurityContext? securityContext;
-  Object address = InternetAddress.anyIPv4;
-  int port = 8080;
-  bool generateOpenApiModel = true;
   bool runUnbound = false;
+
+  late HttpConfiguration configuration;
 
   @override
   int get loadOrder => -10;
 
   @override
-  Future configure() async {}
+  Future configure() async {
+    configuration = await HttpConfiguration.load(DarwinSystem.internalInstance);
+    if (configuration.secure) {
+      var context = SecurityContext();
+      context.useCertificateChain(configuration.certFile);
+      context.usePrivateKey(configuration.keyFile);
+      securityContext = context;
+    }
+  }
 
   @override
   Stream<ServiceDescriptor> collectServices() async* {

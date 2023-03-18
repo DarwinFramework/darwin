@@ -41,6 +41,12 @@ class DarwinApplication {
   DarwinSystemGeneratedArgs get generatedArgs => _generatedArgs!;
   DarwinSystemUserArgs get userArgs => DarwinSystemUserArgs(appModule: module, plugins: plugins);
 
+  /// The list of [ConfigurationSource]s that will be passed to the [DarwinSystem].
+  List<ConfigurationSource> configurationSources = DarwinSystemConfigurationMixin.defaultSources.toList();
+
+  /// Adds a [ConfigurationSource] to [configurationSources].
+  void addConfigurationSource(ConfigurationSource source) => configurationSources.add(source);
+
   /// Forces the process to exit when the application is stopped.
   bool exitProcessOnStop = false;
 
@@ -71,9 +77,19 @@ class DarwinApplication {
   /// Starts the [DarwinSystem] with the current configuration and statically
   /// links [DarwinSystem.internalInstance] as well as [system].
   @mustCallSuper
-  Future execute() async {
+  Future execute([List<String> args = const []]) async {
     var currentSystem = _system;
     currentSystem ??= DarwinSystem.internalInstance;
+    /// Infer current execution profile
+    currentSystem.configurationSourceList = configurationSources;
+    if (currentSystem.profile == null) {
+      currentSystem.profile = DefaultProfiles.release;
+      assert((){
+        currentSystem!.profile = DefaultProfiles.debug;
+        return true;
+      }());
+    }
+    currentSystem.applicationArgs = args;
     _system = currentSystem;
     DarwinSystem.internalInstance = currentSystem;
     plugins.sort((a, b) =>

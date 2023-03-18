@@ -72,11 +72,19 @@ class Start extends RetainedAnnotation {
   const Start();
 }
 
+/// Method annotation for declaring start methods for [Service]s.
+/// Implementations must have no arguments and a return type of void or [Future].
+const Start start = Start();
+
 /// Method annotation for declaring stop methods for [Service]s.
 /// Implementations must have no arguments and a return type of void or [Future].
 class Stop extends RetainedAnnotation {
   const Stop();
 }
+
+/// Method annotation for declaring stop methods for [Service]s.
+/// Implementations must have no arguments and a return type of void or [Future].
+const Stop stop = Stop();
 
 /// Abstract base for [Service]s, which can be used to hook into the service
 /// lifecycle. Can also obtain the current instance of [DarwinSystem].

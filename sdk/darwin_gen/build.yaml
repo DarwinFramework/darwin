@@ -16,6 +16,19 @@ builders:
     build_extensions: { ".dart": [ ".base.g.dart" ] }
     auto_apply: dependents
     build_to: source
+  darwin_config_bindings:
+    import: "package:darwin_gen/integrations.dart"
+    builder_factories: [ "darwinConfigBindings" ]
+    build_extensions: { ".dart": [ ".conf.service" ] }
+    runs_before: [ "darwin_gen:darwin_reactor" ]
+    auto_apply: dependents
+    build_to: cache
+  darwin_config_descriptors:
+    import: "package:darwin_gen/integrations.dart"
+    builder_factories: [ "darwinConfigDescriptors" ]
+    build_extensions: { ".dart": [ ".conf.g.dart" ] }
+    auto_apply: dependents
+    build_to: source
   darwin_reactor:
     import: "package:darwin_gen/integrations.dart"
     builder_factories: [ "darwinReactor" ]

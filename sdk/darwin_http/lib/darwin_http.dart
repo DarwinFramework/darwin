@@ -26,6 +26,7 @@ import 'package:darwin_sdk/darwin_sdk.dart';
 
 import 'darwin_http.dart';
 
+export 'src/configuration.dart';
 export 'src/context.dart';
 export 'src/events.dart';
 export 'src/exceptions.dart';
