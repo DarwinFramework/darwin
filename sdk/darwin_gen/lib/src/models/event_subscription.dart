@@ -22,19 +22,20 @@ class EventSubscriptionDefinition {
   bool isAsync;
   DartType type;
   String accessor;
+  int priority;
   String? conditionSourceArray;
 
   EventSubscriptionDefinition(this.isSync, this.isAsync, this.type,
-      this.accessor, this.conditionSourceArray);
+      this.accessor, this.conditionSourceArray, this.priority);
 
   String getCode(CachedAliasCounter counter) {
     String registerStatement;
     if (isSync) {
       registerStatement =
-          "system.eventbus.getLine<${counter.get(type)}>().subscribe($accessor);";
+          "system.eventbus.getLine<${counter.get(type)}>().subscribe($accessor, priority: $priority);";
     } else if (isAsync) {
       registerStatement =
-          "system.eventbus.getAsyncLine<${counter.get(type)}>().subscribe($accessor);";
+          "system.eventbus.getAsyncLine<${counter.get(type)}>().subscribe($accessor, priority: $priority);";
     } else {
       throw Exception("Can't determine event type");
     }

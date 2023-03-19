@@ -146,12 +146,13 @@ class ServiceGen {
         throw Exception("Subscribed methods must have an event argument.");
       }
       var type = element.parameters.first.type;
+      var priority = subscriptionChecker.firstAnnotationOf(element)!.getField("priority")!.toIntValue();
       return EventSubscriptionDefinition(
           syncEventChecker.isSuperTypeOf(type),
           asyncEventChecker.isSuperTypeOf(type),
           type,
           "(evt) async => await (obj.${element.name}(evt) as FutureOr<dynamic>)",
-          getConditionsSourceArray(element, counter));
+          getConditionsSourceArray(element, counter), priority!);
     }).toList();
     return eventSubscriptions;
   }

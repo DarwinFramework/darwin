@@ -19,6 +19,8 @@ library darwin_eventbus;
 
 import 'dart:async';
 
+import 'package:darwin_eventbus/darwin_eventbus.dart';
+
 export 'src/bus.dart';
 export 'src/events.dart';
 export 'src/line.dart';
@@ -33,7 +35,8 @@ typedef SyncEventConsumer<T> = Function(T);
 typedef AsyncEventConsumer<T> = FutureOr<void> Function(T);
 
 class Subscribe {
-  const Subscribe();
+  final int priority;
+  const Subscribe([this.priority = EventPriority.normal]);
 }
 
 const Subscribe subscribe = Subscribe();

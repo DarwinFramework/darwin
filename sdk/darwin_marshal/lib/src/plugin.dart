@@ -47,4 +47,9 @@ class MarshalPlugin extends DarwinPlugin {
   Stream<Module> collectModules() async* {
     yield module;
   }
+
+  @override
+  Stream<ServiceDescriptor> collectServices() async* {
+    yield MarshalServiceDescriptor();
+  }
 }
